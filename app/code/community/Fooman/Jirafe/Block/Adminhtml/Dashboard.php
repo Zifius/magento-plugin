@@ -41,7 +41,11 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard extends Mage_Adminhtml_Block_Dashb
 
     public function getDashboardApiUrl ()
     {
-        return Mage::getModel('foomanjirafe/jirafe')->getApiUrl();
+        try {
+            return Mage::getModel('foomanjirafe/jirafe')->getApiUrl();
+        } catch (Exception $e) {
+            return '';
+        }        
     }
 
     public function getJirafeUserToken ()
