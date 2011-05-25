@@ -20,22 +20,32 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
 
-    private $_jirafeApi = null;
+    private $_jirafeApi = false;
     
     function __construct ($httpClient = null)
     {
-        if (empty($httpClient)) {
-            $httpClient = new Zend_Http_Client();
-            $httpClient->setConfig(array(
-                'timeout' => 30,
-                'keepalive' => true
-            ));
+        try {
+            if (empty($httpClient)) {
+                $httpClient = new Jirafe_Http_Zend();
+                $httpClient->setConfig(array(
+                    'timeout' => 30,
+                    'keepalive' => true
+                ));
+            }
+            $this->_jirafeApi = new Jirafe_Api($httpClient);
+        } catch (Exception $e) {
+            Mage::logException($e);
+            Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
+            Mage::helper('foomanjirafe')->setStoreConfig('last_status',
+                    Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_ERROR);
         }
-        $this->_jirafeApi = new Jirafe_Api($httpClient);
     }
 
     public function getJirafeApi()
     {
+        if(!$this->_jirafeApi) {
+            throw new Exception('Jirafe API not initialised.');        
+        }
         return $this->_jirafeApi;
     }
     
@@ -243,6 +253,7 @@ class Fooman_Jirafe_Model_Jirafe
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites']);
             } catch (Exception $e) {
+                Mage::logException($e);
                 Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
                 Mage::helper('foomanjirafe')->setStoreConfig('last_status', Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_ERROR);
                 return false;
@@ -274,13 +285,21 @@ class Fooman_Jirafe_Model_Jirafe
             //Make sure the default (admin) store is loaded
             $defaultStoreId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID;
             Mage::app()->getStore($defaultStoreId)->load($defaultStoreId);
-            
-            $this->syncUsersStores();
-            // Run cron for the first time since the upgrade, so that users can see any changes right away.
-            if(!Mage::helper('foomanjirafe')->getStoreConfig('installed')) {
-                // Notify user 
-                $this->_notifyAdminUser(Mage::helper('foomanjirafe')->isOk(), (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
-                Mage::helper('foomanjirafe')->setStoreConfig('installed', true);
+            try {
+                $this->syncUsersStores();
+                // Run cron for the first time since the upgrade, so that users can see any changes right away.
+                if(!Mage::helper('foomanjirafe')->getStoreConfig('installed')) {
+                    // Notify user 
+                    $this->_notifyAdminUser(Mage::helper('foomanjirafe')->isOk(), (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
+                    Mage::helper('foomanjirafe')->setStoreConfig('installed', true);
+                }
+            } catch (Exception $e) {
+                Mage::logException($e);
+                Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
+                Mage::helper('foomanjirafe')->setStoreConfig('last_status',
+                        Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_ERROR);
+
+                return false;
             }
         }
     }
