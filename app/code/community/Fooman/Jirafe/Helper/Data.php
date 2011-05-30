@@ -195,7 +195,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         if(!$allUsers){
             foreach (explode(',', Mage::helper('foomanjirafe')->getStoreConfig('also_send_emails_to')) as $jirafeEmail) {
                 if (!empty($jirafeEmail)) {
-                    $emails[$jirafeEmail] = Mage::helper('foomanjirafe')->getStoreConfig('reportType');
+                    $emails[$jirafeEmail] = Mage::helper('foomanjirafe')->getStoreConfig('report_type');
                 }
             }
         }
