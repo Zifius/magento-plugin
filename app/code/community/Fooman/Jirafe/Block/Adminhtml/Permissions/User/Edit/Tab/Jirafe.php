@@ -70,15 +70,6 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
             'value' => $adminUser->getJirafeEmailSuppress()
         ));
 
-        $fieldset->addField('jirafe_also_send_to', 'textarea', array(
-            'name' => 'jirafe_also_send_to',
-            'label' => Mage::helper('foomanjirafe')->__('Also Email Reports to'),
-            'title' => Mage::helper('foomanjirafe')->__('Also Email Reports to'),
-            'after_element_html' => '<p class="nm"><small>' . Mage::helper('foomanjirafe')->__('One email address per line') . '</small></p>',
-            'required' => false,
-            'value' => str_replace(",", "\n", $adminUser->getJirafeAlsoSendTo())
-        ));
-
         $form->setValues($adminUser->getData());
 
         $this->setForm($form);
