@@ -216,6 +216,7 @@ class Fooman_Jirafe_Model_Report extends Mage_Core_Model_Abstract
             $emailTemplate = Mage::getModel('core/email_template');
             /* @var $emailTemplate Mage_Core_Model_Email_Template */
             foreach ($emails as $emailAddress => $reportType) {
+                $this->_helper->debug("Sending ".$reportType." Report to ".$emailAddress);
                 $data['detail_report'] = $reportType;
                 $emailTemplate
                         ->setDesignConfig(array('area' => 'backend'))
