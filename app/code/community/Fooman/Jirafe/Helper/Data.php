@@ -172,8 +172,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      * @param boolean $asCsv
      * @return string|array
      */
-    public function collectJirafeEmails ($asCsv = true,
-            $excludeSuppress = false, $allUsers = false)
+    public function collectJirafeEmails ($asCsv = true, $containsOrders = true, $allUsers = false)
     {
         $adminUsers = Mage::getSingleton('admin/user')->getCollection();
         $emails = array();
@@ -182,7 +181,8 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
             if ($adminUser->getIsActive() && ($adminUser->getJirafeSendEmail() || $allUsers)) {
                 // If user wants to suppress emails with no revenue...
                 $suppress = $adminUser->getJirafeEmailSuppress();
-                if (($excludeSuppress && $suppress) || $allUsers) {
+                // Only continue if the data contains orders, or if we are not suppressing
+                if (($containsOrders || !$suppress) || $allUsers) {
                     if ($asCsv) {
                         $emails[] = $adminUser->getEmail();
                     } else {
