@@ -21,9 +21,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     const VISITOR_ENGAGED   = 'C';
     const VISITOR_READY2BUY = 'D';
     const VISITOR_CUSTOMER  = 'E';
-
-    protected $_isCheckoutSuccess = false;
-
+    
     /**
      * Set default template
      *
@@ -32,6 +30,115 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     {
         $this->setTemplate('fooman/jirafe/js.phtml');
     }
+
+    function getTrackingCode()
+    {
+        if (Mage::helper('foomanjirafe')->isConfigured()) {
+            $jfUrl = $this->getPiwikBaseURL(false);
+            $jfUrlSsl = $this->getPiwikBaseURL(true);
+            $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
+
+            $pageType = $this->_getSession()->getJirafePageType();
+            switch ($pageType) {
+                case 'E' : $additionalJs = $this->_getAdditionalJsE(); break;
+                case 'D' : $additionalJs = $this->_getAdditionalJsD(); break;
+                case 'C' : $additionalJs = $this->_getAdditionalJsC(); break;
+                default  : $additionalJs = '';
+            }
+
+            $js = "
+<!-- Jirafe -->
+<script type='text/javascript'>
+var _paq = _paq || [];
+(function(){
+    var u=(('https:' == document.location.protocol) ? '{$jfUrl}' : '{$jfUrlSsl}');
+    var s='visit';
+    _paq.push(['setSiteId', {$siteId}]);
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['enableLinkTracking']);
+    _paq.push([ function() {
+        var jf_v = '{$pageType}';
+        var jf_u = this.getCustomVariable(1, s);
+        alert(jf_u);
+        jf_u = jf_u ? jf_u[1] : 'A';
+        var jf_n = this.getCustomVariable(5, s);
+        alert(jf_n);
+        jf_n = jf_n ? (parseInt(jf_n[1]) + 1) : 1;
+        if (jf_n > 1) {
+            jf_u = jf_v > jf_u ? jf_v : jf_u;
+        } else {
+            jf_u = 'A';
+        }
+        alert ('jf_v=' + jf_v + ', jf_u=' + jf_u + ', jf_n=' + jf_n);
+        this.setCustomVariable(1,'U',jf_u,s);
+        this.setCustomVariable(5,'N',String(jf_n), s);{$additionalJs}
+    }]);
+    _paq.push(['trackPageView']);
+    
+    var d=document,
+        g=d.createElement('script'),
+        s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript';
+        g.defer=true;
+        g.async=true;
+        g.src=u+'piwik.js';
+        s.parentNode.insertBefore(g,s);
+})();
+</script>
+<!-- End Jirafe Code -->";
+        }
+        
+        return $js;
+    }
+    
+    function _getAdditionalJsC()
+    {
+        $js = '';
+        $product = Mage::registry('product');
+        if ($product) {
+            $sku = addslashes($product->getSku());
+            $name = addslashes($product->getName());
+            $category = $product->getCategoryIds();
+            $price = $product->getPrice();
+            $js .= "
+        this.setEcommerceView('{$sku}','{$name}', '');";  // Should add category, and price when it is supported by Piwik
+        }
+        
+        return $js;
+    }
+    
+    function _getAdditionalJsD()
+    {
+        return '';
+    }
+    
+    function _getAdditionalJsE()
+    {
+        $js = '';
+        $quote = $this->_getLastQuote();
+        if ($quote) {
+            foreach ($quote->getAllVisibleItems() as $quoteItem) {
+                $sku = $quoteItem->getSku();
+                $name = $quoteItem->getName();
+                $category = $quoteItem->getCategoryIds();
+                $price = $quoteItem->getBasePrice();
+                $quantity = $quoteItem->getQuantity();
+                $js .= "
+        this.addEcommerceItem('{$sku}', '{$name}', '{$category}', '{$price}', '{$quantity}');";
+            }
+        }
+        
+        return $js;
+    }
+
+    public function setJirafePageType ($type=null)
+    {
+        $this->_getSession()->setJirafePageType($type);
+    }
+
+
+
+    protected $_isCheckoutSuccess = false;
 
     protected function _getSession ()
     {
@@ -46,22 +153,6 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     public function getIsCheckoutSuccess ()
     {
         return $this->_isCheckoutSuccess;
-    }
-
-    public function setPiwikVisitorType ($type=null)
-    {
-        $currentType = $this->_getSession()->getPiwikVisitorType();
-        if (empty($currentType)) {
-            $this->_getSession()->setPiwikVisitorType(self::VISITOR_ALL);
-            Mage::register('piwik_visitor_type_set', true);
-        } elseif ($type > $currentType) {
-            $this->_getSession()->setPiwikVisitorType($type);
-        } elseif ($currentType == self::VISITOR_ALL && $type == self::VISITOR_ALL) {
-            //upgrade to browser on second page view
-            if (!Mage::registry('piwik_visitor_type_set')) {
-                $this->_getSession()->setPiwikVisitorType(self::VISITOR_BROWSERS);
-            }
-        }
     }
 
     public function getPiwikVisitorType ()
@@ -81,50 +172,12 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return $js;
     }
 
-    
-    public function getAdditionalTrackingInfo ()
-    {
-        return "";
-    }
-
-    public function _getPageTrackingInfo ()
-    {
-        $js = "";
-        if ($this->getIsCheckoutSuccess()) {
-            //$js .= "_paq.push(['setCustomVariable',5, 'orderId','".$this->_getLastOrderIncrementId()."']);";
-        }
-        $js .= "_paq.push(['setCustomVariable','1','U','" . $this->getPiwikVisitorType() . "']);
-        _paq.push(['trackPageView']);";
-        return $js;
-    }
-
-    public function _getCartTrackingInfo ()
-    {
-        return "";
-    }
-
-    public function _getPurchaseTrackingInfo ()
-    {
-        $js = "";
-        if ($this->getIsCheckoutSuccess()) {
-            $items = array();
-            $quote = $this->_getLastQuote();
-            if ($quote) {
-                foreach ($quote->getAllVisibleItems() as $quoteItem) {
-                    $items[] = array('sku' => $quoteItem->getSku(), 'price' => $quoteItem->getBasePrice());
-                }
-                //$js .= "_paq.push(['trackGoal',".Mage::helper('foomanjirafe')->getStoreConfig('checkoutGoalId', Mage::app()->getStore()->getId()).",'".$quote->getBaseGrandTotal()."']);";
-            }
-        }
-        return $js;
-    }
-
     /**
      * load the quote belonging to the last successful order
      * 
      * @return Mage_Sales_Model_Quote|bool
      */
-    public function _getLastQuote ()
+    public function _getLastQuote()
     {
         $orderIncrementId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
         if ($orderIncrementId) {
