@@ -175,7 +175,9 @@ class Fooman_Jirafe_Model_Observer
         $store = $observer->getEvent()->getStore();
         // If the object is new, or has any data changes, sync
         if (!$store->getId() || $store->hasDataChanges()) {
-            Mage::register('foomanjirafe_sync', true);
+            if (!Mage::registry('foomanjirafe_sync')) {
+                Mage::register('foomanjirafe_sync', true);
+            }
         }
     }
     
