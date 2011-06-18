@@ -203,9 +203,9 @@ class Fooman_Jirafe_Model_Report extends Mage_Core_Model_Abstract
             // Get the template
             $template = Mage::getStoreConfig(self::XML_PATH_EMAIL_TEMPLATE, $storeId);
             // Pass in 'true' if there are no orders, so to suppress emails who do not want to be sent for stores with 0 orders
-            $excludeSuppress = ($data['order_num'] == 0);
+            $containsOrders = !($data['order_num'] == 0);
             // Get the list of emails to send this report
-            $emails = $this->_helper->collectJirafeEmails(false, $excludeSuppress);
+            $emails = $this->_helper->collectJirafeEmails(false, $containsOrders);
             //add intro to the first email being sent (global)
             $data['first'] = !Mage::helper('foomanjirafe')->getStoreConfig('sent_initial_email');
             // Translate email

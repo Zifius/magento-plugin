@@ -24,19 +24,23 @@ cd js/
 ln -s ~/code/jirafe-magento-plugin/js/fooman
 cd ..
 cd lib/
+ln -s ~/code/jirafe-magento-plugin/lib/Jirafe
+cd ..
+cd lib/
 ln -s ~/code/jirafe-magento-plugin/lib/Piwik
 cd ..
 
 ## Run this to remove a linked Jirafe from a Magento instance
-rm app/code/community/Fooman
-rm app/design/adminhtml/default/default/layout/foomanjirafe.xml
-rm app/design/adminhtml/default/default/template/fooman
-rm app/design/frontend/base/default/layout/foomanjirafe.xml
-rm app/design/frontend/base/default/template/fooman
-rm app/etc/modules/Fooman_Jirafe.xml
-rm app/locale/en_US/template/email/jirafe
-rm js/fooman
-rm lib/Piwik
+rm -rf app/code/community/Fooman
+rm -rf app/design/adminhtml/default/default/layout/foomanjirafe.xml
+rm -rf app/design/adminhtml/default/default/template/fooman
+rm -rf app/design/frontend/base/default/layout/foomanjirafe.xml
+rm -rf app/design/frontend/base/default/template/fooman
+rm -rf app/etc/modules/Fooman_Jirafe.xml
+rm -rf app/locale/en_US/template/email/jirafe
+rm -rf js/fooman
+rm -rf lib/Jirafe
+rm -rf lib/Piwik
 
 ## Run this in the MySQL DB to remove Jirafe (assumes no table prefix)
 DROP TABLE foomanjirafe_report;
