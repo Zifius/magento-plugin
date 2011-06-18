@@ -28,11 +28,12 @@ class Fooman_Jirafe_Model_Jirafe
             if (empty($httpClient)) {
                 $httpClient = new Jirafe_Http_Zend();
                 $httpClient->setConfig(array(
-                    'timeout' => 30,
+                    'timeout' => 60,
                     'keepalive' => true
                 ));
             }
-            $this->_jirafeApi = new Jirafe_Api($httpClient);
+            $this->_jirafeApi = new Jirafe_Api();
+            $this->_jirafeApi->setHttpClient($httpClient);
         } catch (Exception $e) {
             Mage::logException($e);
             Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
