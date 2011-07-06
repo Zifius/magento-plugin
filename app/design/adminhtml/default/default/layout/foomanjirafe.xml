@@ -14,4 +14,10 @@
             <block type="foomanjirafe/adminhtml_status" name="foomanjirafe_status" as="foomanjirafe_status" />
         </reference>
     </adminhtml_system_config_edit>
+    <!--Magento 1.4+-->
+    <adminhtml_sales_order_view>
+        <reference name="sales_order_tabs">
+            <action method="addTab"><name>jirafe</name><block>foomanjirafe/adminhtml_sales_order_view_tab_jirafe</block></action>
+        </reference>
+    </adminhtml_sales_order_view>
 </layout>

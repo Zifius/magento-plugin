@@ -1,0 +1,11 @@
+<div class="entry-edit">
+    <fieldset>
+        <ul class="note-list">
+            <table>
+            <?php foreach ($this->getReferrerData() as $data):?>
+                <tr><td width="15%"><?php echo $data['label']?></td><td><?php echo $data['data'] ?></td></tr>
+            <?php endforeach;?>
+            </table>
+        </ul>
+    </fieldset>
+</div>
