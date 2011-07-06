@@ -43,7 +43,11 @@
                 <td><?php echo $row['scope'] ?></td>
                 <td><?php echo $row['scope_id'] ?></td>
                 <td><?php echo $row['path'] ?></td>
-                <td><?php echo $row['value'] ?></td>                
+                <?php if(strpos($row['path'],'app_token')) :?>
+                <td><?php echo substr($row['value'], 0, 5) ?></td>
+                <?php else: ?>
+                <td><?php echo $row['value'] ?></td>
+                <?php endif; ?>
             </tr>
         <?php endforeach;?>
         </table>
