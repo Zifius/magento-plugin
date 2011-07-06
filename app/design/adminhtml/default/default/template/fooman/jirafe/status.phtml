@@ -13,7 +13,7 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
-<?php if ($this->isDebug() || $this->isConfig()): ?>
+<?php if ($this->isDebug() && $this->isConfig()): ?>
 <?php $statusCssClass = $this->isOk()?'success-msg':'error-msg' ?>
 <ul class="messages">
     <li class="<?php echo $statusCssClass?>">
@@ -25,8 +25,28 @@
  <?php echo $this->__('Last Status'); ?>: <?php echo $this->getStatusMessage();?>
         <?php if ($this->isDebug()) :?>
             <span style="float:right;"><a href="<?php echo $this->getSyncUrl()?>"><?php echo $this->__('Synchronise Magento with Jirafe'); ?></a> |
-                <a href="<?php echo $this->getReportUrl()?>"><?php echo $this->__('Run Report'); ?></a></span>
+                <a href="<?php echo $this->getReportUrl()?>"><?php echo $this->__('Run Report'); ?></a> |
+                <a href="<?php echo $this->getResetUrl()?>"><?php echo $this->__('Jirafe Reset'); ?></a></span>
         <?php endif;?>
+    </li>
+    <li>
+        <?php echo $this->__('Jirafe Debug Information')?> <br/>
+        <table>
+            <tr>
+                <th>Scope</th>
+                <th>ID</th>
+                <th>Path</th>
+                <th>Value</th>
+            </tr>
+        <?php foreach($this->getJirafeConfigData() as $row):?>
+            <tr>
+                <td><?php echo $row['scope'] ?></td>
+                <td><?php echo $row['scope_id'] ?></td>
+                <td><?php echo $row['path'] ?></td>
+                <td><?php echo $row['value'] ?></td>                
+            </tr>
+        <?php endforeach;?>
+        </table>
     </li>
 </ul>
 <?php endif;?>

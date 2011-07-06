@@ -50,6 +50,18 @@ class Fooman_Jirafe_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Template
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/report');
     }
+    
+    public function getResetUrl()
+    {
+        return Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/reset');
+    }
+
+    public function getJirafeConfigData()
+    {
+        $read = Mage::getSingleton('core/resource')->getConnection('core_read');
+        return $read->fetchAll("SELECT * FROM core_config_data WHERE path like 'foomanjirafe%'");
+                
+    }    
 
     public function isDebug()
     {

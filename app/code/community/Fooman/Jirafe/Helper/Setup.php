@@ -20,6 +20,10 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     {
         $instructions = array();
         switch ($version) {
+            case '0.2.12':
+            case '0.2.11':
+            case '0.2.10':
+            case '0.2.8':
             case '0.2.7':
                 $instructions = array_merge(
                         $instructions,
@@ -68,6 +72,10 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     break;
                 }
                 //nobreak intentionally;
+            case '0.2.4':
+            case '0.2.3':
+            case '0.2.2':
+            case '0.2.1':
             case '0.2.0':
                 $instructions = array_merge(
                         $instructions,
@@ -85,6 +93,9 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     break;
                 }
                 //nobreak intentionally;
+            case '0.1.6':               
+            case '0.1.4':
+            case '0.1.2':
             case '0.1.1':
                 $instructions = array_merge(
                         $instructions,
@@ -169,6 +180,45 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
 
         }
     }
+    
+    public function resetDb ()
+    {
+        Mage::log('test');
+        $currentVersion = (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version;
+        
+        $installer = new Fooman_Jirafe_Model_Mysql4_Setup('foomanjirafe_setup');
+        $installer->startSetup();
+        foreach (Mage::helper('foomanjirafe/setup')->getDbSchema($currentVersion, true) as $instruction) {
+            switch ($instruction['type']) {
+                case 'table':
+                    $sql = "DROP TABLE IF EXISTS `{$installer->getTable($instruction['name'])}`;\n";
+                    $return = $installer->run($sql);
+                    break;
+                case 'sql-column':
+                    try{
+                    $return = $installer->run("
+                        ALTER TABLE `{$installer->getTable($instruction['table'])}` DROP COLUMN `{$instruction['name']}`");                
+                        
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
+                    break;
+                case 'eav-attribute':
+                    try {
+                        $return =  $installer->removeAttribute($instruction['entity'], $instruction['name']);                        
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
+                    break;
+            }
+        }
+        $return = $installer->run("
+            DELETE FROM `{$installer->getTable('core_config_data')}` WHERE path LIKE '%jirafe%'
+            ");
+        $return = $installer->run("
+            DELETE FROM `{$installer->getTable('core_resource')}` WHERE code = 'foomanjirafe_setup'
+            ");
+        $installer->endSetup();
+    }
 
 }
-

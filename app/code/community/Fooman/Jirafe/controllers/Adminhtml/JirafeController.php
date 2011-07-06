@@ -26,14 +26,21 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
         } else {
             Mage::getModel('foomanjirafe/report')->cron();
         }
-        $this->_redirect('adminhtml/dashboard');
+        $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
     }
 
     public function syncAction()
     {
         $jirafe = Mage::getModel('foomanjirafe/jirafe');
         $jirafe->syncUsersStores();
-        $this->_redirect('adminhtml/dashboard');
+        $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
+    }
+    
+    public function resetAction()
+    {
+        $jirafe = Mage::helper('foomanjirafe/setup');
+        $jirafe->resetDb();
+        $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
     }
 
     public function toggleDashboardAction()
