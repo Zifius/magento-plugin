@@ -15,12 +15,13 @@
 
 class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
 {
-
     const VISITOR_ALL       = 'A';
     const VISITOR_BROWSERS  = 'B';
     const VISITOR_ENGAGED   = 'C';
     const VISITOR_READY2BUY = 'D';
     const VISITOR_CUSTOMER  = 'E';
+    
+    static public $pageType = self::VISITOR_BROWSERS;
 
     /**
      * Set default template
@@ -179,22 +180,30 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return $protocol . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
     }
     
-    public function setJirafePageType($type = 'A')
+    public function setJirafePageType($type)
     {
         if (strlen($type) > 1) {
-            // Not a flag, maybe a constant name?
+            // Maybe type is a class constant name?
             $type = constant(__CLASS__.'::'.$type);
         }
-        if (!empty($type)) {
-            $this->_getSession()->setJirafePageType($type);
+        if (!empty($type) && $type > self::$pageType) {
+            self::$pageType = $type;
         }
     }
     
     public function getJirafePageType()
     {
-        return $this->_getSession()->getJirafePageType();
+        $type = $this->_getSession()->getJirafePageType();
+        if (!empty($type) && $type > self::$pageType) {
+            // Override page type with session data
+            self::$pageType = $type;
+            // Clear session variable
+            $this->_getSession()->setJirafePageType(null);
+        }
+        
+        return self::$pageType;
     }
-
+    
     public function getTrackingCode()
     {
         $urlHttp    = $this->getBaseURL(false);

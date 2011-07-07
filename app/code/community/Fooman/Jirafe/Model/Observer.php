@@ -304,6 +304,6 @@ class Fooman_Jirafe_Model_Observer
 
     public function readyToBuy ($observer)
     {
-        Mage::getSingleton('customer/session')->setJirafePageType('D');
+        Mage::getSingleton('customer/session')->setJirafePageType(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
     }
 }
