@@ -181,7 +181,13 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
     public function setJirafePageType($type = 'A')
     {
-        $this->_getSession()->setJirafePageType($type);
+        if (strlen($type) > 1) {
+            // Not a flag, maybe a constant name?
+            $type = constant(__CLASS__.'::'.$type);
+        }
+        if (!empty($type)) {
+            $this->_getSession()->setJirafePageType($type);
+        }
     }
     
     public function getJirafePageType()
