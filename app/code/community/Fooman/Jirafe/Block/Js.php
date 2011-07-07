@@ -169,15 +169,14 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
 //        return false;
 //    }
 
-    public function getSiteId ()
+    public function getSiteId()
     {
         return Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     }
 
-    public function getBaseURL ($secure = false)
+    public function getBaseURL()
     {
-        $protocol = $secure ? "https://" : "http://";
-        return $protocol . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
+        return Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
     }
     
     public function setJirafePageType($type)
@@ -206,30 +205,28 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
     public function getTrackingCode()
     {
-        $urlHttp    = $this->getBaseURL(false);
-        $urlHttps   = $this->getBaseURL(true);
         $jirafeJson = json_encode(array(
             'siteId'   => $this->getSiteId(),
             'pageType' => $this->getJirafePageType(),
-            'url'      => array($urlHttp, $urlHttps),
+            'baseUrl'  => $this->getBaseURL(),
         ));
     
         return <<<EOF
 <!-- Jirafe:START -->
 <script type="text/javascript">
-(function(){
-    jirafe = {$jirafeJson};
-    var p = document.location.protocol == 'http:' ? 0 : 1,
-        d = document,
+(function(j){
+    jirafe = j;
+    var d = document,
         g = d.createElement('script'),
         s = d.getElementsByTagName('script')[0];
     g.type = 'text/javascript';
     g.defer = g.async = true;
-    g.src = jirafe.url[p] + 'jirafe.js';
+    g.src = d.location.protocol + '//' + j.baseUrl + 'jirafe.js';
     s.parentNode.insertBefore(g, s);
-})();
+})({$jirafeJson});
 </script>
 <!-- Jirafe:END -->
+
 EOF;
     }
     
