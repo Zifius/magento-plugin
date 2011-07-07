@@ -21,7 +21,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     const VISITOR_READY2BUY = 'D';
     const VISITOR_CUSTOMER  = 'E';
     
-    static public $pageType = self::VISITOR_BROWSERS;
+    public $pageType = self::VISITOR_BROWSERS;
 
     /**
      * Set default template
@@ -53,22 +53,22 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
             // Maybe type is a class constant name?
             $type = constant(__CLASS__.'::'.$type);
         }
-        if (!empty($type) && $type > self::$pageType) {
-            self::$pageType = $type;
+        if (!empty($type) && $type > $this->pageType) {
+            $this->pageType = $type;
         }
     }
     
     public function getJirafePageType()
     {
         $type = $this->_getSession()->getJirafePageType();
-        if (!empty($type) && $type > self::$pageType) {
+        if (!empty($type) && $type > $this->pageType) {
             // Override page type with session data
-            self::$pageType = $type;
+            $this->pageType = $type;
             // Clear session variable
             $this->_getSession()->setJirafePageType(null);
         }
         
-        return self::$pageType;
+        return $this->pageType;
     }
     
     public function getTrackingCode()
