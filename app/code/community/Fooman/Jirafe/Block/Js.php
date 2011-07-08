@@ -21,7 +21,11 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     const VISITOR_READY2BUY = 'D';
     const VISITOR_CUSTOMER  = 'E';
     
-    public $pageType = self::VISITOR_BROWSERS;
+    const PAGE_PRODUCT  = 1;
+    const PAGE_CATEGORY = 2;
+    
+    public $pageLevel = self::VISITOR_BROWSERS;
+    public $pageType;
 
     /**
      * Set default template
@@ -47,37 +51,87 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
     }
     
-    public function setJirafePageType($type)
+    public function getProduct()
     {
-        if (strlen($type) > 1) {
-            // Maybe type is a class constant name?
-            $type = constant(__CLASS__.'::'.$type);
+        $product = Mage::registry('product');
+        $aCategories = array();
+        foreach ($product->getCategoryIds() as $id) {
+            $category = Mage::getModel('catalog/category')->load($id);
+            $aCategories[] = $this->getCategory($category);
         }
-        if (!empty($type) && $type > $this->pageType) {
-            $this->pageType = $type;
+        return array(
+            'sku'        => $product->getSku(),
+            'name'       => $product->getName(),
+            'categories' => $aCategories,
+        );
+    }
+    
+    public function getCategory($category = null)
+    {
+        $aCategories = array();
+        if (!isset($category)) {
+            $category = Mage::registry('current_category');
+        }
+        foreach ($category->getPathIds() as $k => $id) {
+            // Skip null and root
+            if ($k > 1) {
+                $category = Mage::getModel('catalog/category')->load($id);
+                $aCategories[] = $category->getName();
+            }
+        }
+        return join('/', $aCategories);
+    }
+    
+    public function setJirafePageLevel($level)
+    {
+        if (strlen($level) > 1) {
+            // Maybe type is a class constant name?
+            $level = constant(__CLASS__.'::'.$level);
+        }
+        if (!empty($level) && $level > $this->pageLevel) {
+            $this->pageLevel = $level;
         }
     }
     
-    public function getJirafePageType()
+    public function getJirafePageLevel()
     {
-        $type = $this->_getSession()->getJirafePageType();
-        if (!empty($type) && $type > $this->pageType) {
+        $level = $this->_getSession()->getJirafePageLevel();
+        if (!empty($level) && $level > $level->pageLevel) {
             // Override page type with session data
-            $this->pageType = $type;
+            $this->pageLevel = $level;
             // Clear session variable
-            $this->_getSession()->setJirafePageType(null);
+            $this->_getSession()->setJirafePageLevel(null);
         }
         
-        return $this->pageType;
+        return $this->pageLevel;
+    }
+    
+    public function setJirafePageType($type)
+    {
+        $type = constant(__CLASS__.'::'.$type);
+        if (!empty($type)) {
+            $this->pageType = $type;
+        }
     }
     
     public function getTrackingCode()
     {
-        $jirafeJson = json_encode(array(
-            'siteId'   => $this->getSiteId(),
-            'pageType' => $this->getJirafePageType(),
-            'baseUrl'  => $this->getBaseURL(),
-        ));
+        $aData = array(
+            'siteId'    => $this->getSiteId(),
+            'pageLevel' => $this->getJirafePageLevel(),
+            'baseUrl'   => $this->getBaseURL(),
+        );
+        
+        switch ($this->pageType) {
+            case self::PAGE_PRODUCT:
+                $aData['product']  = $this->getProduct();
+                break;
+            case self::PAGE_CATEGORY:
+                $aData['category'] = $this->getCategory();
+                break;
+        }
+        
+        $jirafeJson = json_encode($aData);
     
         return <<<EOF
 <!-- Jirafe:START -->
