@@ -20,6 +20,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     {
         $instructions = array();
         switch ($version) {
+            case '0.2.13':
             case '0.2.12':
             case '0.2.11':
             case '0.2.10':
@@ -155,11 +156,19 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     $tableDetails = implode(",",array_merge($columns,$keys));
                     $sql = "DROP TABLE IF EXISTS `{$installer->getTable($instruction['name'])}`;\n";
                     $sql .="CREATE TABLE `{$installer->getTable($instruction['name'])}` (".$tableDetails.") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-                    $installer->run($sql);
+                    try {
+                        $installer->run($sql);
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
                     break;
                 case 'sql-column':
-                    $return = $installer->run("
+                    try {
+                        $return = $installer->run("
                         ALTER TABLE `{$installer->getTable($instruction['table'])}` ADD COLUMN `{$instruction['name']}` {$instruction['params']}");
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
                     break;
                 case 'sql-column-delete':
                     try{
@@ -183,9 +192,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     
     public function resetDb ()
     {
-        Mage::log('test');
         $currentVersion = (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version;
-        
         $installer = new Fooman_Jirafe_Model_Mysql4_Setup('foomanjirafe_setup');
         $installer->startSetup();
         foreach (Mage::helper('foomanjirafe/setup')->getDbSchema($currentVersion, true) as $instruction) {
