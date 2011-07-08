@@ -5,6 +5,7 @@
             <?php foreach ($this->getReferrerData() as $data):?>
                 <tr><td width="15%"><?php echo $data['label']?></td><td><?php echo $data['data'] ?></td></tr>
             <?php endforeach;?>
+                <tr><td width="15%"><?php $this->__('Export Status')?></td><td><?php echo $order->getJirafeExportStatus()?></td></tr>
             </table>
         </ul>
     </fieldset>
