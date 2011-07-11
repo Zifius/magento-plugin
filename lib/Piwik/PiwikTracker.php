@@ -692,7 +692,7 @@ class Piwik_PiwikTracker
      */
     protected function sendRequest($url)
     {
-		$timeout = 600; // Allow debug while blocking the request
+		$timeout = 10; // Reduced timeout to 10s
 		$response = '';
 
 		if(!$this->cookieSupport)
