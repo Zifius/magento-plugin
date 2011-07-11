@@ -84,7 +84,7 @@ class Fooman_Jirafe_Model_Observer
                 $piwikTracker->doTrackEcommerceOrder(
                         $order->getIncrementId(),
                         $order->getBaseGrandTotal(),
-                        $order->getBaseSubotal(),
+                        $order->getBaseSubtotal(),
                         $order->getBaseTaxAmount(),
                         $order->getBaseShippingAmount(),
                         $order->getDiscountAmount() > 0 ? 1 : 0
@@ -329,12 +329,12 @@ class Fooman_Jirafe_Model_Observer
     
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
-        foreach ($quote->getAllItems() as $item) {
+        foreach ($quote->getAllVisibleItems() as $item) {
             $piwikTracker->addEcommerceItem(
                 $item->getSku(),
                 $item->getName(),
                 $this->_getItemCategory($item),
-                $item->getPrice(),
+                $item->getProduct()->getPrice(),
                 $item->getQty()
             );
         }        
@@ -347,6 +347,7 @@ class Fooman_Jirafe_Model_Observer
         
         $this->_addEcommerceItems($piwikTracker, $quote);
         
+        $quote->collectTotals();
         $piwikTracker->doTrackEcommerceCartUpdate($quote->getGrandTotal());
     }
     
@@ -354,7 +355,7 @@ class Fooman_Jirafe_Model_Observer
     {
         Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
         
-        $this->ecommerceCartUpdate($observer->getCart()->getQuote());
+        $this->ecommerceCartUpdate(Mage::getSingleton('checkout/session')->getQuote());
     }
     
     public function checkoutCartUpdateItemsAfter($observer)
@@ -364,6 +365,6 @@ class Fooman_Jirafe_Model_Observer
     
     public function checkoutCartProductUpdateAfter($observer)
     {        
-        $this->ecommerceCartUpdate($observer->getCart()->getQuote());
+        $this->ecommerceCartUpdate(Mage::getSingleton('checkout/session')->getQuote());
     }
 }
