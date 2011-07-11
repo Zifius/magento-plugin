@@ -312,9 +312,9 @@ class Fooman_Jirafe_Model_Observer
     }
     
     
-    protected function _getItemCategory($item)
+    protected function _getCategory($product)
     {
-        $id = current($item->getProduct()->getCategoryIds());
+        $id = current($product->getCategoryIds());
         $category = Mage::getModel('catalog/category')->load($id);
         $aCategories = array();
         foreach ($category->getPathIds() as $k => $id) {
@@ -330,11 +330,12 @@ class Fooman_Jirafe_Model_Observer
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
+            $product = $item->getProduct();
             $piwikTracker->addEcommerceItem(
-                $item->getSku(),
+                $product->getData('sku'),
                 $item->getName(),
-                $this->_getItemCategory($item),
-                $item->getProduct()->getPrice(),
+                $this->_getCategory($product),
+                $product->getPrice(),
                 $item->getQty()
             );
         }        
