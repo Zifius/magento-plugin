@@ -74,15 +74,13 @@ class Fooman_Jirafe_Model_Observer
             if ($order->getJirafeAttributionData()) {
                 $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
             }
-
-            $quote = $order->getQuote();
-            $this->_addEcommerceItems($piwikTracker, $quote);
             
             try {
                 Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
                 $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
                 $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
 
+                $this->_addEcommerceItems($piwikTracker, $order->getQuote());
                 $piwikTracker->doTrackEcommerceOrder(
                         $order->getIncrementId(),
                         $order->getBaseGrandTotal(),
@@ -317,7 +315,7 @@ class Fooman_Jirafe_Model_Observer
     protected function _getItemCategory($item)
     {
         $id = current($item->getProduct()->getCategoryIds());
-        $category = Mage::getModel('catalog/category')->load();
+        $category = Mage::getModel('catalog/category')->load($id);
         $aCategories = array();
         foreach ($category->getPathIds() as $k => $id) {
             // Skip null and root
