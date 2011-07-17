@@ -25,4 +25,15 @@ class Fooman_Jirafe_Block_JsAlt extends Fooman_Jirafe_Block_Js
         $this->setTemplate('fooman/jirafe/js-alt.phtml');
     }
 
+    public function getTrackingCode()
+    {
+        $urlHttps   = $this->getBaseURL(true);
+    
+        return <<<EOF
+<!-- Jirafe:START -->
+<noscript><p><img src="{$urlHttps}piwik.php?idsite=<?php echo $_siteId ?>" style="border:0" alt="" /></p></noscript>
+<!-- Jirafe:END -->
+EOF;
+    }
+
 }

@@ -188,10 +188,28 @@
                     <foomanjirafe_readyToBuy>
                         <type>singleton</type>
                         <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>readyToBuy</method>
+                        <method>checkoutCartProductAddAfter</method>
                     </foomanjirafe_readyToBuy>
                 </observers>
             </checkout_cart_product_add_after>
+            <checkout_cart_update_items_after>
+                <observers>
+                    <foomanjirafe_readyToBuy>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>checkoutCartUpdateItemsAfter</method>
+                    </foomanjirafe_readyToBuy>
+                </observers>
+            </checkout_cart_update_items_after>
+            <checkout_cart_product_update_after>
+                <observers>
+                    <foomanjirafe_readyToBuy>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>checkoutCartProductUpdateAfter</method>
+                    </foomanjirafe_readyToBuy>
+                </observers>
+            </checkout_cart_product_update_after>    
             <sales_convert_quote_to_order>
                 <observers>
                     <foomanjirafe_salesConvertQuoteToOrder>
