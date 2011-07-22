@@ -46,4 +46,14 @@ class Fooman_Jirafe_Block_Adminhtml_Sales_Order_View_Tab_Jirafe
         }
         return $returnArray;
     }
+    
+    public function getJirafeExportStatus ()
+    {
+        $order = $this->getOrder();
+        if($order->getId()) {
+            return $order->getJirafeExportStatus();
+        } else {
+            return '';
+        }
+    }
 }
