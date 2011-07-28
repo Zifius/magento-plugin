@@ -26,15 +26,19 @@ class Fooman_Jirafe_Model_Jirafe
     const JIRAFE_API_SERVER = 'https://api.jirafe.com';
     const JIRAFE_API_BASE = '';
     const JIRAFE_PIWIK_BASE_URL = 'data.jirafe.com';
+    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
 
     // DEV environment
-// const JIRAFE_API_SERVER = 'http://api.jirafe.local';
-// const JIRAFE_API_BASE = 'app_dev.php';
-// const JIRAFE_PIWIK_BASE_URL = 'piwik.local';
+//    const JIRAFE_API_SERVER = 'http://api.jirafe.local';
+//    const JIRAFE_API_BASE = 'app_dev.php';
+//    const JIRAFE_PIWIK_BASE_URL = 'piwik.local';
+//    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
+    
     // TEST environment
-// const JIRAFE_API_SERVER = 'https://test-api.jirafe.com';
-// const JIRAFE_API_BASE = '';
-// const JIRAFE_PIWIK_BASE_URL = 'test-data.jirafe.com';
+//    const JIRAFE_API_SERVER = 'https://test-api.jirafe.com';
+//    const JIRAFE_API_BASE = '';
+//    const JIRAFE_PIWIK_BASE_URL = 'test-data.jirafe.com';
+//    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
     
     const JIRAFE_API_VERSION = 'v1';
     const JIRAFE_DOC_URL = 'http://jirafe.com/doc';
@@ -104,7 +108,17 @@ class Fooman_Jirafe_Model_Jirafe
      */
     public function getPiwikBaseUrl ()
     {
-        return rtrim(self::JIRAFE_PIWIK_BASE_URL, '/') . '/';
+        return rtrim(self::JIRAFE_PIWIK_BASE_URL, '/');
+    }
+
+    /**
+     * Returns the URL of the Jirafe JS wrapper
+     *
+     * @return string
+     */
+    public function getJsBaseUrl ()
+    {
+        return rtrim(self::JIRAFE_JS_BASE_URL, '/');
     }
 
     /**

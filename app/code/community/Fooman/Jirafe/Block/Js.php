@@ -23,6 +23,9 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
     const PAGE_PRODUCT  = 1;
     const PAGE_CATEGORY = 2;
+    const PAGE_SEARCH   = 3;
+    const PAGE_CART     = 4;
+    const PAGE_CONFIRM  = 5;
     
     public $pageLevel = self::VISITOR_BROWSERS;
     public $pageType;
@@ -46,9 +49,14 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     }
 
-    public function getBaseURL()
+    public function getPiwikBaseURL()
     {
         return Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
+    }
+
+    public function getJsBaseURL()
+    {
+        return Mage::getModel('foomanjirafe/jirafe')->getJsBaseUrl();
     }
     
     public function getProduct()
@@ -93,19 +101,6 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         }
     }
     
-    public function getJirafePageLevel()
-    {
-        $level = $this->_getSession()->getJirafePageLevel();
-        if (!empty($level) && $level > $level->pageLevel) {
-            // Override page type with session data
-            $this->pageLevel = $level;
-            // Clear session variable
-            $this->_getSession()->setJirafePageLevel(null);
-        }
-        
-        return $this->pageLevel;
-    }
-    
     public function setJirafePageType($type)
     {
         $type = constant(__CLASS__.'::'.$type);
@@ -116,11 +111,13 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
     public function getTrackingCode()
     {
-        $aData = array(
-            'siteId'    => $this->getSiteId(),
-            'pageLevel' => $this->getJirafePageLevel(),
-            'baseUrl'   => $this->getBaseURL(),
-        );
+        $aData = array('id' => $this->getSiteId());
+        
+        $jsUrl = $this->getJsBaseURL();
+        $piwikUrl = $this->getPiwikBaseURL();
+        if ($piwikUrl != 'data.jirafe.com') {
+            $aData['baseUrl'] = $piwikUrl;
+        }
         
         switch ($this->pageType) {
             case self::PAGE_PRODUCT:
@@ -135,17 +132,13 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
         return <<<EOF
 <!-- Jirafe:START -->
-<script type="text/javascript">
-(function(j){
-    jirafe = j;
-    var d = document,
-        g = d.createElement('script'),
-        s = d.getElementsByTagName('script')[0];
-    g.type = 'text/javascript';
-    g.defer = g.async = true;
-    g.src = d.location.protocol + '//' + j.baseUrl + 'jirafe.js';
+<script type='text/javascript'>
+var jirafe = {$jirafeJson};
+(function(){
+    var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript',g.defer=g.async=true;g.src=d.location.protocol+'//{$jsUrl}/jirafe.js';
     s.parentNode.insertBefore(g, s);
-})({$jirafeJson});
+})();
 </script>
 <!-- Jirafe:END -->
 
