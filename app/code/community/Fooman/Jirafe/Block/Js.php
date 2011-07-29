@@ -114,7 +114,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         $type = constant(__CLASS__.'::'.$type);
         if (!empty($type)) {
             $this->pageType = $type;
-            $this->pageLevel = isset($this->aMap[$type]) ? $this->aMap[$type] : self::VISITOR_BROWSERS;
+            $this->pageLevel = isset($this->aPageMap[$type]) ? $this->aPageMap[$type] : self::VISITOR_BROWSERS;
         }
     }
     
