@@ -25,6 +25,7 @@ class Fooman_Jirafe_Model_Observer
         $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl().'/';
         $piwikTracker = new Fooman_Jirafe_Model_JirafeTracker($siteId, $jirafePiwikUrl);
         $piwikTracker->setTokenAuth($appToken);
+        $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
         $piwikTracker->disableCookieSupport();
 
         return $piwikTracker;
@@ -65,11 +66,6 @@ class Fooman_Jirafe_Model_Observer
             $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
             $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
             $piwikTracker->setIp($order->getRemoteIp());
-            //$piwikTracker->setUrl();
-
-            if ($order->getJirafeVisitorId()) {
-                $piwikTracker->setVisitorId($order->getJirafeVisitorId());
-            }
 
             if ($order->getJirafeAttributionData()) {
                 $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
