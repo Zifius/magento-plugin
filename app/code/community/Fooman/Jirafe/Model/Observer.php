@@ -355,6 +355,8 @@ class Fooman_Jirafe_Model_Observer
     
     public function checkoutCartProductAddAfter($observer)
     {
+        Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
+
         $this->ecommerceCartUpdate(Mage::getSingleton('checkout/session')->getQuote());
     }
     
