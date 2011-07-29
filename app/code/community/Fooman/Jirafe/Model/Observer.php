@@ -22,7 +22,7 @@ class Fooman_Jirafe_Model_Observer
         $appToken = Mage::helper('foomanjirafe')->getStoreConfig('app_token');
         $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $storeId);
 
-        $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
+        $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl().'/';
         $piwikTracker = new Fooman_Jirafe_Model_JirafeTracker($siteId, $jirafePiwikUrl);
         $piwikTracker->setTokenAuth($appToken);
         $piwikTracker->disableCookieSupport();
@@ -87,7 +87,7 @@ class Fooman_Jirafe_Model_Observer
                         $order->getBaseSubtotal(),
                         $order->getBaseTaxAmount(),
                         $order->getBaseShippingAmount(),
-                        $order->getDiscountAmount() > 0 ? 1 : 0
+                        $order->getDiscountAmount()
                 );
 
                 $order->setJirafeExportStatus(Fooman_Jirafe_Model_Jirafe::STATUS_ORDER_EXPORTED);
@@ -345,7 +345,8 @@ class Fooman_Jirafe_Model_Observer
     {
         $piwikTracker = $this->_initPiwikTracker($quote->getStoreId());
         $piwikTracker->setIp($quote->getRemoteIp());
-        
+        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_ENGAGED);
+
         $this->_addEcommerceItems($piwikTracker, $quote);
         
         $quote->collectTotals();

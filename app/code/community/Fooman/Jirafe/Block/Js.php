@@ -23,9 +23,18 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     
     const PAGE_PRODUCT  = 1;
     const PAGE_CATEGORY = 2;
+    const PAGE_SEARCH   = 3;
+    const PAGE_CART     = 4;
+    const PAGE_CONFIRM  = 5;
     
     public $pageLevel = self::VISITOR_BROWSERS;
     public $pageType;
+    
+    protected $aPageMap = array(
+        self::PAGE_PRODUCT => self::VISITOR_ENGAGED,
+        self::PAGE_CART    => self::VISITOR_READY2BUY,
+        self::PAGE_CONFIRM => self::VISITOR_ENGAGED,
+    );
 
     /**
      * Set default template
@@ -46,9 +55,14 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     }
 
-    public function getBaseURL()
+    public function getPiwikBaseURL()
     {
         return Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
+    }
+
+    public function getJsBaseURL()
+    {
+        return Mage::getModel('foomanjirafe/jirafe')->getJsBaseUrl();
     }
     
     public function getProduct()
@@ -82,17 +96,6 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return join('/', $aCategories);
     }
     
-    public function setJirafePageLevel($level)
-    {
-        if (strlen($level) > 1) {
-            // Maybe type is a class constant name?
-            $level = constant(__CLASS__.'::'.$level);
-        }
-        if (!empty($level) && $level > $this->pageLevel) {
-            $this->pageLevel = $level;
-        }
-    }
-    
     public function getJirafePageLevel()
     {
         $level = $this->_getSession()->getJirafePageLevel();
@@ -111,6 +114,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         $type = constant(__CLASS__.'::'.$type);
         if (!empty($type)) {
             $this->pageType = $type;
+            $this->pageLevel = isset($this->aMap[$type]) ? $this->aMap[$type] : self::VISITOR_BROWSERS;
         }
     }
     
@@ -119,15 +123,20 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         $aData = array(
             'siteId'    => $this->getSiteId(),
             'pageLevel' => $this->getJirafePageLevel(),
-            'baseUrl'   => $this->getBaseURL(),
         );
-        
+
+        $jsUrl = $this->getJsBaseURL();
+        $piwikUrl = $this->getPiwikBaseURL();
+        if ($piwikUrl != 'data.jirafe.com') {
+            $aData['baseUrl'] = $piwikUrl;
+        }
+
         switch ($this->pageType) {
             case self::PAGE_PRODUCT:
                 $aData['product']  = $this->getProduct();
                 break;
             case self::PAGE_CATEGORY:
-                $aData['category'] = $this->getCategory();
+                $aData['category'] = array('name' => $this->getCategory());
                 break;
         }
         
@@ -136,16 +145,12 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return <<<EOF
 <!-- Jirafe:START -->
 <script type="text/javascript">
-(function(j){
-    jirafe = j;
-    var d = document,
-        g = d.createElement('script'),
-        s = d.getElementsByTagName('script')[0];
-    g.type = 'text/javascript';
-    g.defer = g.async = true;
-    g.src = d.location.protocol + '//' + j.baseUrl + 'jirafe.js';
-    s.parentNode.insertBefore(g, s);
-})({$jirafeJson});
+var jirafe = {$jirafeJson};
+(function(){
+    var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript',g.defer=g.async=true;g.src=d.location.protocol+'//{$jsUrl}/jirafe.js';
+     s.parentNode.insertBefore(g, s);
+})();
 </script>
 <!-- Jirafe:END -->
 
