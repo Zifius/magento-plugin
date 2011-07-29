@@ -27,14 +27,14 @@ class Fooman_Jirafe_Model_Jirafe
     const JIRAFE_API_BASE = '';
     const JIRAFE_PIWIK_BASE_URL = 'data.jirafe.com';
     const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
- 
-     // DEV environment
+
+    // DEV environment
 //    const JIRAFE_API_SERVER = 'http://api.jirafe.local';
 //    const JIRAFE_API_BASE = 'app_dev.php';
 //    const JIRAFE_PIWIK_BASE_URL = 'piwik.local';
 //    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
     
-     // TEST environment
+    // TEST environment
 //    const JIRAFE_API_SERVER = 'https://test-api.jirafe.com';
 //    const JIRAFE_API_BASE = '';
 //    const JIRAFE_PIWIK_BASE_URL = 'test-data.jirafe.com';
