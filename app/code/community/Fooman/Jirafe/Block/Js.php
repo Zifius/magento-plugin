@@ -121,7 +121,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     public function getTrackingCode()
     {
         $aData = array(
-            'siteId'    => $this->getSiteId(),
+            'id'        => $this->getSiteId(),
             'pageLevel' => $this->getJirafePageLevel(),
         );
 
