@@ -16,6 +16,7 @@
 <div id="jirafe"></div>
 <script type="text/javascript">
 <!--
+if (typeof jQuery != 'undefined') { 
     (function($) {
          $('#jirafe').jirafe({
             api_url:    '<?php echo $this->getDashboardApiUrl()?>',
@@ -23,5 +24,6 @@
             app_id:     '<?php echo $this->getJirafeApplicationId()?>'
          });
     })(jQuery);
+}
 -->
 </script>

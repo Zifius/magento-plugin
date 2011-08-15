@@ -1,1 +1,3 @@
-$.noConflict();
+if (typeof jQuery != 'undefined') { 
+    $.noConflict();
+}
