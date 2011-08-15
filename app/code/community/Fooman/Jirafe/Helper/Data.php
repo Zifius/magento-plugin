@@ -225,7 +225,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function createJirafeUserId ($user)
     {
-        return 'magento_' . substr($this->getStoreConfig('app_token'), 0, 5) . '_' . $user->getEmail();
+        return $user->getEmail();
     }
 
     public function createJirafeUserEmail ($user)
@@ -239,8 +239,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
          * see createJirafeUserId
          */
 
-        $array = explode('_', $email, 3);
-        return $array[2];
+        return $email;
     }
 
     public function getUnifiedStoreBaseUrl ($baseUrl)
