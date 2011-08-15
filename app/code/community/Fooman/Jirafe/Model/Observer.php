@@ -67,6 +67,12 @@ class Fooman_Jirafe_Model_Observer
             $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
             $piwikTracker->setIp($order->getRemoteIp());
 
+            // this observer can be potentially be triggered via a backend action
+            // it is safer to set the visitor id from the order (if available)
+            if ($order->getJirafeVisitorId()) {
+                $piwikTracker->setVisitorId($order->getJirafeVisitorId());
+            }
+            
             if ($order->getJirafeAttributionData()) {
                 $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
             }
@@ -344,25 +350,16 @@ class Fooman_Jirafe_Model_Observer
         $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_ENGAGED);
 
         $this->_addEcommerceItems($piwikTracker, $quote);
-        
-        $quote->collectTotals();
         $piwikTracker->doTrackEcommerceCartUpdate($quote->getGrandTotal());
     }
     
     public function checkoutCartProductAddAfter($observer)
     {
         Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
-
-        $this->ecommerceCartUpdate(Mage::getSingleton('checkout/session')->getQuote());
     }
     
-    public function checkoutCartUpdateItemsAfter($observer)
-    {        
-        $this->ecommerceCartUpdate($observer->getCart()->getQuote());
-    }
-    
-    public function checkoutCartProductUpdateAfter($observer)
-    {        
-        $this->ecommerceCartUpdate(Mage::getSingleton('checkout/session')->getQuote());
+    public function salesQuoteCollectTotalsAfter ($observer)
+    {
+        $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
     }
 }
