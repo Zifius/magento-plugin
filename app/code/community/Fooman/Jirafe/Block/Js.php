@@ -99,7 +99,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     public function getJirafePageLevel()
     {
         $level = $this->_getSession()->getJirafePageLevel();
-        if (!empty($level) && $level > $level->pageLevel) {
+        if (!empty($level) && $level > $this->pageLevel) {
             // Override page type with session data
             $this->pageLevel = $level;
             // Clear session variable
