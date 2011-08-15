@@ -18,6 +18,7 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
     protected function sendRequest($url)
     {
         $client = new Zend_Http_Client($url);
+        Mage::helper('foomanjirafe')->debug($url);
         $response = $client->request();
 
         //check server response
