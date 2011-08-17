@@ -271,6 +271,11 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
                 && $this->getStatus() != Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_NOT_INSTALLED
                 && $this->getStatus() != Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_ERROR;
     }
+    
+    public function noSync ()
+    {
+        return $this->getStatus() != self::JIRAFE_STATUS_SYNC_COMPLETED;
+    }    
 
     public function getStatus ()
     {

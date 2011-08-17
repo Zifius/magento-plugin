@@ -30,6 +30,11 @@ class Fooman_Jirafe_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Template
     {
         return Mage::helper('foomanjirafe')->isOk();
     }
+    
+    public function noSync ()
+    {
+        return Mage::helper('foomanjirafe')->noSync();
+    }
 
     public function getStatus ()
     {
