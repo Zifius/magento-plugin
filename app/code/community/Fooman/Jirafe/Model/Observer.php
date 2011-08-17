@@ -82,7 +82,7 @@ class Fooman_Jirafe_Model_Observer
                 $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
                 $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
 
-                $this->_addEcommerceItems($piwikTracker, $order->getQuote());
+                $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
                 $piwikTracker->doTrackEcommerceOrder(
                         $order->getIncrementId(),
                         $order->getBaseGrandTotal(),
