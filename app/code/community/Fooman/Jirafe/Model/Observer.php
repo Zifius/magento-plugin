@@ -212,11 +212,23 @@ class Fooman_Jirafe_Model_Observer
      *
      * @param $observer
      */
-    public function storeDeleteAfter($observer)
+    public function storeDeleteCommitAfter($observer)
     {
-        Mage::helper('foomanjirafe')->debug('storeDeleteAfter');
+        Mage::helper('foomanjirafe')->debug('storeDeleteCommitAfter');
         Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
     }
+
+    /**
+     * We need to sync every time after we delete a website
+     *
+     * @param $observer
+     */
+    public function websiteDeleteCommitAfter($observer)
+    {
+        Mage::helper('foomanjirafe')->debug('websiteDeleteCommitAfter');
+        Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
+    }
+
 
     /**
      * Check fields in the store group object to see if we should run sync
