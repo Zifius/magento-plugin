@@ -48,6 +48,15 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard extends Mage_Adminhtml_Block_Dashb
         }        
     }
 
+    public function getAssetUrl ($filename)
+    {
+        try {
+            return Mage::getModel('foomanjirafe/jirafe')->getAssetUrl($filename);
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
     public function getJirafeUserToken ()
     {
         return Mage::getSingleton('admin/session')->getUser()->getJirafeUserToken();
