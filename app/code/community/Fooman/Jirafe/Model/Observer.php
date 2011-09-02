@@ -52,54 +52,63 @@ class Fooman_Jirafe_Model_Observer
     }
 
     /**
+     * salesOrderSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see salesOrderSaveCommitAfter
+     * @param type $observer 
+     */
+    public function salesOrderSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->salesOrderSaveCommitAfter($observer);
+        }
+    }    
+    
+    /**
      * Track piwik goals for orders that have reached processing stage
      * TODO: this could be made configurable based on payment method used
      *
      * @param $observer
      */
-    public function salesOrderSaveBefore ($observer)
+    public function salesOrderSaveCommitAfter ($observer)
     {
         Mage::helper('foomanjirafe')->debug('salesOrderSaveBefore');
         $order = $observer->getOrder();    
-        if (!$order->getJirafeExportStatus()) {
-            $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
-            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
-            $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
-            $piwikTracker->setIp($order->getRemoteIp());
 
-            // this observer can be potentially be triggered via a backend action
-            // it is safer to set the visitor id from the order (if available)
-            if ($order->getJirafeVisitorId()) {
-                $piwikTracker->setVisitorId($order->getJirafeVisitorId());
-            }
-            
-            if ($order->getJirafeAttributionData()) {
-                $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
-            }
-            
-            try {
-                Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
-                $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
-                $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
+        $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
+        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
+        $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
+        $piwikTracker->setIp($order->getRemoteIp());
 
-                $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
-                $piwikTracker->doTrackEcommerceOrder(
-                        $order->getIncrementId(),
-                        $order->getBaseGrandTotal(),
-                        $order->getBaseSubtotal(),
-                        $order->getBaseTaxAmount(),
-                        $order->getBaseShippingAmount(),
-                        $order->getDiscountAmount()
-                );
+        // this observer can be potentially be triggered via a backend action
+        // it is safer to set the visitor id from the order (if available)
+        if ($order->getJirafeVisitorId()) {
+            $piwikTracker->setVisitorId($order->getJirafeVisitorId());
+        }
 
-                $order->setJirafeExportStatus(Fooman_Jirafe_Model_Jirafe::STATUS_ORDER_EXPORTED);
-                $order->setDataChanges(true);
-            } catch (Exception $e) {
-                Mage::logException($e);
-                $order->setJirafeExportStatus(Fooman_Jirafe_Model_Jirafe::STATUS_ORDER_FAILED);
-                $order->setDataChanges(true);                
-            }
-        }       
+        if ($order->getJirafeAttributionData()) {
+            $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
+        }
+
+        try {
+            Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
+            $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
+            $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
+
+            $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
+            $piwikTracker->doTrackEcommerceOrder(
+                    $order->getIncrementId(),
+                    $order->getBaseGrandTotal(),
+                    $order->getBaseSubtotal(),
+                    $order->getBaseTaxAmount(),
+                    $order->getBaseShippingAmount(),
+                    $order->getDiscountAmount()
+            );
+
+        } catch (Exception $e) {
+            Mage::logException($e);            
+        }     
     }
 
     /**
@@ -152,12 +161,27 @@ class Fooman_Jirafe_Model_Observer
         }
     }
 
+    
+    /**
+     * adminUserSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see adminUserSaveCommitAfter
+     * @param type $observer 
+     */
+    public function adminUserSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->adminUserSaveCommitAfter($observer);
+        }
+    }    
+    
     /**
      * Check to see if we need to sync.  If so, do it.
      *
      * @param $observer
      */
-    public function adminUserSaveAfter($observer)
+    public function adminUserSaveCommitAfter($observer)
     {
         Mage::helper('foomanjirafe')->debug('adminUserSaveAfter');
         if (Mage::registry('foomanjirafe_sync')) {
@@ -166,11 +190,25 @@ class Fooman_Jirafe_Model_Observer
     }
 
     /**
+     * adminUserSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see adminUserDeleteCommitAfter
+     * @param type $observer 
+     */
+    public function adminUserDeleteAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->adminUserDeleteCommitAfter($observer);
+        }
+    }   
+    
+    /**
      * We need to sync every time after we delete a user
      *
      * @param $observer
      */
-    public function adminUserDeleteAfter($observer)
+    public function adminUserDeleteCommitAfter($observer)
     {
         Mage::helper('foomanjirafe')->debug('adminUserDeleteAfter');
         Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
@@ -193,13 +231,27 @@ class Fooman_Jirafe_Model_Observer
             }
         }
     }
+
+    /**
+     * storeSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see storeSaveCommitAfter
+     * @param type $observer 
+     */
+    public function storeSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->storeSaveCommitAfter($observer);
+        }
+    }     
     
     /**
      * Check to see if we need to sync.  If so, do it.
      *
      * @param $observer
      */
-    public function storeSaveAfter($observer)
+    public function storeSaveCommitAfter($observer)
     {
         Mage::helper('foomanjirafe')->debug('storeSaveAfter');
         if (Mage::registry('foomanjirafe_sync')) {
@@ -207,6 +259,21 @@ class Fooman_Jirafe_Model_Observer
         }
     }
 
+    
+    /**
+     * storeDeleteCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see storeDeleteCommitAfter
+     * @param type $observer 
+     */
+    public function storeDeleteAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->storeDeleteCommitAfter($observer);
+        }
+    }    
+    
     /**
      * We need to sync every time after we delete a store
      *
@@ -218,6 +285,20 @@ class Fooman_Jirafe_Model_Observer
         Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
     }
 
+    /**
+     * websiteDeleteCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see websiteDeleteCommitAfter
+     * @param type $observer 
+     */
+    public function websiteDeleteAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->websiteDeleteCommitAfter($observer);
+        }
+    }      
+    
     /**
      * We need to sync every time after we delete a website
      *
@@ -245,13 +326,27 @@ class Fooman_Jirafe_Model_Observer
             Mage::register('foomanjirafe_sync', true);
         }
     }
+
+    /**
+     * storeGroupSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see storeGroupSaveCommitAfter
+     * @param type $observer 
+     */
+    public function storeGroupSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->storeGroupSaveCommitAfter($observer);
+        }
+    }      
     
     /**
      * Check to see if we need to sync.  If so, do it.
      *
      * @param $observer
      */
-    public function storeGroupSaveAfter($observer)
+    public function storeGroupSaveCommitAfter($observer)
     {
         Mage::helper('foomanjirafe')->debug('storeGroupSaveAfter');
         if (Mage::registry('foomanjirafe_sync')) {
@@ -260,11 +355,25 @@ class Fooman_Jirafe_Model_Observer
     }
 
     /**
+     * storeGroupDeleteCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see storeGroupDeleteCommitAfter
+     * @param type $observer 
+     */
+    public function storeGroupDeleteAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->storeGroupDeleteCommitAfter($observer);
+        }
+    }    
+    
+    /**
      * We need to sync every time after we delete a store group
      *
      * @param $observer
      */
-    public function storeGroupDeleteAfter($observer)
+    public function storeGroupDeleteCommitAfter($observer)
     {
         Mage::helper('foomanjirafe')->debug('storeGroupDeleteAfter');
         Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();

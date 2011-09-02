@@ -210,15 +210,24 @@
                     </foomanjirafe_salesConvertQuoteToOrder>
                 </observers>
             </sales_convert_quote_to_order>
-            <sales_order_save_before>
+            <sales_order_save_after>
                 <observers>
-                    <foomanjirafe_salesOrderSaveBefore>
+                    <foomanjirafe_salesOrderSaveAfter>
                         <type>singleton</type>
                         <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveBefore</method>
-                    </foomanjirafe_salesOrderSaveBefore>
+                        <method>salesOrderSaveAfter</method>
+                    </foomanjirafe_salesOrderSaveAfter>
                 </observers>
-            </sales_order_save_before>
+            </sales_order_save_after>
+            <sales_order_save_commit_after>
+                <observers>
+                    <foomanjirafe_salesOrderSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>salesOrderSaveCommitAfter</method>
+                    </foomanjirafe_salesOrderSaveCommitAfter>
+                </observers>
+            </sales_order_save_commit_after>
         </events>
     </frontend>
     <admin>
@@ -282,13 +291,22 @@
             </store_group_save_before>
             <store_group_save_after>
                 <observers>
-                    <foomanjirafe_storeGroupSaveBefore>
+                    <foomanjirafe_storeGroupSaveAfter>
                         <type>singleton</type>
                         <class>Fooman_Jirafe_Model_Observer</class>
                         <method>storeGroupSaveAfter</method>
-                    </foomanjirafe_storeGroupSaveBefore>
+                    </foomanjirafe_storeGroupSaveAfter>
                 </observers>
-            </store_group_save_after>
+            </store_group_save_after>            
+            <store_group_save_commit_after>
+                <observers>
+                    <foomanjirafe_storeGroupSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>storeGroupSaveCommitAfter</method>
+                    </foomanjirafe_storeGroupSaveCommitAfter>
+                </observers>
+            </store_group_save_commit_after>
             <store_group_delete_after>
                 <observers>
                     <foomanjirafe_storeDeleteAfter>
@@ -298,6 +316,15 @@
                     </foomanjirafe_storeDeleteAfter>
                 </observers>
             </store_group_delete_after>
+            <store_group_delete_commit_after>
+                <observers>
+                    <foomanjirafe_storeDeleteCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>storeGroupDeleteCommitAfter</method>
+                    </foomanjirafe_storeDeleteCommitAfter>
+                </observers>
+            </store_group_delete_commit_after>            
             <store_save_before>
                 <observers>
                     <foomanjirafe_storeSaveBefore>
@@ -316,6 +343,24 @@
                     </foomanjirafe_storeSaveAfter>
                 </observers>
             </store_save_after>
+            <store_save_commit_after>
+                <observers>
+                    <foomanjirafe_storeSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>storeSaveCommitAfter</method>
+                    </foomanjirafe_storeSaveCommitAfter>
+                </observers>
+            </store_save_commit_after>
+            <store_delete_after>
+                <observers>
+                    <foomanjirafe_storeDeleteAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>storeDeleteAfter</method>
+                    </foomanjirafe_storeDeleteAfter>
+                </observers>
+            </store_delete_after>            
             <store_delete_commit_after>
                 <observers>
                     <foomanjirafe_storeDeleteCommitAfter>
@@ -325,6 +370,15 @@
                     </foomanjirafe_storeDeleteCommitAfter>
                 </observers>
             </store_delete_commit_after>
+            <website_delete_after>
+                <observers>
+                    <foomanjirafe_websiteDeleteAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>websiteDeleteAfter</method>
+                    </foomanjirafe_websiteDeleteAfter>
+                </observers>
+            </website_delete_after>            
             <website_delete_commit_after>
                 <observers>
                     <foomanjirafe_websiteDeleteCommitAfter>
@@ -352,6 +406,15 @@
                     </foomanjirafe_userSaveAfter>
                 </observers>
             </admin_user_save_after>
+            <admin_user_save_commit_after>
+                <observers>
+                    <foomanjirafe_userSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>adminUserSaveCommitAfter</method>
+                    </foomanjirafe_userSaveCommitAfter>
+                </observers>
+            </admin_user_save_commit_after>            
             <admin_user_delete_after>
                 <observers>
                     <foomanjirafe_userDeleteAfter>
@@ -361,6 +424,15 @@
                     </foomanjirafe_userDeleteAfter>
                 </observers>
             </admin_user_delete_after>
+            <admin_user_delete_commit_after>
+                <observers>
+                    <foomanjirafe_userDeleteCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>adminUserDeleteCommitAfter</method>
+                    </foomanjirafe_userDeleteCommitAfter>
+                </observers>
+            </admin_user_delete_commit_after>            
             <core_block_abstract_to_html_before>
                 <observers>
                     <foomanjirafe_coreBlockAbstractToHtmlBefore>
