@@ -32,7 +32,7 @@ class Fooman_Jirafe_Block_JsAlt extends Fooman_Jirafe_Block_Js
     
         return <<<EOF
 <!-- Jirafe:START -->
-<noscript><p><img src="{$urlHttps}piwik.php?idsite=<?php echo $siteId ?>" style="border:0" alt="" /></p></noscript>
+<noscript><p><img src="{$urlHttps}piwik.php?idsite={$siteId}" style="border:0" alt="" /></p></noscript>
 <!-- Jirafe:END -->
 EOF;
     }
