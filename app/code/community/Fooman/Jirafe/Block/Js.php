@@ -33,7 +33,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     protected $aPageMap = array(
         self::PAGE_PRODUCT => self::VISITOR_ENGAGED,
         self::PAGE_CART    => self::VISITOR_READY2BUY,
-        self::PAGE_CONFIRM => self::VISITOR_ENGAGED,
+        self::PAGE_CONFIRM => self::VISITOR_CUSTOMER,
     );
 
     /**
