@@ -19,7 +19,7 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
     private $async = false;
 
     
-    public function setSyncFlag ($flag)
+    public function setAsyncFlag ($flag)
     {
         $this->async = $flag;
     }
