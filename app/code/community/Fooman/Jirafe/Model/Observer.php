@@ -27,6 +27,7 @@ class Fooman_Jirafe_Model_Observer
         $piwikTracker->setTokenAuth($appToken);
         $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
         $piwikTracker->disableCookieSupport();
+        $piwikTracker->setAsyncFlag(true);
 
         return $piwikTracker;
     }

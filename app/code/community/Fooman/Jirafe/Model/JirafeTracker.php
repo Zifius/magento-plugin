@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NOTICE OF LICENSE
  *
@@ -12,10 +13,23 @@
  * @copyright   Copyright (c) 2010 Fooman Limited (http://www.fooman.co.nz)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-
 class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
 {
-    protected function sendRequest($url)
+
+    private $async = false;
+
+    
+    public function setSyncFlag ($flag)
+    {
+        $this->async = $flag;
+    }
+    
+    protected function sendRequest ($url)
+    {
+        return $this->async ? $this->sendRequestAsync($url) : $this->sendRequestSync($url);
+    }
+
+    protected function sendRequestSync ($url)
     {
         $client = new Zend_Http_Client($url);
         Mage::helper('foomanjirafe')->debug($url);
@@ -23,10 +37,36 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
 
         //check server response
         if ($client->getLastResponse()->isError()) {
-            throw new Exception($response->getStatus() .' '. $response->getMessage());
+            throw new Exception($response->getStatus() . ' ' . $response->getMessage());
         }
         return $response;
     }
-}
 
+    protected function sendRequestAsync ($url)
+    {
+
+        $parts = parse_url($url);
+
+        $fp = fsockopen($parts['host'], isset($parts['port']) ? $parts['port'] : 80,
+                $errno, $errstr, 30);
+
+        if (!$fp) {
+            return false;
+        } else {
+            $out = "POST " . $parts['path'] . " HTTP/1.1\r\n";
+            $out.= "Host: " . $parts['host'] . "\r\n";
+            $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
+            $out.= "Content-Length: " . strlen($parts['query']) . "\r\n";
+            $out.= "Connection: Close\r\n\r\n";
+            if (isset($parts['query'])) {
+                $out.= $parts['query'];
+            }
+
+            fwrite($fp, $out);
+            fclose($fp);
+            return true;
+        }
+    }
+
+}
 
