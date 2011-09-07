@@ -107,7 +107,7 @@ class Fooman_Jirafe_Model_Observer
                         $order->getBaseSubtotal(),
                         $order->getBaseTaxAmount(),
                         $order->getBaseShippingAmount(),
-                        $order->getDiscountAmount()
+                        $order->getBaseDiscountAmount()
                 );
 
             } catch (Exception $e) {
