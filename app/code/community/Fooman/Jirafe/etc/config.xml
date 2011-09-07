@@ -451,16 +451,25 @@
                         <method>salesConvertQuoteToOrder</method>
                     </foomanjirafe_salesConvertQuoteToOrder>
                 </observers>
-            </sales_convert_quote_to_order>             
-            <sales_order_save_before>
+            </sales_convert_quote_to_order>
+            <sales_order_save_after>
                 <observers>
-                    <foomanjirafe_salesOrderSaveBefore>
+                    <foomanjirafe_salesOrderSaveAfter>
                         <type>singleton</type>
                         <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveBefore</method>
-                    </foomanjirafe_salesOrderSaveBefore>
+                        <method>salesOrderSaveAfter</method>
+                    </foomanjirafe_salesOrderSaveAfter>
                 </observers>
-            </sales_order_save_before>
+            </sales_order_save_after>
+            <sales_order_save_commit_after>
+                <observers>
+                    <foomanjirafe_salesOrderSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>salesOrderSaveCommitAfter</method>
+                    </foomanjirafe_salesOrderSaveCommitAfter>
+                </observers>
+            </sales_order_save_commit_after>
         </events>
         <layout>
             <updates>
