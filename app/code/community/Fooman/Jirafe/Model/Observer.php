@@ -465,7 +465,7 @@ class Fooman_Jirafe_Model_Observer
                 $product->getData('sku'),
                 $item->getName(),
                 $this->_getCategory($product),
-                $product->getPrice(),
+                $product->getBasePrice(),
                 $item->getQty()
             );
         }        
@@ -478,7 +478,7 @@ class Fooman_Jirafe_Model_Observer
         $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_ENGAGED);
 
         $this->_addEcommerceItems($piwikTracker, $quote);
-        $piwikTracker->doTrackEcommerceCartUpdate($quote->getGrandTotal());
+        $piwikTracker->doTrackEcommerceCartUpdate($quote->getBaseGrandTotal());
     }
     
     public function checkoutCartProductAddAfter($observer)
