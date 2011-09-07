@@ -49,7 +49,8 @@ class Fooman_Jirafe_Model_Observer
             $order->setJirafePlacedFromFrontend(true);
         }
         $order->setJirafeVisitorId($piwikTracker->getVisitorId());
-        $order->setJirafeAttributionData($piwikTracker->getAttributionInfo());        
+        $order->setJirafeAttributionData($piwikTracker->getAttributionInfo());
+        $order->setJirafeIsNew(true);     
     }
 
     /**
@@ -67,7 +68,7 @@ class Fooman_Jirafe_Model_Observer
     }    
     
     /**
-     * Track piwik goals for orders that have reached processing stage
+     * Track piwik goals for orders
      * TODO: this could be made configurable based on payment method used
      *
      * @param $observer
@@ -77,39 +78,42 @@ class Fooman_Jirafe_Model_Observer
         Mage::helper('foomanjirafe')->debug('salesOrderSaveBefore');
         $order = $observer->getOrder();    
 
-        $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
-        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
-        $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
-        $piwikTracker->setIp($order->getRemoteIp());
+        //track only orders that are just being converted from a quote
+        if($order->getJirafeIsNew()) {
+            $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
+            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
+            $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
+            $piwikTracker->setIp($order->getRemoteIp());
 
-        // this observer can be potentially be triggered via a backend action
-        // it is safer to set the visitor id from the order (if available)
-        if ($order->getJirafeVisitorId()) {
-            $piwikTracker->setVisitorId($order->getJirafeVisitorId());
-        }
+            // this observer can be potentially be triggered via a backend action
+            // it is safer to set the visitor id from the order (if available)
+            if ($order->getJirafeVisitorId()) {
+                $piwikTracker->setVisitorId($order->getJirafeVisitorId());
+            }
 
-        if ($order->getJirafeAttributionData()) {
-            $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
-        }
+            if ($order->getJirafeAttributionData()) {
+                $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
+            }
 
-        try {
-            Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
-            $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
-            $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
+            try {
+                Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
+                $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
+                $piwikTracker->doTrackGoal($checkoutGoalId, $order->getBaseGrandTotal());
 
-            $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
-            $piwikTracker->doTrackEcommerceOrder(
-                    $order->getIncrementId(),
-                    $order->getBaseGrandTotal(),
-                    $order->getBaseSubtotal(),
-                    $order->getBaseTaxAmount(),
-                    $order->getBaseShippingAmount(),
-                    $order->getDiscountAmount()
-            );
+                $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
+                $piwikTracker->doTrackEcommerceOrder(
+                        $order->getIncrementId(),
+                        $order->getBaseGrandTotal(),
+                        $order->getBaseSubtotal(),
+                        $order->getBaseTaxAmount(),
+                        $order->getBaseShippingAmount(),
+                        $order->getDiscountAmount()
+                );
 
-        } catch (Exception $e) {
-            Mage::logException($e);            
-        }     
+            } catch (Exception $e) {
+                Mage::logException($e);            
+            }
+        }  
     }
 
     /**
