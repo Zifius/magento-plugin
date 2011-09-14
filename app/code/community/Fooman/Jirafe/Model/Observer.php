@@ -465,7 +465,7 @@ class Fooman_Jirafe_Model_Observer
                 $product->getData('sku'),
                 $item->getName(),
                 $this->_getCategory($product),
-                $product->getBasePrice(),
+                $product->getPrice(),
                 $item->getQty()
             );
         }        
