@@ -75,7 +75,7 @@ class Fooman_Jirafe_Model_Observer
      */
     public function salesOrderSaveCommitAfter ($observer)
     {
-        Mage::helper('foomanjirafe')->debug('salesOrderSaveBefore');
+        Mage::helper('foomanjirafe')->debug('salesOrderSaveCommitAfter');
         $order = $observer->getOrder();    
 
         //track only orders that are just being converted from a quote
@@ -109,6 +109,7 @@ class Fooman_Jirafe_Model_Observer
                         $order->getBaseShippingAmount(),
                         $order->getBaseDiscountAmount()
                 );
+                $order->unsJirafeIsNew();
 
             } catch (Exception $e) {
                 Mage::logException($e);            
@@ -483,10 +484,38 @@ class Fooman_Jirafe_Model_Observer
     public function checkoutCartProductAddAfter($observer)
     {
         Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }
+    }
+
+    public function checkoutCartUpdateItemsAfter($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
+    }
+
+    public function checkoutCartProductUpdateAfter($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
+    }
+
+    public function salesQuoteRemoveItem($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
     }
     
     public function salesQuoteCollectTotalsAfter ($observer)
     {
-        $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
+
+        if(Mage::registry('foomanjirafe_update_ecommerce')) {
+            $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
+            Mage::unregister('foomanjirafe_update_ecommerce');
+        }        
     }
 }

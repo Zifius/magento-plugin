@@ -193,6 +193,33 @@
                     </foomanjirafe_checkoutCartProductAddAfter>
                 </observers>
             </checkout_cart_product_add_after>
+            <checkout_cart_update_items_after>
+                <observers>
+                    <foomanjirafe_checkoutCartUpdateItemsAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>checkoutCartUpdateItemsAfter</method>
+                    </foomanjirafe_checkoutCartUpdateItemsAfter>
+                </observers>
+            </checkout_cart_update_items_after>
+            <checkout_cart_product_update_after>
+                <observers>
+                    <foomanjirafe_checkoutCartProductUpdateAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>checkoutCartProductUpdateAfter</method>
+                    </foomanjirafe_checkoutCartProductUpdateAfter>
+                </observers>
+            </checkout_cart_product_update_after>
+            <sales_quote_remove_item>
+                <observers>
+                    <foomanjirafe_salesQuoteRemoveItem>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>salesQuoteRemoveItem</method>
+                    </foomanjirafe_salesQuoteRemoveItem>
+                </observers>
+            </sales_quote_remove_item>
             <sales_quote_collect_totals_after>
                 <observers>
                     <foomanjirafe_salesQuoteCollectTotalsAfter>
