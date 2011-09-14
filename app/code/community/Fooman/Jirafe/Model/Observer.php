@@ -460,12 +460,11 @@ class Fooman_Jirafe_Model_Observer
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
-            $product = $item->getProduct();
             $piwikTracker->addEcommerceItem(
-                $product->getData('sku'),
+                $item->getData('sku'),
                 $item->getName(),
-                $this->_getCategory($product),
-                $product->getBasePrice(),
+                $this->_getCategory($item->getProduct()),
+                $item->getBasePrice(),
                 $item->getQty()
             );
         }        
