@@ -75,7 +75,7 @@ class Fooman_Jirafe_Model_Observer
      */
     public function salesOrderSaveCommitAfter ($observer)
     {
-        Mage::helper('foomanjirafe')->debug('salesOrderSaveBefore');
+        Mage::helper('foomanjirafe')->debug('salesOrderSaveCommitAfter');
         $order = $observer->getOrder();    
 
         //track only orders that are just being converted from a quote
@@ -109,6 +109,7 @@ class Fooman_Jirafe_Model_Observer
                         $order->getBaseShippingAmount(),
                         $order->getBaseDiscountAmount()
                 );
+                $order->unsJirafeIsNew();
 
             } catch (Exception $e) {
                 Mage::logException($e);            
@@ -460,12 +461,18 @@ class Fooman_Jirafe_Model_Observer
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
-            $product = $item->getProduct();
+            $itemPrice = $item->getBasePrice();
+            // This is inconsistent behaviour from Magento
+            // base_price should be item price in base currency
+            // TODO: add test so we don't get caught out when this is fixed in a future release
+            if($itemPrice == '0.0000') {
+                $itemPrice = $item->getPrice();
+            }
             $piwikTracker->addEcommerceItem(
-                $product->getData('sku'),
+                $item->getData('sku'),
                 $item->getName(),
-                $this->_getCategory($product),
-                $product->getPrice(),
+                $this->_getCategory($item->getProduct()),
+                $itemPrice,
                 $item->getQty()
             );
         }        
@@ -484,10 +491,37 @@ class Fooman_Jirafe_Model_Observer
     public function checkoutCartProductAddAfter($observer)
     {
         Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }
+    }
+
+    public function checkoutCartUpdateItemsAfter($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
+    }
+
+    public function checkoutCartProductUpdateAfter($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
+    }
+
+    public function salesQuoteRemoveItem($observer)
+    {
+        if(!Mage::registry('foomanjirafe_update_ecommerce')) {
+            Mage::register('foomanjirafe_update_ecommerce', true);
+        }        
     }
     
     public function salesQuoteCollectTotalsAfter ($observer)
     {
-        $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
+        if(Mage::registry('foomanjirafe_update_ecommerce')) {
+            $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
+            Mage::unregister('foomanjirafe_update_ecommerce');
+        }        
     }
 }
