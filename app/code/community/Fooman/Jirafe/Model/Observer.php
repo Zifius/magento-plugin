@@ -461,11 +461,18 @@ class Fooman_Jirafe_Model_Observer
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
+            $itemPrice = $item->getBasePrice();
+            // This is inconsistent behaviour from Magento
+            // base_price should be item price in base currency
+            // TODO: add test so we don't get caught out when this is fixed in a future release
+            if($itemPrice == '0.0000') {
+                $itemPrice = $item->getPrice();
+            }
             $piwikTracker->addEcommerceItem(
                 $item->getData('sku'),
                 $item->getName(),
                 $this->_getCategory($item->getProduct()),
-                $item->getBasePrice(),
+                $itemPrice,
                 $item->getQty()
             );
         }        
@@ -512,7 +519,6 @@ class Fooman_Jirafe_Model_Observer
     
     public function salesQuoteCollectTotalsAfter ($observer)
     {
-
         if(Mage::registry('foomanjirafe_update_ecommerce')) {
             $this->ecommerceCartUpdate($observer->getEvent()->getQuote());
             Mage::unregister('foomanjirafe_update_ecommerce');
