@@ -476,7 +476,6 @@ class Fooman_Jirafe_Model_Observer
                     $item->getQty()
                 );
             }
-        } 
         }        
     }
 
