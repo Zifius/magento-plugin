@@ -484,7 +484,7 @@ class Fooman_Jirafe_Model_Observer
     {
         $piwikTracker = $this->_initPiwikTracker($quote->getStoreId());
         $piwikTracker->setIp($quote->getRemoteIp());
-        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_ENGAGED);
+        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
 
         $this->_addEcommerceItems($piwikTracker, $quote);
         $piwikTracker->doTrackEcommerceCartUpdate($quote->getBaseGrandTotal());
