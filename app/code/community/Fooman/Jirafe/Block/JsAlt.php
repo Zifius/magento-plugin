@@ -27,7 +27,7 @@ class Fooman_Jirafe_Block_JsAlt extends Fooman_Jirafe_Block_Js
 
     public function getTrackingCode()
     {
-        $urlHttps   = $this->getJsBaseURL(true);
+        $urlHttps = 'https://'.$this->getPiwikBaseURL().'/';
         $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     
         return <<<EOF
