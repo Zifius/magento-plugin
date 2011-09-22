@@ -20,6 +20,8 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     {
         $instructions = array();
         switch ($version) {
+            case '0.2.15':        
+            case '0.2.14':        
             case '0.2.13':
             case '0.2.12':
             case '0.2.11':
