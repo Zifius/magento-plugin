@@ -336,7 +336,7 @@ class Fooman_Jirafe_Model_Jirafe
             $storeArray = $this->getStores();
 
             try {
-                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray);
+                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO);
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites']);
             } catch (Exception $e) {
