@@ -461,11 +461,19 @@ class Fooman_Jirafe_Model_Observer
     {
         foreach ($quote->getAllVisibleItems() as $item) {
             if($item->getName()){
+                //we only want to track the main configurable item
+                //but not the subitem
+                if($item->getParentItem()) {
+                    if ($item->getParentItem()->getProductType() == 'configurable') {
+                        continue;
+                    }
+                }
+
                 $itemPrice = $item->getBasePrice();
                 // This is inconsistent behaviour from Magento
                 // base_price should be item price in base currency
                 // TODO: add test so we don't get caught out when this is fixed in a future release
-                if($itemPrice == '0.0000') {
+                if(!$itemPrice || $itemPrice < 0.00001) {
                     $itemPrice = $item->getPrice();
                 }
                 $piwikTracker->addEcommerceItem(
