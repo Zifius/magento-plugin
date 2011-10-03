@@ -477,7 +477,7 @@ class Fooman_Jirafe_Model_Observer
                     $itemPrice = $item->getPrice();
                 }
                 $piwikTracker->addEcommerceItem(
-                    $item->getProduct()->getSku(),
+                    $item->getProduct()->getData('sku'),
                     $item->getName(),
                     $this->_getCategory($item->getProduct()),
                     $itemPrice,
