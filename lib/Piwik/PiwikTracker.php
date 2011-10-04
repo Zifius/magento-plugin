@@ -299,17 +299,7 @@ class Piwik_PiwikTracker
     	if(empty($sku))
     	{
     		throw new Exception("You must specify a SKU for the Ecommerce item");
-    	}
-        
-        // HACK ALERT
-        //
-        // Alter price / qty in case an item with the same SKU is already in the cart
-        if (isset($this->ecommerceItems[$sku])) {
-            $old = $this->ecommerceItems[$sku];
-            $price = ($old[3] * $old[4] + $price * $quantity) / ($old[4] + $quantity);
-            $quantity += $old[4];
-        }
-        
+    	}        
     	$this->ecommerceItems[$sku] = array( $sku, $name, $category, $price, $quantity );
     }
     
