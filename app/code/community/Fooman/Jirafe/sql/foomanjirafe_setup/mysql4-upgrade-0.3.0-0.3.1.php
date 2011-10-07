@@ -15,11 +15,5 @@
 $version = '0.3.1';
 Mage::log('Running Fooman Jirafe DB upgrade '.$version);
 
-$time = Mage::getSingleton('core/date')->gmtTimestamp();
-Mage::getModel('core/config_data')
-        ->setPath(Fooman_Jirafe_Helper_Data::XML_PATH_FOOMANJIRAFE_SETTINGS . 'installtime')
-        ->setValue($time)
-        ->save();
-
 //Run sync when finished with install/update
 Mage::getModel('foomanjirafe/jirafe')->initialSync($version);
