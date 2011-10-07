@@ -354,7 +354,8 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function sendLogUpdate ($data)
     {
-        return $this->getJirafeApi()->getLog()->sendLog(Mage::helper('foomanjirafe')->getStoreConfig('app_token'), $data);
+        return true;
+        //return $this->getJirafeApi()->getLog()->sendLog(Mage::helper('foomanjirafe')->getStoreConfig('app_token'), $data);
     }
 
     /**
