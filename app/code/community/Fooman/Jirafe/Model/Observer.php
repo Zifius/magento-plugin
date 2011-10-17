@@ -22,7 +22,7 @@ class Fooman_Jirafe_Model_Observer
         $appToken = Mage::helper('foomanjirafe')->getStoreConfig('app_token');
         $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $storeId);
 
-        $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl().'/';
+        $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
         $piwikTracker = new Fooman_Jirafe_Model_JirafeTracker($siteId, $jirafePiwikUrl);
         $piwikTracker->setTokenAuth($appToken);
         $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
@@ -149,7 +149,9 @@ class Fooman_Jirafe_Model_Observer
             $user->dataHasChangedFor('email') ||
             empty($jirafeUserId) ||
             empty($jirafeToken)) {
-            Mage::register('foomanjirafe_sync', true);
+            if (!Mage::registry('foomanjirafe_sync')) {
+                Mage::register('foomanjirafe_sync', true);
+            }
         }
         
         if ($jirafeSendEmail != $user->getJirafeSendEmail()) {
@@ -230,7 +232,13 @@ class Fooman_Jirafe_Model_Observer
         Mage::helper('foomanjirafe')->debug('storeSaveBefore');
         $store = $observer->getEvent()->getStore();
         // If the object is new, or has any data changes, sync
-        if (!$store->getId() || $store->hasDataChanges()) {
+        if (!$store->getId() 
+            || $store->hasDataChanges()                         //works for Magento 1.4.1+
+            || $store->dataHasChangedFor('is_active')
+            || $store->dataHasChangedFor('name')
+            || $store->dataHasChangedFor('code')
+            || $store->dataHasChangedFor('group_id')
+            ) {
             if (!Mage::registry('foomanjirafe_sync')) {
                 Mage::register('foomanjirafe_sync', true);
             }
@@ -315,6 +323,55 @@ class Fooman_Jirafe_Model_Observer
         Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
     }
 
+    /**
+     * Check fields in the website object to see if we should run sync
+     * only call sync if relevant data has changed
+     *
+     * @param $observer
+     */
+    public function websiteSaveBefore($observer)
+    {
+        Mage::helper('foomanjirafe')->debug('websiteSaveBefore');
+        $website = $observer->getEvent()->getWebsite();
+        // If the object is new, or has any data changes, sync
+        if (!$website->getId() 
+            || $website->hasDataChanges()                         //works for Magento 1.4.1+
+            || $website->dataHasChangedFor('name')
+            || $website->dataHasChangedFor('code')
+            || $website->dataHasChangedFor('default_group_id')        
+        ){
+            if (!Mage::registry('foomanjirafe_sync')) {
+                Mage::register('foomanjirafe_sync', true);
+            }
+        }
+    }
+
+    /**
+     * websiteSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     * 
+     * @see websiteSaveCommitAfter
+     * @param type $observer 
+     */
+    public function websiteSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->websiteSaveCommitAfter($observer);
+        }
+    }      
+    
+    /**
+     * Check to see if we need to sync.  If so, do it.
+     *
+     * @param $observer
+     */
+    public function websiteSaveCommitAfter($observer)
+    {
+        Mage::helper('foomanjirafe')->debug('websiteSaveCommitAfter');
+        if (Mage::registry('foomanjirafe_sync')) {
+            Mage::getModel('foomanjirafe/jirafe')->syncUsersStores();
+        }
+    }
 
     /**
      * Check fields in the store group object to see if we should run sync
@@ -327,8 +384,15 @@ class Fooman_Jirafe_Model_Observer
         Mage::helper('foomanjirafe')->debug('storeGroupSaveBefore');
         $storeGroup = $observer->getEvent()->getStoreGroup();
         // If the object is new, or has any data changes, sync
-        if (!$storeGroup->getId() || $storeGroup->hasDataChanges()) {
-            Mage::register('foomanjirafe_sync', true);
+        if (!$storeGroup->getId() 
+            || $storeGroup->hasDataChanges()                         //works for Magento 1.4.1+
+            || $storeGroup->dataHasChangedFor('name')
+            || $storeGroup->dataHasChangedFor('code')
+            || $storeGroup->dataHasChangedFor('default_group_id')        
+        ){
+            if (!Mage::registry('foomanjirafe_sync')) {
+                Mage::register('foomanjirafe_sync', true);
+            }
         }
     }
 
@@ -477,7 +541,7 @@ class Fooman_Jirafe_Model_Observer
                     $itemPrice = $item->getPrice();
                 }
                 $piwikTracker->addEcommerceItem(
-                    $item->getData('sku'),
+                    $item->getProduct()->getData('sku'),
                     $item->getName(),
                     $this->_getCategory($item->getProduct()),
                     $itemPrice,

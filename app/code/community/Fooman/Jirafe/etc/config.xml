@@ -18,7 +18,7 @@
 <config>
     <modules>
         <Fooman_Jirafe>
-            <version>0.3.0</version>
+            <version>0.3.1</version>
         </Fooman_Jirafe>
     </modules>
 
@@ -308,6 +308,33 @@
                     </foomanjirafe_configSaveAfter>
                 </observers>
             </core_config_data_save_after>-->
+            <website_save_before>
+                <observers>
+                    <foomanjirafe_websiteSaveBefore>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>websiteSaveBefore</method>
+                    </foomanjirafe_websiteSaveBefore>
+                </observers>
+            </website_save_before>
+            <website_save_after>
+                <observers>
+                    <foomanjirafe_websiteSaveAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>websiteSaveAfter</method>
+                    </foomanjirafe_websiteSaveAfter>
+                </observers>
+            </website_save_after>
+            <website_save_commit_after>
+                <observers>
+                    <foomanjirafe_websiteSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <method>websiteSaveCommitAfter</method>
+                    </foomanjirafe_websiteSaveCommitAfter>
+                </observers>
+            </website_save_commit_after>
             <store_group_save_before>
                 <observers>
                     <foomanjirafe_storeGroupSaveBefore>

@@ -299,7 +299,7 @@ class Piwik_PiwikTracker
     	if(empty($sku))
     	{
     		throw new Exception("You must specify a SKU for the Ecommerce item");
-    	}
+    	}        
     	$this->ecommerceItems[$sku] = array( $sku, $name, $category, $price, $quantity );
     }
     

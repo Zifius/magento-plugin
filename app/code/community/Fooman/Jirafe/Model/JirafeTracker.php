@@ -68,5 +68,15 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
         }
     }
 
+    public function addEcommerceItem($sku, $name = false, $category = false, $price = false, $quantity = false)
+    {
+        // Alter price / qty in case an item with the same SKU is already in the cart
+        if (!empty($sku) && isset($this->ecommerceItems[$sku])) {
+            $old = $this->ecommerceItems[$sku];
+            $price = ($old[3] * $old[4] + $price * $quantity) / ($old[4] + $quantity);
+            $quantity += $old[4];
+        }
+        
+        parent::addEcommerceItem($sku, $name, $category, $price, $quantity);
+    }    
 }
-
