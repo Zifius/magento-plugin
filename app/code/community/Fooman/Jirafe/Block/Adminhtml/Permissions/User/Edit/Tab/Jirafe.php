@@ -46,6 +46,16 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
             'value' => $adminUser->getJirafeSendEmail()
         ));
         
+        $fieldset->addField('jirafe_dashboard_active', 'select', array(
+            'name' => 'jirafe_dashboard_active',
+            'label' => Mage::helper('foomanjirafe')->__('Display Jirafe Dashboard'),
+            'title' => Mage::helper('foomanjirafe')->__('Display Jirafe Dashboard'),
+            'after_element_html' => '<p class="nm"><small>' . Mage::helper('foomanjirafe')->__('Displays the Jirafe Dashboard instead of the default Magento dashboard') . '</small></p>',
+            'required' => false,
+            'values' => $yesNo,
+            'value' => $adminUser->getJirafeDashboardActive()
+        ));
+        
         $reportTypes = array();
         $reportTypes[] = array('label' => Mage::helper('foomanjirafe')->__('Simple'), 'value' => 'simple');
         $reportTypes[] = array('label' => Mage::helper('foomanjirafe')->__('Detail'), 'value' => 'detail');

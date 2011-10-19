@@ -139,6 +139,7 @@ class Fooman_Jirafe_Model_Observer
         $jirafeToken = $user->getJirafeUserToken();
 
         $jirafeSendEmail = Mage::app()->getRequest()->getPost('jirafe_send_email');
+        $jirafeDashboardActive = Mage::app()->getRequest()->getPost('jirafe_dashboard_active');        
         $jirafeEmailReportType = Mage::app()->getRequest()->getPost('jirafe_email_report_type');
         $jirafeEmailSuppress = Mage::app()->getRequest()->getPost('jirafe_email_suppress');
      
@@ -158,6 +159,10 @@ class Fooman_Jirafe_Model_Observer
             $user->setJirafeSendEmail($jirafeSendEmail);
             $user->setDataChanges(true);
         }
+        if ($jirafeDashboardActive != $user->getJirafeDashboardActive() && $jirafeDashboardActive != null) {
+            $user->setJirafeDashboardActive($jirafeDashboardActive);
+            $user->setDataChanges(true);
+        }        
         if ($jirafeEmailReportType != $user->getJirafeEmailReportType()) {
             $user->setJirafeEmailReportType($jirafeEmailReportType);
             $user->setDataChanges(true);

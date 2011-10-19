@@ -23,6 +23,16 @@ class Fooman_Jirafe_Block_Adminhtml_System_Account_Edit_Form extends Mage_Adminh
             'value' => $adminUser->getJirafeSendEmail()
         ));
 
+        $fieldset->addField('jirafe_dashboard_active', 'select', array(
+            'name' => 'jirafe_dashboard_active',
+            'label' => Mage::helper('foomanjirafe')->__('Display Jirafe Dashboard'),
+            'title' => Mage::helper('foomanjirafe')->__('Display Jirafe Dashboard'),
+            'after_element_html' => '<p class="nm"><small>' . Mage::helper('foomanjirafe')->__('Displays the Jirafe Dashboard instead of the default Magento dashboard') . '</small></p>',
+            'required' => false,
+            'values' => $yesNo,
+            'value' => $adminUser->getJirafeDashboardActive()
+        ));
+
         /* We don't yet individually map store to user
         $fieldset->addField('jirafe_send_email_for_store', 'multiselect', array(
             'name' => 'jirafe_send_email_for_store[]',
