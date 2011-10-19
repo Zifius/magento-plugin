@@ -15,7 +15,9 @@
 ?>
 <?php include $this->getOrigTemplate() ?>
 <?php $_block = $this->getFoomanBlock() ?>
-<div style="margin-top:25px; text-align:center;">
-    <p><a href="<?php echo $_block->getToggleUrl()?>"><?php echo $_block->getToggleLinkName()?></a></p>
-</div>
+<?php if(Mage::helper('foomanjirafe')->isOk()): ?>
+    <div style="margin-top:25px; text-align:center;">
+        <p><a href="<?php echo $_block->getToggleUrl()?>"><?php echo $_block->getToggleLinkName()?></a></p>
+    </div>
+<?php endif; ?>
 <?php echo $_block->getTrackingCode($this->getJirafeApplicationId(), Mage::helper('foomanjirafe/data')->isDashboardActive()) ?>
