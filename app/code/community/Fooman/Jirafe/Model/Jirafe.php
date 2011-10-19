@@ -48,7 +48,10 @@ class Fooman_Jirafe_Model_Jirafe
         try {
             // register autoloader
             Jirafe_Autoloader::register();
-            $this->_jirafeApi = new Jirafe_Client(Mage::helper('foomanjirafe')->getStoreConfig('app_token'));
+            $this->_jirafeApi = new Jirafe_Client(
+                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'), 
+                                    new Fooman_Jirafe_Model_HttpConnection_Zend('https://api.jirafe.com/v1')
+                                );
         } catch (Exception $e) {
             Mage::logException($e);
             Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
