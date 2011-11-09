@@ -24,42 +24,4 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard extends Mage_Adminhtml_Block_Dashb
         }
     }
 
-    public function getHeaderWidth ()
-    {
-        return 'width:50%;';
-    }
-
-    public function getHeaderText ()
-    {
-        return Mage::helper('foomanjirafe')->__('Dashboard');
-    }
-
-    public function getHeaderHtml ()
-    {
-        return '<h3 class="' . $this->getHeaderCssClass() . '">' . $this->getHeaderText() . '</h3>';
-    }
-
-    public function getDashboardApiUrl ()
-    {
-        try {
-            return Mage::getModel('foomanjirafe/jirafe')->getApiUrl();
-        } catch (Exception $e) {
-            return '';
-        }        
-    }
-
-    public function getJirafeUserToken ()
-    {
-        return Mage::getSingleton('admin/session')->getUser()->getJirafeUserToken();
-    }
-
-    public function getJirafeApplicationId ()
-    {
-        return Mage::helper('foomanjirafe')->getStoreConfig('app_id');
-    }
-
-    public function getJirafeApplicationToken ()
-    {
-        return Mage::helper('foomanjirafe')->getStoreConfig('app_token');
-    }
 }
