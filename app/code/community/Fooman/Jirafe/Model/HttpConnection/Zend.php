@@ -46,6 +46,9 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
+        Mage::helper('foomanjirafe')->debug('--------------------------------------GET--------------------------------------');
+        Mage::helper('foomanjirafe')->debug($path);
+        Mage::helper('foomanjirafe')->debug($query);
         return $this->initializeResponse($this->request(self::GET));
     }
 
@@ -63,6 +66,9 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
+        Mage::helper('foomanjirafe')->debug('--------------------------------------HEAD--------------------------------------');
+        Mage::helper('foomanjirafe')->debug($path);
+        Mage::helper('foomanjirafe')->debug($query);       
         return $this->initializeResponse($this->request(self::HEAD));    
     }
 
@@ -83,7 +89,11 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         }
         foreach($parameters as $parameter=>$value) {
             $this->setParameterPost($parameter,$value);
-        }        
+        }
+        Mage::helper('foomanjirafe')->debug('--------------------------------------POST--------------------------------------');
+        Mage::helper('foomanjirafe')->debug($path);
+        Mage::helper('foomanjirafe')->debug($query);
+        Mage::helper('foomanjirafe')->debug($parameters);
         return $this->initializeResponse($this->request(self::POST));    
     }
 
@@ -104,7 +114,11 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         }
         foreach($parameters as $parameter=>$value) {
             $this->setParameterPost($parameter,$value);
-        }        
+        }
+        Mage::helper('foomanjirafe')->debug('--------------------------------------PUT--------------------------------------');
+        Mage::helper('foomanjirafe')->debug($path);
+        Mage::helper('foomanjirafe')->debug($query);
+        Mage::helper('foomanjirafe')->debug($parameters);              
         return $this->initializeResponse($this->request(self::PUT));     
     }
 
@@ -125,7 +139,11 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         }
         foreach($parameters as $parameter=>$value) {
             $this->setParameterPost($parameter,$value);
-        }        
+        }
+        Mage::helper('foomanjirafe')->debug('--------------------------------------DELETE--------------------------------------');
+        Mage::helper('foomanjirafe')->debug($path);
+        Mage::helper('foomanjirafe')->debug($query);
+        Mage::helper('foomanjirafe')->debug($parameters);        
         return $this->initializeResponse($this->request(self::DELETE));     
     }
      
@@ -157,12 +175,18 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     public function request($method = null)
     {   
-        Mage::helper('foomanjirafe')->debug('--------------------------------------REQUEST--------------------------------------');
-        Mage::helper('foomanjirafe')->debug($this->getUri(true));
-        $response = parent::request($method);
-        Mage::helper('foomanjirafe')->debug($this->getLastRequest());
-        Mage::helper('foomanjirafe')->debug('--------------------------------------RESPONSE--------------------------------------');
-        Mage::helper('foomanjirafe')->debug($this->getLastResponse());        
+        try {
+            Mage::helper('foomanjirafe')->debug('--------------------------------------REQUEST--------------------------------------');
+            Mage::helper('foomanjirafe')->debug($this->getUri(true));
+            $response = parent::request($method);
+            Mage::helper('foomanjirafe')->debug($this->getLastRequest());
+            Mage::helper('foomanjirafe')->debug('--------------------------------------RESPONSE--------------------------------------');
+            Mage::helper('foomanjirafe')->debug($this->getLastResponse());
+        } catch (Exception $e) {
+            Mage::helper('foomanjirafe')->debug('--------------------------------------EXCEPTION--------------------------------------');
+            Mage::helper('foomanjirafe')->debug($this->getLastRequest());
+            throw $e;
+        }
         return $response;
     }
 
