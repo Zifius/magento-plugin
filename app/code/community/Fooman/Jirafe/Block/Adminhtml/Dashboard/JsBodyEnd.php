@@ -40,4 +40,15 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard_JsBodyEnd extends Mage_Adminhtml_B
     {
         return Mage::helper('foomanjirafe')->getStoreConfig('app_token');
     }
+    
+    public function getUserLocale()
+    {
+        return Mage::app()->getLocale()->getLocaleCode();
+    }
+    
+    public function getVersion()
+    {
+        //format: magento-v0.3.0
+        return 'magento-v'. Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup');
+    }      
 }
