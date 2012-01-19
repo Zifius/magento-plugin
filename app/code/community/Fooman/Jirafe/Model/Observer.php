@@ -26,6 +26,11 @@ class Fooman_Jirafe_Model_Observer
         $piwikTracker = new Fooman_Jirafe_Model_JirafeTracker($siteId, $jirafePiwikUrl);
         $piwikTracker->setTokenAuth($appToken);
         $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
+        
+        if(Mage::helper('foomanjirafe')->isDebug() && !$piwikTracker->getVisitorId()){   
+            Mage::helper('foomanjirafe')->debug('No Visitor Id for User Agent'.Mage::helper('core/http')->getHttpUserAgent());
+            Mage::helper('foomanjirafe')->debug($_COOKIE); 
+        }
         $piwikTracker->disableCookieSupport();
         $piwikTracker->setAsyncFlag(true);
 
@@ -91,27 +96,29 @@ class Fooman_Jirafe_Model_Observer
                 $piwikTracker->setVisitorId($order->getJirafeVisitorId());
             }
 
-            if ($order->getJirafeAttributionData()) {
-                $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
-            }
+            if($piwikTracker->getVisitorId()){
+                if ($order->getJirafeAttributionData()) {
+                    $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
+                }
 
-            try {
-                Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
-                $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
+                try {
+                    Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
+                    $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
 
-                $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
-                $piwikTracker->doTrackEcommerceOrder(
-                        $order->getIncrementId(),
-                        $order->getBaseGrandTotal(),
-                        $order->getBaseSubtotal(),
-                        $order->getBaseTaxAmount(),
-                        $order->getBaseShippingAmount(),
-                        $order->getBaseDiscountAmount()
-                );
-                $order->unsJirafeIsNew();
+                    $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
+                    $piwikTracker->doTrackEcommerceOrder(
+                            $order->getIncrementId(),
+                            $order->getBaseGrandTotal(),
+                            $order->getBaseSubtotal(),
+                            $order->getBaseTaxAmount(),
+                            $order->getBaseShippingAmount(),
+                            $order->getBaseDiscountAmount()
+                    );
+                    $order->unsJirafeIsNew();
 
-            } catch (Exception $e) {
-                Mage::logException($e);            
+                } catch (Exception $e) {
+                    Mage::logException($e);            
+                }
             }
         }  
     }
@@ -559,11 +566,13 @@ class Fooman_Jirafe_Model_Observer
     protected function ecommerceCartUpdate($quote)
     {
         $piwikTracker = $this->_initPiwikTracker($quote->getStoreId());
-        $piwikTracker->setIp($quote->getRemoteIp());
-        $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
+        if($piwikTracker->getVisitorId()) {
+            $piwikTracker->setIp($quote->getRemoteIp());
+            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
 
-        $this->_addEcommerceItems($piwikTracker, $quote);
-        $piwikTracker->doTrackEcommerceCartUpdate($quote->getBaseGrandTotal());
+            $this->_addEcommerceItems($piwikTracker, $quote);
+            $piwikTracker->doTrackEcommerceCartUpdate($quote->getBaseGrandTotal());
+        }
     }
     
     public function checkoutCartProductAddAfter($observer)
