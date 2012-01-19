@@ -42,4 +42,9 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard_Js extends Mage_Adminhtml_Block_Te
             return '';
         }
     }
+   
+    public function getUserLocale()
+    {
+        return Mage::app()->getLocale()->getLocaleCode();
+    }
 }
