@@ -47,4 +47,10 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard_Js extends Mage_Adminhtml_Block_Te
     {
         return Mage::app()->getLocale()->getLocaleCode();
     }
+    
+    public function getVersion()
+    {
+        //format: magento-v0.3.0
+        return 'magento-v'. Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup');
+    }    
 }

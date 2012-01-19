@@ -21,7 +21,7 @@
                 api_url:    '<?php echo $this->getDashboardApiUrl()?>',
                 api_token:  '<?php echo $this->getJirafeUserToken()?>',
                 app_id:     '<?php echo $this->getJirafeApplicationId()?>',
-                version:    'magento-v0.3.0',
+                version:    '<?php echo $this->getVersion()?>',
                 locale:     '<?php echo $this->getUserLocale()?>'
              });
         })(jQuery);
