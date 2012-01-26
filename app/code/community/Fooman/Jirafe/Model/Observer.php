@@ -16,6 +16,13 @@
 class Fooman_Jirafe_Model_Observer
 {
 
+    /**
+     * initialise tracker information
+     * reads visitorId from cookie information for particular site
+     * 
+     * @param type $storeId
+     * @return Fooman_Jirafe_Model_JirafeTracker 
+     */
     protected function _initPiwikTracker ($storeId)
     {
         $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $storeId);
@@ -520,7 +527,12 @@ class Fooman_Jirafe_Model_Observer
         }
     }
     
-    
+    /**
+     * return concatenated string of category names for a product
+     *
+     * @param type $product
+     * @return string 
+     */
     protected function _getCategory($product)
     {
         $id = current($product->getCategoryIds());
@@ -536,6 +548,12 @@ class Fooman_Jirafe_Model_Observer
         return join('/', $aCategories);
     }
     
+    /**
+     * add all visible items from a quote as tracked ecommerce items
+     * 
+     * @param Fooman_Jirafe_Model_JirafeTracker $piwikTracker
+     * @param Mage_Sales_Model_Quote $quote 
+     */
     protected function _addEcommerceItems($piwikTracker, $quote)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
@@ -566,6 +584,11 @@ class Fooman_Jirafe_Model_Observer
         }        
     }
 
+    /**
+     * send tracking information for a shopping basket
+     * 
+     * @param Mage_Sales_Model_Quote $quote 
+     */
     protected function ecommerceCartUpdate($quote)
     {
         $piwikTracker = $this->_initPiwikTracker($quote->getStoreId());
@@ -578,6 +601,12 @@ class Fooman_Jirafe_Model_Observer
         }
     }
     
+    /**
+     * event observer when a product has been added to the cart
+     * triggers ecommerceCartUpdate via salesQuoteCollectTotalsAfter
+     * 
+     * @param $observer 
+     */
     public function checkoutCartProductAddAfter($observer)
     {
         Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
@@ -586,6 +615,12 @@ class Fooman_Jirafe_Model_Observer
         }
     }
 
+    /**
+     * event observer when the cart has been updated
+     * triggers ecommerceCartUpdate via salesQuoteCollectTotalsAfter
+     * 
+     * @param $observer 
+     */    
     public function checkoutCartUpdateItemsAfter($observer)
     {
         if(!Mage::registry('foomanjirafe_update_ecommerce')) {
@@ -593,6 +628,12 @@ class Fooman_Jirafe_Model_Observer
         }        
     }
 
+    /**
+     * event observer when a product has been updated
+     * triggers ecommerceCartUpdate via salesQuoteCollectTotalsAfter
+     * 
+     * @param $observer 
+     */     
     public function checkoutCartProductUpdateAfter($observer)
     {
         if(!Mage::registry('foomanjirafe_update_ecommerce')) {
@@ -600,6 +641,12 @@ class Fooman_Jirafe_Model_Observer
         }        
     }
 
+    /**
+     * event observer when a product has been removed
+     * triggers ecommerceCartUpdate via salesQuoteCollectTotalsAfter
+     * 
+     * @param $observer 
+     */    
     public function salesQuoteRemoveItem($observer)
     {
         if(!Mage::registry('foomanjirafe_update_ecommerce')) {
@@ -607,6 +654,12 @@ class Fooman_Jirafe_Model_Observer
         }        
     }
     
+    /**
+     * trigger ecommerceCartUpdate when any changes to the shopping basket
+     * need to be send
+     * 
+     * @param $observer 
+     */    
     public function salesQuoteCollectTotalsAfter ($observer)
     {
         if(Mage::registry('foomanjirafe_update_ecommerce')) {
