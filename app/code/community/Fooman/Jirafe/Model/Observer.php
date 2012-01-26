@@ -25,10 +25,13 @@ class Fooman_Jirafe_Model_Observer
         $jirafePiwikUrl = 'http://' . Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
         $piwikTracker = new Fooman_Jirafe_Model_JirafeTracker($siteId, $jirafePiwikUrl);
         $piwikTracker->setTokenAuth($appToken);
-        $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
         
-        if(Mage::helper('foomanjirafe')->isDebug() && !$piwikTracker->getVisitorId()){   
-            Mage::helper('foomanjirafe')->debug('No Visitor Id for User Agent'.Mage::helper('core/http')->getHttpUserAgent());
+        if(Mage::helper('foomanjirafe')->isDebug() && !$piwikTracker->getVisitorId()){
+            if (version_compare(Mage::getVersion(), '1.4.0.0', '>=')) {
+                Mage::helper('foomanjirafe')->debug('No Visitor Id for User Agent: '.Mage::helper('core/http')->getHttpUserAgent());
+            } else {
+                Mage::helper('foomanjirafe')->debug('No Visitor Id for User Agent.');
+            }
             Mage::helper('foomanjirafe')->debug($_COOKIE); 
         }
         $piwikTracker->disableCookieSupport();
