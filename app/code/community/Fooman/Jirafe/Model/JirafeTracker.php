@@ -19,13 +19,15 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
     private $async = false;
 
     /**
-    * the default piwikTracker automatically assigns a visitor id
-    * we want to rely on the cookie id only
-    */
-    public function __construct( $idSite, $apiUrl = false )
+     * the default piwikTracker automatically assigns a visitor id
+     * we want to rely on the cookie id only for frontend visitors
+     */
+    public function __construct($idSite, $apiUrl = false)
     {
-    	parent::__construct($idSite, $apiUrl);
-    	$this->visitorId = false;
+        parent::__construct($idSite, $apiUrl);
+        if (Mage::getDesign()->getArea() == 'frontend') {
+            $this->visitorId = false;
+        }
     }
     
     public function setAsyncFlag ($flag)
