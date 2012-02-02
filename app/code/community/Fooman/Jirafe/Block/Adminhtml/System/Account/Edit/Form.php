@@ -69,6 +69,21 @@ class Fooman_Jirafe_Block_Adminhtml_System_Account_Edit_Form extends Mage_Adminh
             'value' => $adminUser->getJirafeEmailSuppress()
         ));
 
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '>=')) {
+            $this->setChild('form_after',
+                $this->getLayout()->createBlock('adminhtml/widget_form_element_dependence')
+                    ->addFieldMap("jirafe_enabled", 'jirafe_enabled')
+                    ->addFieldMap("jirafe_send_email", 'jirafe_send_email')
+                    ->addFieldMap("jirafe_email_report_type", 'jirafe_email_report_type')
+                    ->addFieldMap("jirafe_dashboard_active", 'jirafe_dashboard_active')
+                    ->addFieldMap("jirafe_email_suppress", 'jirafe_email_suppress')
+                    ->addFieldDependence('jirafe_send_email', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_email_report_type', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_dashboard_active', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_email_suppress', 'jirafe_enabled', '1')
+            );
+        }
+
         return $this;
     }
 

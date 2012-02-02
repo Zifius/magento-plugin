@@ -36,7 +36,16 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
         $yesNo = array();
         $yesNo[] = array('label' => Mage::helper('foomanjirafe')->__('Yes'), 'value' => 1);
         $yesNo[] = array('label' => Mage::helper('foomanjirafe')->__('No'), 'value' => 0);
-        
+
+        $fieldset->addField('jirafe_enabled', 'select', array(
+            'name' => 'jirafe_enabled',
+            'label' => Mage::helper('foomanjirafe')->__('Enable Jirafe'),
+            'title' => Mage::helper('foomanjirafe')->__('Enable Jirafe'),
+            'required' => false,
+            'values' => $yesNo,
+            'value' => $adminUser->getJirafeEnabled()
+        ));
+
         $fieldset->addField('jirafe_send_email', 'select', array(
             'name' => 'jirafe_send_email',
             'label' => Mage::helper('foomanjirafe')->__('Send Jirafe Emails'),
@@ -83,6 +92,21 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
         $form->setValues($adminUser->getData());
 
         $this->setForm($form);
+
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '>=')) {
+            $this->setChild('form_after',
+                $this->getLayout()->createBlock('adminhtml/widget_form_element_dependence')
+                    ->addFieldMap("jirafe_enabled", 'jirafe_enabled')
+                    ->addFieldMap("jirafe_send_email", 'jirafe_send_email')
+                    ->addFieldMap("jirafe_email_report_type", 'jirafe_email_report_type')
+                    ->addFieldMap("jirafe_dashboard_active", 'jirafe_dashboard_active')
+                    ->addFieldMap("jirafe_email_suppress", 'jirafe_email_suppress')
+                    ->addFieldDependence('jirafe_send_email', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_email_report_type', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_dashboard_active', 'jirafe_enabled', '1')
+                    ->addFieldDependence('jirafe_email_suppress', 'jirafe_enabled', '1')
+            );
+        }
 
         return parent::_prepareForm();
     }

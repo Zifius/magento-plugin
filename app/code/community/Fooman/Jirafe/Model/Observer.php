@@ -155,6 +155,7 @@ class Fooman_Jirafe_Model_Observer
         $jirafeUserId = $user->getJirafeUserId();
         $jirafeToken = $user->getJirafeUserToken();
 
+        $jirafeEnabled = Mage::app()->getRequest()->getPost('jirafe_enabled');
         $jirafeSendEmail = Mage::app()->getRequest()->getPost('jirafe_send_email');
         $jirafeDashboardActive = Mage::app()->getRequest()->getPost('jirafe_dashboard_active');        
         $jirafeEmailReportType = Mage::app()->getRequest()->getPost('jirafe_email_report_type');
@@ -171,7 +172,15 @@ class Fooman_Jirafe_Model_Observer
                 Mage::register('foomanjirafe_sync', true);
             }
         }
-        
+
+        if ($jirafeEnabled != $user->getJirafeEnabled()) {
+            $user->setJirafeEnabled($jirafeEnabled);
+            $user->setDataChanges(true);
+            if (!Mage::registry('foomanjirafe_sync')) {
+                Mage::register('foomanjirafe_sync', true);
+            }
+        }
+
         if ($jirafeSendEmail != $user->getJirafeSendEmail()) {
             $user->setJirafeSendEmail($jirafeSendEmail);
             $user->setDataChanges(true);
