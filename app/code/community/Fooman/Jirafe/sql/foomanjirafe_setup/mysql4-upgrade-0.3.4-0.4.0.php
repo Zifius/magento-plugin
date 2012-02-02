@@ -15,5 +15,12 @@
 $version = '0.4.0';
 Mage::log('Running Fooman Jirafe DB upgrade '.$version);
 
+$installer = $this;
+/* @var $installer Fooman_Jirafe_Model_Mysql4_Setup */
+
+$installer->startSetup();
+Mage::helper('foomanjirafe/setup')->runDbSchemaUpgrade($installer, $version);
+$installer->endSetup();
+
 //Run sync when finished with install/update
 Mage::getModel('foomanjirafe/jirafe')->initialSync($version);
