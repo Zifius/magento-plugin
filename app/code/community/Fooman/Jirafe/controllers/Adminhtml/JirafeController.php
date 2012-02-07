@@ -13,13 +13,15 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller_Action {
+class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller_Action
+{
 
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->setUsedModuleName('Fooman_Jirafe');
     }
 
-    public function reportAction ()
+    public function reportAction()
     {
         if (Mage::helper('foomanjirafe')->isConfigured()) {
             Mage::getModel('foomanjirafe/report')->cron();
@@ -35,7 +37,7 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
         $jirafe->syncUsersStores();
         $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
     }
-    
+
     public function resetAction()
     {
         $jirafe = Mage::helper('foomanjirafe/setup');
@@ -51,7 +53,23 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
         //to prevent a password change unset it here for pre 1.4.0.0
         if (version_compare(Mage::getVersion(), '1.4.0.0') < 0) {
             $user->unsPassword();
-        }        
+        }
+        $user->save();
+        $this->_redirect('adminhtml/dashboard');
+    }
+
+    public function optinAction()
+    {
+        $user = Mage::getSingleton('admin/session')->getUser();
+        $answer = $this->getRequest()->getParam('answer') == 'yes' ? true : false;
+        $user->setJirafeEnabled($answer);
+        $user->setJirafeSendEmail($answer);
+        $user->setJirafeDashboardActive($answer);
+        $user->setJirafeOptinAnswered(true);
+        //to prevent a password change unset it here for pre 1.4.0.0
+        if (version_compare(Mage::getVersion(), '1.4.0.0') < 0) {
+            $user->unsPassword();
+        }
         $user->save();
         $this->_redirect('adminhtml/dashboard');
     }

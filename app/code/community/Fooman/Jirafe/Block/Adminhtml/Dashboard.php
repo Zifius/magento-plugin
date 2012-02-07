@@ -19,8 +19,18 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard extends Mage_Adminhtml_Block_Dashb
     public function __construct ()
     {
         parent::__construct();
-        if (Mage::helper('foomanjirafe/data')->isDashboardActive() && Mage::helper('foomanjirafe')->isOk()) {
+        $helper = Mage::helper('foomanjirafe/data');
+        if ($helper->isDashboardActive() && $helper->isOk()) {
             $this->setTemplate('fooman/jirafe/dashboard.phtml');
+        }
+        $adminSession = Mage::getSingleton('admin/session');
+        if (!$adminSession->getUser()->getJirafeOptinAnswered()) {
+            Mage::getSingleton('adminhtml/session')->addNotice(
+                $helper->__('Would you like access to advanced analytics from Jirafe? <a href="%s">Yes</a> <a href="%s">No</a>',
+                    Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/optin', array('_query' => array('answer' => 'yes'))),
+                    Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/optin', array('_query' => array('answer' => 'no')))
+                )
+            );
         }
     }
 

@@ -235,6 +235,7 @@ class Fooman_Jirafe_Model_Jirafe
                 $tmpUser['email'] = Mage::helper('foomanjirafe')->createJirafeUserEmail($adminUser);
                 $tmpUser['first_name'] = $adminUser->getFirstname();
                 $tmpUser['last_name'] = $adminUser->getLastname();
+                $tmpUser['initiate_verification'] = $adminUser->getJirafeEnabled();
                 //$tmpUser['mobile_phone'] = $adminUser->getMobilePhone();
                 $adminUserArray[] = $tmpUser;
             }

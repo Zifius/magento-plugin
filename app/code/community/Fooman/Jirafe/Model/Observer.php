@@ -173,7 +173,7 @@ class Fooman_Jirafe_Model_Observer
             }
         }
 
-        if ($jirafeEnabled != $user->getJirafeEnabled()) {
+        if ($jirafeEnabled != $user->getJirafeEnabled() && $jirafeEnabled != null) {
             $user->setJirafeEnabled($jirafeEnabled);
             $user->setDataChanges(true);
             if (!Mage::registry('foomanjirafe_sync')) {
@@ -181,7 +181,7 @@ class Fooman_Jirafe_Model_Observer
             }
         }
 
-        if ($jirafeSendEmail != $user->getJirafeSendEmail()) {
+        if ($jirafeSendEmail != $user->getJirafeSendEmail()&& $jirafeSendEmail != null) {
             $user->setJirafeSendEmail($jirafeSendEmail);
             $user->setDataChanges(true);
         }

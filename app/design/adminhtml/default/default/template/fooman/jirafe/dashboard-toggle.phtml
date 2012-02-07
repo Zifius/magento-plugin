@@ -15,7 +15,7 @@
 ?>
 <?php include $this->getOrigTemplate() ?>
 <?php $_block = $this->getFoomanBlock() ?>
-<?php if(Mage::helper('foomanjirafe')->isOk()): ?>
+<?php if(Mage::helper('foomanjirafe')->isOk() && Mage::helper('foomanjirafe')->currentUserEnabled()): ?>
     <div style="margin-top:25px; text-align:center;">
         <p><a href="<?php echo $_block->getToggleUrl()?>"><?php echo $_block->getToggleLinkName()?></a></p>
     </div>
