@@ -34,4 +34,19 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         parent::_beforeSave();
     }
 
+    public function afterCommitCallback()
+    {
+        //ping Jirafe
+        return parent::afterCommitCallback();
+    }
+
+    protected function _afterSave()
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            //ping Jirafe
+        }
+        parent::_afterSaveCommit();
+    }
+
+
 }
