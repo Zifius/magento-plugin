@@ -86,6 +86,7 @@
                 <resourceModel>foomanjirafe_mysql4</resourceModel>
                 <entities>
                     <report><table>foomanjirafe_report</table></report>
+                    <event><table>foomanjirafe_event</table></event>
                 </entities>
             </foomanjirafe_mysql4>
             <log>

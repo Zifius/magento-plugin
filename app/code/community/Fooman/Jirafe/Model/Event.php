@@ -27,4 +27,11 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         $this->_init('foomanjirafe/event');
     }
+
+    protected function _beforeSave()
+    {
+        $this->setGeneratedByJirafeVersion((string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
+        parent::_beforeSave();
+    }
+
 }

@@ -42,7 +42,7 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
         $event = Mage::getModel('foomanjirafe/event');
         if ($order->getJirafeIsNew()) {
             $event->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
-            $evenData = array (
+            $eventData = array (
                 'order_id'          => $order->getIncrementId(),
                 'status'            => $order->getState(),
                 'customer_id'       => md5(strtolower(trim($order->getCustomerEmail()))),
@@ -61,12 +61,12 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
             );
         } else {
             $event->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
-            $evenData = array (
+            $eventData = array (
                 'order_id'=>$order->getIncrementId(),
                 'new_status'=>$order->getState()
             );
         }
-        $event->setData(json_encode($evenData));
+        $event->setEventData(json_encode($eventData));
         $event->save();
 
 
@@ -115,13 +115,15 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
         $returnArray = array();
         foreach ($salesObject->getAllVisibleItems() as $item)
         {
-            /*$returnArray[] = array(
-                'sku'=>,
-                'name'=>,
+            $product = Mage::getModel('catalog/product')->load($item->getProductId());
+            $returnArray[] = array(
+                'sku'=> $product->getSku(),
+                'name'=> $item->getName(),
                 'category'=>$this->_getCategory($product),
-                'price'=>,
-                'qty'=>
-            )*/
+                'price'=> $item->getBasePrice(),
+                'qty'=> $item->getQty()
+            );
         }
+        return $returnArray;
     }
 }
