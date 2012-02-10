@@ -57,9 +57,11 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
                 'is_backend_order'  => !$order->getJirafePlacedFromFrontend(),
                 'currency'          => $order->getBaseCurrencyCode(),
                 'items'             => $this->getItems($order)
-
             );
+            $order->unsJirafeIsNew();
         } else {
+            //TODO: work out why we have order_create AND order_update for a new order
+            //and if we can simply filter out by $order->getState() != Mage_Sales_Model_Order::STATE_NEW
             $event->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
             $eventData = array (
                 'order_id'=>$order->getIncrementId(),
@@ -113,6 +115,7 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
     protected function getItems($salesObject)
     {
         $returnArray = array();
+        $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
         foreach ($salesObject->getAllVisibleItems() as $item)
         {
             $product = Mage::getModel('catalog/product')->load($item->getProductId());
@@ -121,7 +124,7 @@ class Fooman_Jirafe_Model_OrderObserver extends Fooman_Jirafe_Model_Observer
                 'name'=> $item->getName(),
                 'category'=>$this->_getCategory($product),
                 'price'=> $item->getBasePrice(),
-                'qty'=> $item->getQty()
+                'qty'=> $isOrder? $item->getQtyOrdered(): $item->getQty()
             );
         }
         return $returnArray;
