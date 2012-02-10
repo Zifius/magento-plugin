@@ -68,70 +68,6 @@ class Fooman_Jirafe_Model_Observer
         $order->setJirafeIsNew(true);     
     }
 
-    /**
-     * salesOrderSaveCommitAfter is not available on Magento 1.3
-     * provide the closest alternative
-     * 
-     * @see salesOrderSaveCommitAfter
-     * @param type $observer 
-     */
-    public function salesOrderSaveAfter ($observer)
-    {
-        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
-            $this->salesOrderSaveCommitAfter($observer);
-        }
-    }    
-    
-    /**
-     * Track piwik goals for orders
-     * TODO: this could be made configurable based on payment method used
-     *
-     * @param $observer
-     */
-    public function salesOrderSaveCommitAfter ($observer)
-    {
-        Mage::helper('foomanjirafe')->debug('salesOrderSaveCommitAfter');
-        $order = $observer->getOrder();    
-
-        //track only orders that are just being converted from a quote
-        if($order->getJirafeIsNew()) {
-            $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
-            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
-            $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
-            $piwikTracker->setIp($order->getRemoteIp());
-
-            // this observer can be potentially be triggered via a backend action
-            // it is safer to set the visitor id from the order (if available)
-            if ($order->getJirafeVisitorId()) {
-                $piwikTracker->setVisitorId($order->getJirafeVisitorId());
-            }
-
-            if($piwikTracker->getVisitorId()){
-                if ($order->getJirafeAttributionData()) {
-                    $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
-                }
-
-                try {
-                    Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
-                    $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
-
-                    $this->_addEcommerceItems($piwikTracker, Mage::getModel('sales/quote')->load($order->getQuoteId()));
-                    $piwikTracker->doTrackEcommerceOrder(
-                            $order->getIncrementId(),
-                            $order->getBaseGrandTotal(),
-                            $order->getBaseSubtotal(),
-                            $order->getBaseTaxAmount(),
-                            $order->getBaseShippingAmount(),
-                            $order->getBaseDiscountAmount()
-                    );
-                    $order->unsJirafeIsNew();
-
-                } catch (Exception $e) {
-                    Mage::logException($e);            
-                }
-            }
-        }  
-    }
 
     /**
      * Check fields in the user object to see if we should run sync
@@ -590,7 +526,7 @@ class Fooman_Jirafe_Model_Observer
                     $item->getQty()
                 );
             }
-        }        
+        }
     }
 
     /**

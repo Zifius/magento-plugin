@@ -242,7 +242,7 @@
                 <observers>
                     <foomanjirafe_salesOrderSaveAfter>
                         <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
                         <method>salesOrderSaveAfter</method>
                     </foomanjirafe_salesOrderSaveAfter>
                 </observers>
@@ -251,12 +251,21 @@
                 <observers>
                     <foomanjirafe_salesOrderSaveCommitAfter>
                         <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
                         <method>salesOrderSaveCommitAfter</method>
                     </foomanjirafe_salesOrderSaveCommitAfter>
                 </observers>
             </sales_order_save_commit_after>
         </events>
+        <routers>
+            <foomanjirafe>
+                <use>standard</use>
+                <args>
+                    <module>Fooman_Jirafe</module>
+                    <frontName>foomanjirafe</frontName>
+                </args>
+            </foomanjirafe>
+        </routers>
     </frontend>
     <admin>
         <routers>
@@ -510,7 +519,7 @@
                 <observers>
                     <foomanjirafe_salesOrderSaveAfter>
                         <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
                         <method>salesOrderSaveAfter</method>
                     </foomanjirafe_salesOrderSaveAfter>
                 </observers>
@@ -519,7 +528,7 @@
                 <observers>
                     <foomanjirafe_salesOrderSaveCommitAfter>
                         <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
                         <method>salesOrderSaveCommitAfter</method>
                     </foomanjirafe_salesOrderSaveCommitAfter>
                 </observers>
