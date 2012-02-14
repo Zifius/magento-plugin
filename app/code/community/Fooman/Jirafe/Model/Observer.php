@@ -471,27 +471,7 @@ class Fooman_Jirafe_Model_Observer
             $block->setFoomanBlock($block->getLayout()->createBlock('foomanjirafe/adminhtml_dashboard_toggle'));
         }
     }
-    
-    /**
-     * return concatenated string of category names for a product
-     *
-     * @param type $product
-     * @return string 
-     */
-    protected function _getCategory($product)
-    {
-        $id = current($product->getCategoryIds());
-        $category = Mage::getModel('catalog/category')->load($id);
-        $aCategories = array();
-        foreach ($category->getPathIds() as $k => $id) {
-            // Skip null and root
-            if ($k > 1) {
-                $category = Mage::getModel('catalog/category')->load($id);
-                $aCategories[] = $category->getName();
-            }
-        }
-        return join('/', $aCategories);
-    }
+
     
     /**
      * add all visible items from a quote as tracked ecommerce items
@@ -521,7 +501,7 @@ class Fooman_Jirafe_Model_Observer
                 $piwikTracker->addEcommerceItem(
                     $item->getProduct()->getData('sku'),
                     $item->getName(),
-                    $this->_getCategory($item->getProduct()),
+                    Mage::helper('foomanjirafe')->getCategory($item->getProduct()),
                     $itemPrice,
                     $item->getQty()
                 );

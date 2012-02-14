@@ -298,4 +298,26 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return $this->getStoreConfig('last_status');
     }
+
+    /**
+     * return concatenated string of category names for a product
+     *
+     * @param type $product
+     * @return string
+     */
+    public function getCategory($product)
+    {
+        $id = current($product->getCategoryIds());
+        $category = Mage::getModel('catalog/category')->load($id);
+        $aCategories = array();
+        foreach ($category->getPathIds() as $k => $id) {
+            // Skip null and root
+            if ($k > 1) {
+                $category = Mage::getModel('catalog/category')->load($id);
+                $aCategories[] = $category->getName();
+            }
+        }
+        return join('/', $aCategories);
+    }
+
 }
