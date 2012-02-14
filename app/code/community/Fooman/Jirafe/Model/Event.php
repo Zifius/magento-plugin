@@ -15,12 +15,12 @@
 
 class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 {
-    const JIRAFE_ACTION_ORDER_CREATE    = 'order_create';
-    const JIRAFE_ACTION_ORDER_UPDATE    = 'order_update';
-    const JIRAFE_ACTION_INVOICE_CREATE  = 'invoice_create';
-    const JIRAFE_ACTION_INVOICE_UPDATE  = 'invoice_update';
-    const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipment_create';
-    const JIRAFE_ACTION_REFUND_CREATE   = 'refund_create';
+    const JIRAFE_ACTION_ORDER_CREATE    = 'orderCreate';
+    const JIRAFE_ACTION_ORDER_UPDATE    = 'orderUpdate';
+    const JIRAFE_ACTION_INVOICE_CREATE  = 'invoiceCreate';
+    const JIRAFE_ACTION_INVOICE_UPDATE  = 'invoiceUpdate';
+    const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipmentCreate';
+    const JIRAFE_ACTION_REFUND_CREATE   = 'refundCreate';
 
     protected $_eventPrefix = 'foomanjirafe_event';
     protected $_eventObject = 'jirafeevent';
