@@ -14,6 +14,15 @@ class Fooman_Jirafe_Block_Adminhtml_System_Account_Edit_Form extends Mage_Adminh
         $yesNo[] = array('label' => Mage::helper('foomanjirafe')->__('Yes'), 'value' => 1);
         $yesNo[] = array('label' => Mage::helper('foomanjirafe')->__('No'), 'value' => 0);
 
+        $fieldset->addField('jirafe_enabled', 'select', array(
+            'name' => 'jirafe_enabled',
+            'label' => Mage::helper('foomanjirafe')->__('Enable Jirafe'),
+            'title' => Mage::helper('foomanjirafe')->__('Enable Jirafe'),
+            'required' => false,
+            'values' => $yesNo,
+            'value' => $adminUser->getJirafeEnabled()
+        ));
+
         $fieldset->addField('jirafe_send_email', 'select', array(
             'name' => 'jirafe_send_email',
             'label' => Mage::helper('foomanjirafe')->__('Send Jirafe Emails'),
