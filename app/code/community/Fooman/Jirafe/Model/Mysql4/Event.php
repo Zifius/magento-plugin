@@ -21,4 +21,14 @@ class Fooman_Jirafe_Model_Mysql4_Event extends Mage_Core_Model_Mysql4_Abstract
         $this->_init('foomanjirafe/event', 'id');
     }
 
+    public function getLastVersionNumber($siteId)
+    {
+        $select = $this->_getReadAdapter()->select()
+            ->from($this->getTable('foomanjirafe/event'), array(new Zend_Db_Expr('max(version) as maxId')))
+            ->where('site_id = ?', $siteId);
+
+        $res = $this->_getReadAdapter()->fetchRow($select);
+        return isset($res['maxId']) ? $res['maxId'] : 0;
+    }
+
 }

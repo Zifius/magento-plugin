@@ -13,13 +13,25 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-class Fooman_Jirafe_JirafeController extends Mage_Adminhtml_Controller_Action
+class Fooman_Jirafe_JirafeController extends Mage_Core_Controller_Front_Action
 {
 
-    protected function _construct()
+    public function eventsAction()
     {
-        $this->setUsedModuleName('Fooman_Jirafe');
-    }
+        $token = $this->getRequest()->getParam('token');
+        $version = $this->getRequest()->getParam('v');
+        $siteId = $this->getRequest()->getParam('siteId');
+        //TODO: check token against Jirafe
 
+        //TODO: post events
+        $jirafeEvents = Mage::getModel('foomanjirafe/event')
+            ->getCollection()
+            ->addFieldToFilter('site_id', $siteId)
+            ->addFieldToFilter('version', array('gteq'=>$version));
+        foreach($jirafeEvents as $event) {
+            var_dump($event->getData());
+        }
+
+    }
 
 }

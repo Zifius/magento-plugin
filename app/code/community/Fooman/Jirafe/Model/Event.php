@@ -22,6 +22,8 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipment_create';
     const JIRAFE_ACTION_REFUND_CREATE   = 'refund_create';
 
+    protected $_eventPrefix = 'foomanjirafe_event';
+    protected $_eventObject = 'jirafeevent';
 
     protected function _construct ()
     {
@@ -30,6 +32,8 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     protected function _beforeSave()
     {
+        $lastEventNumberForSite = $this->_getLastVersionNumber($this->getSiteId());
+        $this->setVersion($lastEventNumberForSite + 1);
         $this->setGeneratedByJirafeVersion((string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
         parent::_beforeSave();
     }
@@ -44,8 +48,13 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
             //ping Jirafe
+            $this->afterCommitCallback();
         }
-        parent::_afterSaveCommit();
+    }
+
+    protected function _getLastVersionNumber($siteId)
+    {
+        return Mage::getResourceModel('foomanjirafe/event')->getLastVersionNumber($siteId);
     }
 
     public function orderCreateOrUpdate($order)
@@ -78,6 +87,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'new_status'=>$order->getState()
             );
         }
+        $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
         $this->setEventData(json_encode($eventData));
         $this->save();
     }
@@ -86,7 +96,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         $returnArray = array();
         $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
-        foreach ($salesObject->getItems() as $item)
+        foreach ($salesObject->getAllItems() as $item)
         {
             if (!$item->getParentItemId()) {
                 $product = Mage::getModel('catalog/product')->load($item->getProductId());
