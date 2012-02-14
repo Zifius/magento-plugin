@@ -29,16 +29,18 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     array(
                         array("type" => "table", "name" => "foomanjirafe_event", "items" =>
                             array(
-                                array("sql-column", "id", "int(10) unsigned NOT NULL"),
-                                array("sql-column", "site_id", "int(5) unsigned NOT NULL"),
+                                array("sql-column", "id", "int(12) unsigned NOT NULL auto_increment"),
+                                array("sql-column", "version", "int(12) unsigned NOT NULL"),
+                                array("sql-column", "site_id", "int(12) unsigned NOT NULL"),
                                 array("sql-column", "created_at", "timestamp NOT NULL default CURRENT_TIMESTAMP"),
                                 array("sql-column", "generated_by_jirafe_version", "varchar(128)"),
                                 array("sql-column", "action", "varchar(128)"),
-                                array("sql-column", "event_data", "text")
+                                array("sql-column", "event_data", "text"),
+                                array("key", "PRIMARY KEY", "id")
                             )
                         ),
                         array("type"=> "index", "table"=>"foomanjirafe_event", "name"=>"CREATE UNIQUE INDEX `IDX_JIRAFE_EVENT`", "on"=>
-                            array('id','site_id')
+                            array('version','site_id')
                         )
                     )
                 );
