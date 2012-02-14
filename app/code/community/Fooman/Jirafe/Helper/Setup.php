@@ -29,7 +29,8 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     array(
                         array("type" => "table", "name" => "foomanjirafe_event", "items" =>
                         array(
-                            array("sql-column", "id", "int(10) unsigned NOT NULL auto_increment"),
+                            array("sql-column", "id", "int(10) unsigned NOT NULL"),
+                            array("sql-column", "site_id", "int(5) unsigned NOT NULL"),
                             array("sql-column", "created_at", "timestamp NOT NULL default CURRENT_TIMESTAMP"),
                             array("sql-column", "generated_by_jirafe_version", "varchar(128)"),
                             array("sql-column", "action", "varchar(128)"),
