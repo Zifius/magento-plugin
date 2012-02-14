@@ -26,7 +26,7 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard extends Mage_Adminhtml_Block_Dashb
         $adminSession = Mage::getSingleton('admin/session');
         if (!$adminSession->getUser()->getJirafeOptinAnswered()) {
             Mage::getSingleton('adminhtml/session')->addNotice(
-                $helper->__('Would you like access to advanced analytics from Jirafe? <a href="%s">Yes</a> <a href="%s">No</a>',
+                $helper->__('Would you like access to advanced analytics from Jirafe? <a id="jirafe-yes" href="%s">Yes</a> <a id="jirafe-no" href="%s">No</a>',
                     Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/optin', array('_query' => array('answer' => 'yes'))),
                     Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/optin', array('_query' => array('answer' => 'no')))
                 )
