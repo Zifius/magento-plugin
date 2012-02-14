@@ -135,7 +135,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     break;
                 }
                 //nobreak intentionally;
-            case '0.1.6':               
+            case '0.1.6':
             case '0.1.4':
             case '0.1.2':
             case '0.1.1':
@@ -253,17 +253,17 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     $return = $installer->run($sql);
                     break;
                 case 'sql-column':
-                    try{
-                    $return = $installer->run("
-                        ALTER TABLE `{$installer->getTable($instruction['table'])}` DROP COLUMN `{$instruction['name']}`");                
-                        
+                    try {
+                        $return = $installer->run("
+                            ALTER TABLE `{$installer->getTable($instruction['table'])}` DROP COLUMN `{$instruction['name']}`
+                        ");
                     } catch (Exception $e) {
                         Mage::logException($e);
                     }
                     break;
                 case 'eav-attribute':
                     try {
-                        $return =  $installer->removeAttribute($instruction['entity'], $instruction['name']);                        
+                        $return = $installer->removeAttribute($instruction['entity'], $instruction['name']);
                     } catch (Exception $e) {
                         Mage::logException($e);
                     }
