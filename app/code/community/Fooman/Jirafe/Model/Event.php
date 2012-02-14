@@ -48,5 +48,58 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         parent::_afterSaveCommit();
     }
 
+    public function orderCreateOrUpdate($order)
+    {
+        if ($order->getJirafeIsNew()) {
+            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
+            $eventData = array (
+                'order_id'          => $order->getIncrementId(),
+                'status'            => $order->getState(),
+                'customer_id'       => md5(strtolower(trim($order->getCustomerEmail()))),
+                'visitor_id'        => $order->getJirafeVisitorId(),
+                'attribution_data'  => $order->getJirafeAttributionData(),
+                'order_time'        => strtotime($order->getCreatedAt()),
+                'grand_total'       => $order->getBaseGrandTotal(),
+                'subtotal'          => $order->getBaseSubtotal(),
+                'tax_amount'        => $order->getBaseTaxAmount(),
+                'shipping_amount'   => $order->getBaseShippingAmount(),
+                'discount_amount'   => $order->getBaseDiscountAmount(),
+                'is_backend_order'  => !$order->getJirafePlacedFromFrontend(),
+                'currency'          => $order->getBaseCurrencyCode(),
+                'items'             => $this->_getItems($order)
+            );
+            $order->unsJirafeIsNew();
+        } else {
+            //TODO: work out why we have order_create AND order_update for a new order
+            //and if we can simply filter out by $order->getState() != Mage_Sales_Model_Order::STATE_NEW
+            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
+            $eventData = array (
+                'order_id'=>$order->getIncrementId(),
+                'new_status'=>$order->getState()
+            );
+        }
+        $this->setEventData(json_encode($eventData));
+        $this->save();
+    }
+
+    protected function _getItems($salesObject)
+    {
+        $returnArray = array();
+        $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
+        foreach ($salesObject->getItems() as $item)
+        {
+            if (!$item->getParentItemId()) {
+                $product = Mage::getModel('catalog/product')->load($item->getProductId());
+                $returnArray[] = array(
+                    'sku' => $product->getSku(),
+                    'name' => $item->getName(),
+                    'category' => Mage::helper('foomanjirafe')->getCategory($product),
+                    'price' => $item->getBasePrice(),
+                    'qty' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
+                );
+            }
+        }
+        return $returnArray;
+    }
 
 }
