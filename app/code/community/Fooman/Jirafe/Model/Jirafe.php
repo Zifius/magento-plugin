@@ -226,7 +226,7 @@ class Fooman_Jirafe_Model_Jirafe
         $adminUserArray = array();
         $adminUsers = Mage::getSingleton('admin/user')->getCollection();
         foreach ($adminUsers as $adminUser) {
-            if ($adminUser->getIsActive() &&  $adminUser->getEmail()) {
+            if ($adminUser->getIsActive() &&  $adminUser->getEmail() && $adminUser->getJirafeEnabled()) {
                 $tmpUser = array();
                 if( $adminUser->getJirafeUserToken()) {
                     $tmpUser['token'] = $adminUser->getJirafeUserToken();
@@ -235,7 +235,6 @@ class Fooman_Jirafe_Model_Jirafe
                 $tmpUser['email'] = Mage::helper('foomanjirafe')->createJirafeUserEmail($adminUser);
                 $tmpUser['first_name'] = $adminUser->getFirstname();
                 $tmpUser['last_name'] = $adminUser->getLastname();
-                $tmpUser['initiate_verification'] = $adminUser->getJirafeEnabled();
                 //$tmpUser['mobile_phone'] = $adminUser->getMobilePhone();
                 $adminUserArray[] = $tmpUser;
             }
@@ -341,7 +340,7 @@ class Fooman_Jirafe_Model_Jirafe
 
             try {
                 $this->getJirafeApi()->getConnection()->setConfig(array('timeout'=>120));
-                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO);
+                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, true, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO);
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites']);
             } catch (Exception $e) {
