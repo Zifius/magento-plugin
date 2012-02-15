@@ -24,8 +24,9 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return store config value for key
      *
-     * @param   string $key
-     * @return  string
+     * @param $key
+     * @param $storeId
+     * @return mixed
      */
     public function getStoreConfig ($key,
             $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID)
@@ -37,8 +38,11 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return store config value for key directly from db
      *
-     * @param   string $key
-     * @return  string
+     * @param $key
+     * @param $storeId
+     * @param bool $foomanjirafe
+     * @param bool $websiteId
+     * @return mixed
      */
     public function getStoreConfigDirect ($key,
             $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID, $foomanjirafe=true, $websiteId=false)
@@ -89,7 +93,8 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @param string $key
      * @param string $value
-     * @return <type>
+     * @param $storeId
+     * @return mixed
      */
     public function setStoreConfig ($key, $value,
             $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID)
@@ -130,16 +135,33 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::app()->getStore($storeId)->load($storeId)->setConfig($path, $value);
     }
 
+    /**
+     * Check if we have an app_id and app_token
+     *
+     * @param $storeId
+     * @return bool
+     */
     public function isConfigured ($storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID)
     {
         return ($this->getStoreConfig('app_id', $storeId) && $this->getStoreConfig('app_token', $storeId));
     }
 
+    /**
+     * get list of active store ids
+     * @see getStores
+     * @return string
+     */
     public function getStoreIds ()
     {
         return $this->getStores(true);
     }
 
+    /**
+     * get an array of stores or a csv string of store ids
+     *
+     * @param bool $idsOnly
+     * @return array|string
+     */
     public function getStores ($idsOnly = false)
     {
         // Get a list of store IDs to send to the user
@@ -168,9 +190,10 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      * either return a csv list of just emails or an array
      * with key = email address and value = report type
      *
-     * @param int $storeId
-     * @param boolean $asCsv
-     * @return string|array
+     * @param bool $asCsv
+     * @param bool $containsOrders
+     * @param bool $allUsers
+     * @return array|string
      */
     public function collectJirafeEmails ($asCsv = true, $containsOrders = true, $allUsers = false)
     {
@@ -206,6 +229,11 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    /**
+     * send message to jirafe.log
+     *
+     * @param $mesg
+     */
     public function debug ($mesg)
     {
         if ($this->isDebug()) {
@@ -213,35 +241,67 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    /**
+     * are we currently in debug mode
+     * @see Admin Back-end > System > Configuration > Jirafe Analytics
+     *
+     * @return bool
+     */
     public function isDebug ()
     {
         return (bool) $this->getStoreConfig('is_debug');
     }
 
+    /**
+     * return a unified store description including the website's name
+     * @param $store
+     * @return string
+     */
     public function getStoreDescription ($store)
     {
         return Mage::getModel('core/store_group')->load($store->getGroupId())->getName() . ' (' . $store->getData('name') . ')';
     }
 
+    /**
+     * previously used to create a fake unique email address
+     * @param $user
+     * @return mixed
+     */
     public function createJirafeUserId ($user)
     {
         return $user->getEmail();
     }
 
+    /**
+     * previously used to create a fake unique email address
+     *
+     * @param $user
+     * @return mixed
+     */
     public function createJirafeUserEmail ($user)
     {
         return $this->createJirafeUserId($user);
     }
 
+    /**
+     * previously used to determine real address from fake email address
+     * @see createJirafeUserId
+     * @param $email
+     * @return mixed
+     */
     public function getUserEmail ($email)
     {
-        /*
-         * see createJirafeUserId
-         */
-
         return $email;
     }
 
+    /**
+     * unify the baseUrl
+     * also deal with deprecated notation of {{base_url}}
+     * as well as cases where we don't yet have the value
+     *
+     * @param $baseUrl
+     * @return string
+     */
     public function getUnifiedStoreBaseUrl ($baseUrl)
     {
         if ($baseUrl == '{{base_url}}' || empty($baseUrl)) {
@@ -250,6 +310,12 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         return rtrim($baseUrl, '/');
     }
 
+    /**
+     * run a list of checks to work out if the Jirafe Dashboard
+     * should be shown
+     *
+     * @return bool
+     */
     public function isDashboardActive ()
     {
         // To check if the dashboard is active, you must check:
@@ -265,11 +331,25 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         );
     }
 
+    /**
+     * email is active for a store if both
+     * isEmailActive
+     * isActive
+     * are set to yes for the store
+     *
+     * @return bool
+     */
     public function isEmailActive ()
     {
         return (Mage::helper('foomanjirafe')->getStoreConfig('isEmailActive') && Mage::helper('foomanjirafe')->getStoreConfig('isActive'));
     }
 
+    /**
+     * check if we have encountered any errors
+     * and that a configuration is present
+     *
+     * @return bool
+     */
     public function isOk ()
     {
         return $this->isConfigured()
@@ -277,6 +357,11 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
                 && $this->getStatus() != Fooman_Jirafe_Helper_Data::JIRAFE_STATUS_ERROR;
     }
 
+    /**
+     * has the current User enabled Jirafe?
+     *
+     * @return bool
+     */
     public function currentUserEnabled()
     {
         $adminSession = Mage::getSingleton('admin/session');
@@ -289,11 +374,20 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     }
 
+    /**
+     * return true if the last sync was unsuccessful
+     * @return bool
+     */
     public function noSync ()
     {
         return $this->getStatus() != self::JIRAFE_STATUS_SYNC_COMPLETED;
     }    
 
+    /**
+     * return the last status of interacting with Jirafe's Api
+     *
+     * @return string
+     */
     public function getStatus ()
     {
         return $this->getStoreConfig('last_status');
