@@ -15,12 +15,22 @@
 
 class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 {
+    //TODO: these could move into the php-client
     const JIRAFE_ACTION_ORDER_CREATE    = 'orderCreate';
     const JIRAFE_ACTION_ORDER_UPDATE    = 'orderUpdate';
     const JIRAFE_ACTION_INVOICE_CREATE  = 'invoiceCreate';
     const JIRAFE_ACTION_INVOICE_UPDATE  = 'invoiceUpdate';
     const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipmentCreate';
     const JIRAFE_ACTION_REFUND_CREATE   = 'refundCreate';
+
+    const JIRAFE_ORDER_STATUS_NEW               = 'new';
+    const JIRAFE_ORDER_STATUS_PAYMENT_PENDING   = 'pendingPayment';
+    const JIRAFE_ORDER_STATUS_PROCESSING        = 'processing';
+    const JIRAFE_ORDER_STATUS_COMPLETE          = 'complete';
+    const JIRAFE_ORDER_STATUS_CLOSED            = 'closed';
+    const JIRAFE_ORDER_STATUS_CANCELLED         = 'canceled';
+    const JIRAFE_ORDER_STATUS_HELD              = 'holded';
+    const JIRAFE_ORDER_STATUS_PAYMENT_REVIEW    = 'paymentReview';
 
     protected $_eventPrefix = 'foomanjirafe_event';
     protected $_eventObject = 'jirafeevent';
@@ -38,18 +48,22 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         parent::_beforeSave();
     }
 
+    /**
+     * there is no afterCommitCallback on earlier
+     * versions, use the closest alternative
+     * @see afterCommitCallback
+     */
+    protected function _afterSave()
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->afterCommitCallback();
+        }
+    }
+
     public function afterCommitCallback()
     {
         //ping Jirafe
         return parent::afterCommitCallback();
-    }
-
-    protected function _afterSave()
-    {
-        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
-            //ping Jirafe
-            $this->afterCommitCallback();
-        }
     }
 
     protected function _getLastVersionNumber($siteId)
@@ -62,18 +76,17 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         if ($order->getJirafeIsNew()) {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
             $eventData = array (
-                'order_id'          => $order->getIncrementId(),
-                'status'            => $order->getState(),
-                'customer_id'       => md5(strtolower(trim($order->getCustomerEmail()))),
-                'visitor_id'        => $order->getJirafeVisitorId(),
-                'attribution_data'  => $order->getJirafeAttributionData(),
-                'order_time'        => strtotime($order->getCreatedAt()),
-                'grand_total'       => $order->getBaseGrandTotal(),
-                'subtotal'          => $order->getBaseSubtotal(),
-                'tax_amount'        => $order->getBaseTaxAmount(),
-                'shipping_amount'   => $order->getBaseShippingAmount(),
-                'discount_amount'   => $order->getBaseDiscountAmount(),
-                'is_backend_order'  => !$order->getJirafePlacedFromFrontend(),
+                'orderId'           => $order->getIncrementId(),
+                'status'            => $this->_getOrderStatus($order),
+                'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
+                'visitorId'         => $order->getJirafeVisitorId(),
+                'time'              => strtotime($order->getCreatedAt()),
+                'grandTotal'        => $order->getBaseGrandTotal(),
+                'subTotal'          => $order->getBaseSubtotal(),
+                'taxAmount'         => $order->getBaseTaxAmount(),
+                'shippingAmount'    => $order->getBaseShippingAmount(),
+                'discountAmount'    => $order->getBaseDiscountAmount(),
+                'isBackendOrder'    => !$order->getJirafePlacedFromFrontend(),
                 'currency'          => $order->getBaseCurrencyCode(),
                 'items'             => $this->_getItems($order)
             );
@@ -83,8 +96,8 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             //and if we can simply filter out by $order->getState() != Mage_Sales_Model_Order::STATE_NEW
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
             $eventData = array (
-                'order_id'=>$order->getIncrementId(),
-                'new_status'=>$order->getState()
+                'orderId'   =>$order->getIncrementId(),
+                'status'    =>$this->_getOrderStatus($order)
             );
         }
         $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
@@ -110,6 +123,36 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             }
         }
         return $returnArray;
+    }
+
+    protected function _getOrderStatus($order)
+    {
+        switch ($order->getState()) {
+            case Mage_Sales_Model_Order::STATE_NEW:
+                return self::JIRAFE_ORDER_STATUS_NEW;
+                break;
+            case Mage_Sales_Model_Order::STATE_PENDING_PAYMENT:
+                return self::JIRAFE_ORDER_STATUS_PAYMENT_PENDING;
+                break;
+            case Mage_Sales_Model_Order::STATE_PROCESSING:
+                return self::JIRAFE_ORDER_STATUS_PROCESSING;
+                break;
+            case Mage_Sales_Model_Order::STATE_COMPLETE:
+                return self::JIRAFE_ORDER_STATUS_COMPLETE;
+                break;
+            case Mage_Sales_Model_Order::STATE_CLOSED:
+                return self::JIRAFE_ORDER_STATUS_CLOSED;
+                break;
+            case Mage_Sales_Model_Order::STATE_CANCELED:
+                return self::JIRAFE_ORDER_STATUS_CANCELLED;
+                break;
+            case Mage_Sales_Model_Order::STATE_HOLDED:
+                return self::JIRAFE_ORDER_STATUS_HELD;
+                break;
+            case Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW:
+                return self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
+                break;
+        }
     }
 
 }
