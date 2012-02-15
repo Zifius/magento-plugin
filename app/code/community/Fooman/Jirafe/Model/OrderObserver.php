@@ -38,8 +38,32 @@ class Fooman_Jirafe_Model_OrderObserver
     public function salesOrderSaveCommitAfter ($observer)
     {
         Mage::helper('foomanjirafe')->debug('salesOrderSaveCommitAfter');
-        $order = $observer->getOrder();
-        Mage::getModel('foomanjirafe/event')->orderCreateOrUpdate($order);
+        Mage::getModel('foomanjirafe/event')->orderCreateOrUpdate($observer->getEvent()->getOrder());
+    }
+
+    /**
+     * salesCreditmemoSaveCommitAfter is not available on Magento 1.3
+     * provide the closest alternative
+     *
+     * @see salesOrderCreditmemoSaveCommitAfter
+     * @param type $observer
+     */
+    public function salesOrderCreditmemoSaveAfter ($observer)
+    {
+        if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
+            $this->salesOrderCreditmemoSaveCommitAfter($observer);
+        }
+    }
+
+    /**
+     * Save this event to the Event Table for later synchronisation with Jirafe
+     *
+     * @param $observer
+     */
+    public function salesOrderCreditmemoSaveCommitAfter ($observer)
+    {
+        Mage::helper('foomanjirafe')->debug('salesCreditmemoSaveCommitAfter');
+        Mage::getModel('foomanjirafe/event')->creditmemoCreateOrUpdate($observer->getEvent()->getCreditmemo());
     }
 
 }

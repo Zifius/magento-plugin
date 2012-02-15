@@ -105,6 +105,28 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         $this->save();
     }
 
+    public function creditmemoCreateOrUpdate($creditmemo)
+    {
+        if(!$creditmemo->getId()){
+            //must be a new refund
+            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_CREATE);
+            $eventData = array (
+                'refundId'                  => $creditmemo->getIncrementId(),
+                'originalOrderId'           => $creditmemo->getOrder()->getIncrementId(),
+                'refundTime'                => strtotime($creditmemo->getCreatedAt()),
+                'refundedGrandTotal'        => $creditmemo->getBaseGrandTotal(),
+                'refundedSubTotal'          => $creditmemo->getBaseSubtotal(),
+                'refundedTaxAmount'         => $creditmemo->getBaseTaxAmount(),
+                'refundedShipppingAmount'   => $creditmemo->getBaseShippingAmount(),
+                'refundedDiscountAmount'    => $creditmemo->getBaseDiscountAmount(),
+                'refundedItems'             => $this->_getItems($creditmemo)
+            );
+            $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $creditmemo->getStoreId()));
+            $this->setEventData(json_encode($eventData));
+            $this->save();
+        }
+    }
+
     protected function _getItems($salesObject)
     {
         $returnArray = array();
