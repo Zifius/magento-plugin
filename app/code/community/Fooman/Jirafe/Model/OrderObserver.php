@@ -41,6 +41,14 @@ class Fooman_Jirafe_Model_OrderObserver
         Mage::getModel('foomanjirafe/event')->orderCreateOrUpdate($observer->getEvent()->getOrder());
     }
 
+    public function salesOrderCreditmemoSaveBefore ($observer)
+    {
+        $creditmemo = $observer->getEvent()->getCreditmemo();
+        if(!$creditmemo->getId()) {
+            $creditmemo->setJirafeIsNew(1);
+        }
+    }
+
     /**
      * salesCreditmemoSaveCommitAfter is not available on Magento 1.3
      * provide the closest alternative

@@ -73,7 +73,9 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     public function orderCreateOrUpdate($order)
     {
-        if ($order->getJirafeIsNew()) {
+        $saveEvent = false;
+        if ($order->getJirafeIsNew() == 1) {
+            $saveEvent = true;
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
             $eventData = array (
                 'orderId'           => $order->getIncrementId(),
@@ -90,27 +92,40 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'currency'          => $order->getBaseCurrencyCode(),
                 'items'             => $this->_getItems($order)
             );
-            $order->unsJirafeIsNew();
+            $order->setJirafeIsNew(2);
         } else {
-            //TODO: work out why we have order_create AND order_update for a new order
-            //and if we can simply filter out by $order->getState() != Mage_Sales_Model_Order::STATE_NEW
-            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
-            $eventData = array (
-                'orderId'   =>$order->getIncrementId(),
-                'status'    =>$this->_getOrderStatus($order)
-            );
+            $saveEvent = false;
+            if($order->getOrigData()) {
+                if($order->getState() != $order->getOrigData('state')) {
+                    //only create an update event when the state has changed
+                    //TODO: check against final spec if there are any other changes we are interested in
+                    $saveEvent = true;
+                }
+            } elseif ($order->getJirafeIsNew() != 2 && $order->getState() != Mage_Sales_Model_Order::STATE_NEW) {
+                //During order creation Magento saves a new order twice
+                //the above check prevents an order_create AND order_update event for a new order
+                $saveEvent = true;
+            }
+            if($saveEvent) {
+                $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
+                $eventData = array (
+                    'orderId'   =>$order->getIncrementId(),
+                    'status'    =>$this->_getOrderStatus($order)
+                );
+            }
         }
-        $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
-        $this->setEventData(json_encode($eventData));
-        $this->save();
+        if($saveEvent) {
+            $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
+            $this->setEventData(json_encode($eventData));
+            $this->save();
+        }
     }
 
     public function creditmemoCreateOrUpdate($creditmemo)
     {
-        if(!$creditmemo->getId()){
-            //must be a new refund
+        if ($creditmemo->getJirafeIsNew() == 1) {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_CREATE);
-            $eventData = array (
+            $eventData = array(
                 'refundId'                  => $creditmemo->getIncrementId(),
                 'originalOrderId'           => $creditmemo->getOrder()->getIncrementId(),
                 'refundTime'                => strtotime($creditmemo->getCreatedAt()),
@@ -124,6 +139,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $creditmemo->getStoreId()));
             $this->setEventData(json_encode($eventData));
             $this->save();
+            $creditmemo->setJirafeIsNew(2);
         }
     }
 

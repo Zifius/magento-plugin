@@ -165,6 +165,15 @@
                     </foomanjirafe_salesOrderSaveCommitAfter>
                 </observers>
             </sales_order_save_commit_after>
+            <sales_order_creditmemo_save_before>
+                <observers>
+                    <foomanjirafe_salesOrderCreditmemoSaveBefore>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderCreditmemoSaveBefore</method>
+                    </foomanjirafe_salesOrderCreditmemoSaveBefore>
+                </observers>
+            </sales_order_creditmemo_save_before>
             <sales_order_creditmemo_save_after>
                 <observers>
                     <foomanjirafe_salesOrderCreditmemoSaveAfter>
