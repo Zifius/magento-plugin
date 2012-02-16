@@ -226,7 +226,12 @@ class Fooman_Jirafe_Model_Jirafe
         $adminUserArray = array();
         $adminUsers = Mage::getSingleton('admin/user')->getCollection();
         foreach ($adminUsers as $adminUser) {
-            if ($adminUser->getIsActive() &&  $adminUser->getEmail() && $adminUser->getJirafeEnabled()) {
+            //For us to add a User to Jirafe the following needs to have happened
+            //1. the admin user is currently active in Jirafe
+            //2. they have an email address
+            //3. Jirafe is enabled for the user
+            //4. the user has opted into receiving Advanced Analytics by Jirafe
+            if ($adminUser->getIsActive() &&  $adminUser->getEmail() && $adminUser->getJirafeEnabled() && $adminUser->getJirafeOptinAnswered()) {
                 $tmpUser = array();
                 if( $adminUser->getJirafeUserToken()) {
                     $tmpUser['token'] = $adminUser->getJirafeUserToken();
