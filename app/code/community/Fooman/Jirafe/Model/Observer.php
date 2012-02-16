@@ -111,6 +111,10 @@ class Fooman_Jirafe_Model_Observer
 
         if ($jirafeEnabled != $user->getJirafeEnabled() && $jirafeEnabled != null) {
             $user->setJirafeEnabled($jirafeEnabled);
+            //remove the token when a user disables Jirafe
+            if(!$jirafeEnabled) {
+                $user->setJirafeUserToken(null);
+            }
             $user->setDataChanges(true);
             if (!Mage::registry('foomanjirafe_sync')) {
                 Mage::register('foomanjirafe_sync', true);
