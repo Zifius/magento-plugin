@@ -345,7 +345,7 @@ class Fooman_Jirafe_Model_Jirafe
 
             try {
                 $this->getJirafeApi()->getConnection()->setConfig(array('timeout'=>120));
-                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, true, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO);
+                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO, true);
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites']);
             } catch (Exception $e) {
