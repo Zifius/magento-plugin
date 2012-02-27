@@ -19,7 +19,14 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     public function getDbSchema ($version, $returnComplete=false)
     {
         $instructions = array();
+        $currentConfigVersion = (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version;
         switch ($version) {
+            case $currentConfigVersion:
+            case '0.3.5':     
+            case '0.3.4':
+            case '0.3.3':
+            case '0.3.2':
+            case '0.3.1':        
             case '0.3.0':
             case '0.2.15':
             case '0.2.14':
