@@ -41,6 +41,12 @@ class Fooman_Jirafe_Model_Observer
             }
             Mage::helper('foomanjirafe')->debug($_COOKIE); 
         }
+        
+        if($piwikTracker->getVisitorId()) {
+            //set forced VisitorId to be the ID read from the Cookie
+            $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
+        }
+                
         $piwikTracker->disableCookieSupport();
         $piwikTracker->setAsyncFlag(true);
 
