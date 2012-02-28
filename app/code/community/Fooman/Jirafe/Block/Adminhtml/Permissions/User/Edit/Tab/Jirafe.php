@@ -23,15 +23,6 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
         $form = new Varien_Data_Form();
         $fieldset = $form->addFieldset('jirafe_fieldset', array('legend'=>Mage::helper('adminhtml')->__('Jirafe Analytics')));
 
-        /*if ($model->getUserId()) {
-            $fieldset->addField('user_id', 'hidden', array(
-                'name' => 'user_id',
-            ));
-        } else {
-            if (! $model->hasData('is_active')) {
-                $model->setIsActive(1);
-            }
-        }*/
         $adminUser = Mage::registry('permissions_user');
         $yesNo = array();
         $yesNo[] = array('label' => Mage::helper('foomanjirafe')->__('Yes'), 'value' => 1);
@@ -54,7 +45,7 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
             'values' => $yesNo,
             'value' => $adminUser->getJirafeSendEmail()
         ));
-        
+
         $fieldset->addField('jirafe_dashboard_active', 'select', array(
             'name' => 'jirafe_dashboard_active',
             'label' => Mage::helper('foomanjirafe')->__('Display Jirafe Dashboard'),
@@ -64,7 +55,7 @@ class Fooman_Jirafe_Block_Adminhtml_Permissions_User_Edit_Tab_Jirafe extends Mag
             'values' => $yesNo,
             'value' => $adminUser->getJirafeDashboardActive()
         ));
-        
+
         $reportTypes = array();
         $reportTypes[] = array('label' => Mage::helper('foomanjirafe')->__('Simple'), 'value' => 'simple');
         $reportTypes[] = array('label' => Mage::helper('foomanjirafe')->__('Detail'), 'value' => 'detail');
