@@ -113,11 +113,11 @@ class Fooman_Jirafe_Model_Observer
             }
 
             if($piwikTracker->getVisitorId()){
-                if ($order->getJirafeAttributionData()) {
-                    $piwikTracker->setAttributionInfo($order->getJirafeAttributionData());
-                }
-
                 try {
+                    if ($order->getJirafeAttributionData()) {
+                        $piwikTracker->setAttributionInfo(str_replace('\"','"',$order->getJirafeAttributionData()));
+                    }
+                
                     Mage::helper('foomanjirafe')->debug($order->getIncrementId().': '.$order->getJirafeVisitorId().' '.$order->getBaseGrandTotal());
                     $checkoutGoalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $order->getStoreId());
 
