@@ -57,6 +57,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                     break;
                 }
                 //nobreak intentionally;
+            case '0.3.6':
             case '0.3.5':
             case '0.3.4':
             case '0.3.3':
