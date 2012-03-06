@@ -76,7 +76,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'orderId'           => $order->getIncrementId(),
                 'status'            => $this->_getOrderStatus($order),
                 'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
-                'visitorId'         => $this->_getVisitorId($order),
+                'visitorId'         => $this->_getJirafeVisitorId($order),
                 'time'              => strtotime($order->getCreatedAt()),
                 'grandTotal'        => $order->getBaseGrandTotal(),
                 'subTotal'          => $order->getBaseSubtotal(),
@@ -148,10 +148,12 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     protected function _getJirafeVisitorId($order)
     {
         if ($order->getJirafePlacedFromFrontend()) {
-            return null;
+            $visitorId = $order->getJirafeVisitorId();
         } else {
-            return $order->getJirafeVisitorId();
+            $visitorId = null;
         }
+        unset($order);
+        return $visitorId;
     }
 
     protected function _getItems($salesObject)
@@ -176,32 +178,35 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     protected function _getOrderStatus($order)
     {
-        switch ($order->getState()) {
+        $state = $order->getState();
+        unset($order);
+        switch ($state) {
             case Mage_Sales_Model_Order::STATE_NEW:
-                return self::JIRAFE_ORDER_STATUS_NEW;
+                $status = self::JIRAFE_ORDER_STATUS_NEW;
                 break;
             case Mage_Sales_Model_Order::STATE_PENDING_PAYMENT:
-                return self::JIRAFE_ORDER_STATUS_PAYMENT_PENDING;
+                $status = self::JIRAFE_ORDER_STATUS_PAYMENT_PENDING;
                 break;
             case Mage_Sales_Model_Order::STATE_PROCESSING:
-                return self::JIRAFE_ORDER_STATUS_PROCESSING;
+                $status = self::JIRAFE_ORDER_STATUS_PROCESSING;
                 break;
             case Mage_Sales_Model_Order::STATE_COMPLETE:
-                return self::JIRAFE_ORDER_STATUS_COMPLETE;
+                $status = self::JIRAFE_ORDER_STATUS_COMPLETE;
                 break;
             case Mage_Sales_Model_Order::STATE_CLOSED:
-                return self::JIRAFE_ORDER_STATUS_CLOSED;
+                $status = self::JIRAFE_ORDER_STATUS_CLOSED;
                 break;
             case Mage_Sales_Model_Order::STATE_CANCELED:
-                return self::JIRAFE_ORDER_STATUS_CANCELLED;
+                $status = self::JIRAFE_ORDER_STATUS_CANCELLED;
                 break;
             case Mage_Sales_Model_Order::STATE_HOLDED:
-                return self::JIRAFE_ORDER_STATUS_HELD;
+                $status = self::JIRAFE_ORDER_STATUS_HELD;
                 break;
             case Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW:
-                return self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
+                $status = self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
                 break;
         }
+        return $status;
     }
 
 }
