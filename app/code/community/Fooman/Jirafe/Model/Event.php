@@ -76,14 +76,13 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'orderId'           => $order->getIncrementId(),
                 'status'            => $this->_getOrderStatus($order),
                 'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
-                'visitorId'         => $order->getJirafeVisitorId(),
+                'visitorId'         => $this->_getVisitorId($order),
                 'time'              => strtotime($order->getCreatedAt()),
                 'grandTotal'        => $order->getBaseGrandTotal(),
                 'subTotal'          => $order->getBaseSubtotal(),
                 'taxAmount'         => $order->getBaseTaxAmount(),
                 'shippingAmount'    => $order->getBaseShippingAmount(),
                 'discountAmount'    => $order->getBaseDiscountAmount(),
-                'isBackendOrder'    => !$order->getJirafePlacedFromFrontend(),
                 'items'             => $this->_getItems($order)
             );
             $order->setJirafeIsNew(2);
@@ -143,6 +142,15 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 Mage::helper('foomanjirafe')->debug($e->getMessage());
             }
             $creditmemo->setJirafeIsNew(2);
+        }
+    }
+
+    protected function _getJirafeVisitorId($order)
+    {
+        if ($order->getJirafePlacedFromFrontend()) {
+            return null;
+        } else {
+            return $order->getJirafeVisitorId();
         }
     }
 
