@@ -72,6 +72,7 @@ class Fooman_Jirafe_Model_Observer
         $order->setJirafeVisitorId($piwikTracker->getVisitorId());
         $order->setJirafeAttributionData($piwikTracker->getAttributionInfo());
         $order->setJirafeIsNew(1);
+        $order->setJirafeExportStatus(1);
     }
 
 

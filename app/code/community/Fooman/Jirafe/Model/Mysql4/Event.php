@@ -23,12 +23,35 @@ class Fooman_Jirafe_Model_Mysql4_Event extends Mage_Core_Model_Mysql4_Abstract
 
     public function getLastVersionNumber($siteId)
     {
+        //the below query seems to perform slightly better on high concurrency than
+        //->from($this->getTable('foomanjirafe/event'), array(new Zend_Db_Expr('max(version) as version')))
         $select = $this->_getReadAdapter()->select()
-            ->from($this->getTable('foomanjirafe/event'), array(new Zend_Db_Expr('max(version) as maxId')))
+            ->from($this->getTable('foomanjirafe/event'),'version')
+            ->order('version DESC')
+            ->limit(1)
             ->where('site_id = ?', $siteId);
 
         $res = $this->_getReadAdapter()->fetchRow($select);
-        return isset($res['maxId']) ? $res['maxId'] : 0;
+        return isset($res['version']) ? $res['version'] : 0;
+    }
+
+
+    protected function _beforeSave(Mage_Core_Model_Abstract $event)
+    {
+        //need to lock the table so that version is consecutive per store id
+        //and no events are dropped
+        $tableName = $this->getMainTable();
+        $this->_getWriteAdapter()->raw_query("LOCK TABLES `{$tableName}` WRITE;");
+        $lastEventNumberForSite = $this->getLastVersionNumber($event->getSiteId());
+        $event->setVersion($lastEventNumberForSite + 1);
+        return $this;
+    }
+
+
+    protected function _afterSave(Mage_Core_Model_Abstract $event)
+    {
+        $this->_getWriteAdapter()->raw_query("UNLOCK TABLES;");
+        return $this;
     }
 
 }

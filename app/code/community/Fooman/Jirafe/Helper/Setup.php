@@ -25,6 +25,21 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
 
             case '0.4.0':
 
+                if(version_compare(Mage::getVersion(),'1.4.1.0') >= 0){
+                    $instructions = array_merge(
+                        $instructions,
+                        array(
+                            array("type" =>"sql-column", "table" =>"sales/creditmemo", "name" =>"jirafe_export_status","params" =>"int(5) DEFAULT 0")
+                        )
+                    );
+                } else {
+                    $instructions = array_merge(
+                        $instructions,
+                        array(
+                            array("type" =>"eav-attribute", "entity" =>"creditmemo", "name" =>"jirafe_export_status","params" =>array('type' => 'int','label' => 'Jirafe Export Status','required'=>0,'global'=>1,'visible'=>0,'default'=>0))
+                        )
+                    );
+                }
                 $instructions = array_merge(
                     $instructions,
                     array(

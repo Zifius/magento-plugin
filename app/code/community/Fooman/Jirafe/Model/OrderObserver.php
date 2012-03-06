@@ -46,6 +46,7 @@ class Fooman_Jirafe_Model_OrderObserver
         $creditmemo = $observer->getEvent()->getCreditmemo();
         if(!$creditmemo->getId()) {
             $creditmemo->setJirafeIsNew(1);
+            $creditmemo->setJirafeExportStatus(1);
         }
     }
 

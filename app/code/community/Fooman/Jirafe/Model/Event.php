@@ -22,6 +22,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     const JIRAFE_ACTION_INVOICE_UPDATE  = 'invoiceUpdate';
     const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipmentCreate';
     const JIRAFE_ACTION_REFUND_CREATE   = 'refundCreate';
+    const JIRAFE_ACTION_NOOP            = 'noop';
 
     const JIRAFE_ORDER_STATUS_NEW               = 'new';
     const JIRAFE_ORDER_STATUS_PAYMENT_PENDING   = 'pendingPayment';
@@ -42,8 +43,6 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     protected function _beforeSave()
     {
-        $lastEventNumberForSite = $this->_getLastVersionNumber($this->getSiteId());
-        $this->setVersion($lastEventNumberForSite + 1);
         $this->setGeneratedByJirafeVersion((string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
         parent::_beforeSave();
     }
@@ -63,12 +62,8 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     public function afterCommitCallback()
     {
         //ping Jirafe
+        Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($this->getSiteId());
         return parent::afterCommitCallback();
-    }
-
-    protected function _getLastVersionNumber($siteId)
-    {
-        return Mage::getResourceModel('foomanjirafe/event')->getLastVersionNumber($siteId);
     }
 
     public function orderCreateOrUpdate($order)
@@ -89,12 +84,10 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'shippingAmount'    => $order->getBaseShippingAmount(),
                 'discountAmount'    => $order->getBaseDiscountAmount(),
                 'isBackendOrder'    => !$order->getJirafePlacedFromFrontend(),
-                'currency'          => $order->getBaseCurrencyCode(),
                 'items'             => $this->_getItems($order)
             );
             $order->setJirafeIsNew(2);
         } else {
-            $saveEvent = false;
             if($order->getOrigData()) {
                 if($order->getState() != $order->getOrigData('state')) {
                     //only create an update event when the state has changed
@@ -117,7 +110,12 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         if($saveEvent) {
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
             $this->setEventData(json_encode($eventData));
-            $this->save();
+            try {
+                $this->save();
+            } catch (Exception $e) {
+                Mage::logException($e);
+                Mage::helper('foomanjirafe')->debug($e->getMessage());
+            }
         }
     }
 
@@ -127,18 +125,23 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_CREATE);
             $eventData = array(
                 'refundId'                  => $creditmemo->getIncrementId(),
-                'originalOrderId'           => $creditmemo->getOrder()->getIncrementId(),
-                'refundTime'                => strtotime($creditmemo->getCreatedAt()),
-                'refundedGrandTotal'        => $creditmemo->getBaseGrandTotal(),
-                'refundedSubTotal'          => $creditmemo->getBaseSubtotal(),
-                'refundedTaxAmount'         => $creditmemo->getBaseTaxAmount(),
-                'refundedShipppingAmount'   => $creditmemo->getBaseShippingAmount(),
-                'refundedDiscountAmount'    => $creditmemo->getBaseDiscountAmount(),
-                'refundedItems'             => $this->_getItems($creditmemo)
+                'orderId'                   => $creditmemo->getOrder()->getIncrementId(),
+                'time'                      => strtotime($creditmemo->getCreatedAt()),
+                'grandTotal'                => $creditmemo->getBaseGrandTotal(),
+                'subTotal'                  => $creditmemo->getBaseSubtotal(),
+                'taxAmount'                 => $creditmemo->getBaseTaxAmount(),
+                'shippingAmount'            => $creditmemo->getBaseShippingAmount(),
+                'discountAmount'            => $creditmemo->getBaseDiscountAmount(),
+                'items'                     => $this->_getItems($creditmemo)
             );
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $creditmemo->getStoreId()));
             $this->setEventData(json_encode($eventData));
-            $this->save();
+            try {
+                $this->save();
+            } catch (Exception $e) {
+                Mage::logException($e);
+                Mage::helper('foomanjirafe')->debug($e->getMessage());
+            }
             $creditmemo->setJirafeIsNew(2);
         }
     }
