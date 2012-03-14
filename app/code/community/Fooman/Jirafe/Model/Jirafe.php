@@ -137,7 +137,7 @@ class Fooman_Jirafe_Model_Jirafe
     public function sendCMB($siteId)
     {
         $parts = parse_url($this->getCMBUrl());
-        $parts['query'] = json_encode(array('siteId'=>$siteId));
+        $parts['query'] = 'siteId='.urlencode($siteId);
 
         $fp = fsockopen($parts['host'], isset($parts['port']) ? $parts['port'] : 80,
             $errno, $errstr, 30);
