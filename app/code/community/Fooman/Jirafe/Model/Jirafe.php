@@ -492,9 +492,9 @@ class Fooman_Jirafe_Model_Jirafe
                 $version++;
             }
             $events[] = array(
-                'v' => $jirafeEvent->getVersion(),
+                'v' => (int)$jirafeEvent->getVersion(),
                 'a' => $jirafeEvent->getAction(),
-                'd' => $jirafeEvent->getEventData()
+                'd' => json_decode($jirafeEvent->getEventData())
             );
             $version = $jirafeEvent->getVersion()+1;
         }

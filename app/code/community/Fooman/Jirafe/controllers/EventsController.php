@@ -20,19 +20,23 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
     {
         $token = $this->getRequest()->getParam('confirmToken');
         $hash = $this->getRequest()->getParam('hash');
-        $version = $this->getRequest()->getParam('v');
+        $version = $this->getRequest()->getParam('version');
         $siteId = $this->getRequest()->getParam('siteId');
+
+	$response = $this->getResponse();
 
         if($token && $hash && $siteId) {
             $jirafe = Mage::getModel('foomanjirafe/jirafe');
             if($jirafe->checkEventsToken($token, $hash)) {
                 $jirafe->postEvents($token, $siteId, $version+1);
-                $this->getResponse()->setBody('OK');
+                $response->setBody('OK');
             } else {
-                $this->getResponse()->setBody('KO');
+                $response->setHttpResponseCode(400);
+                $response->setBody('KO');
             }
         } else {
-            $this->getResponse()->setBody('KO');
+            $response->setHttpResponseCode(400);
+            $response->setBody('KO');
         }
     }
 
