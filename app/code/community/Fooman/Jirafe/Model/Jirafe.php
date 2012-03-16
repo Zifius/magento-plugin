@@ -115,57 +115,6 @@ class Fooman_Jirafe_Model_Jirafe
     }
 
     /**
-     * Returns the URL to send call me back notice to
-     *
-     * @return string
-     */
-    public function getCMBUrl ()
-    {
-        return 'https://'.$this->getPiwikBaseUrl().'/cmb';
-    }
-
-    /**
-     * Returns the URL to send call me back notice to
-     *
-     * @return string
-     */
-    public function getEventsUrl ()
-    {
-        return 'https://'.$this->getPiwikBaseUrl().'/events';
-    }
-
-    public function sendCMB($siteId)
-    {
-        $parts = parse_url($this->getCMBUrl());
-        $parts['query'] = 'siteId='.urlencode($siteId);
-
-        $fp = fsockopen($parts['host'], isset($parts['port']) ? $parts['port'] : 80,
-            $errno, $errstr, 30);
-
-        if (!$fp) {
-            return false;
-        } else {
-            $out = "POST " . $parts['path'] . " HTTP/1.1\r\n";
-            $out.= "Host: " . $parts['host'] . "\r\n";
-            $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
-            $out.= "Content-Length: " . strlen($parts['query']) . "\r\n";
-            $out.= "Connection: Close\r\n\r\n";
-            if (isset($parts['query'])) {
-                $out.= $parts['query'];
-            }
-
-            fwrite($fp, $out);
-            fclose($fp);
-            return true;
-        }
-    }
-
-    public function checkEventsToken ($token, $hash)
-    {
-        return $hash == sha1($token.Mage::helper('foomanjirafe')->getStoreConfig('app_token'));
-    }
-
-    /**
      * Returns the URL of the Jirafe JS wrapper
      *
      * @return string
@@ -470,46 +419,6 @@ class Fooman_Jirafe_Model_Jirafe
                     ->setUrl($this->getDocUrl('magento','troubleshooting',$version))
                     ->setDescription('We have just installed Jirafe and but were unable to set it up automatically. Please see the troubleshooting guide.')
                     ->save();
-        }
-    }
-
-    public function postEvents($token, $siteId, $version)
-    {
-        $jirafeEvents = Mage::getModel('foomanjirafe/event')
-            ->getCollection()
-            ->addFieldToFilter('site_id', $siteId)
-            ->addFieldToFilter('version', array('gteq' => $version))
-            ->setOrder('version', 'ASC');
-
-        $events = array();
-        foreach ($jirafeEvents as $jirafeEvent) {
-            while ($version < $jirafeEvent->getVersion()) {
-                Mage::helper('foomanjirafe')->debug('Filling gaps in version numbers! Missing: ' . $version);
-                $events[] = array(
-                    'v' => $version,
-                    'a' => Fooman_Jirafe_Model_Event::JIRAFE_ACTION_NOOP
-                );
-                $version++;
-            }
-            $events[] = array(
-                'v' => (int)$jirafeEvent->getVersion(),
-                'a' => $jirafeEvent->getAction(),
-                'd' => json_decode($jirafeEvent->getEventData())
-            );
-            $version = $jirafeEvent->getVersion()+1;
-        }
-
-        $client = new Zend_Http_Client($this->getEventsUrl());
-        $client->setParameterPost('token', $token);
-        $client->setParameterPost('siteId', $siteId);
-        $client->setParameterPost('events', json_encode($events));
-        $client->setParameterPost('timestamp', Mage::getSingleton('core/date')->gmtTimestamp());
-        try {
-            $response = $client->request('POST');
-            return $response->isError() ? false : true;
-        } catch (Exception $e) {
-            Mage::logException($e);
-            return false;
         }
     }
 
