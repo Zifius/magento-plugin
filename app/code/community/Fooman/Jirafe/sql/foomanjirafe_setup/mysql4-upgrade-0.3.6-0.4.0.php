@@ -15,5 +15,8 @@
 $version = '0.4.0';
 Mage::log('Running Fooman Jirafe DB upgrade '.$version);
 
+// Modify tables with the new DB schema
+Mage::helper('foomanjirafe/setup')->runDbSchemaUpgrade($installer, $version);
+
 //Run sync when finished with install/update
 Mage::getModel('foomanjirafe/jirafe')->initialSync($version);
