@@ -269,7 +269,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function createJirafeUserId ($user)
     {
-        return $user->getEmail();
+        return trim($user->getEmail());
     }
 
     /**
@@ -295,7 +295,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
          * see createJirafeUserId
          */
 
-        return $email;
+        return trim($email);
     }
 
     /**
