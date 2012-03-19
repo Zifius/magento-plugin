@@ -170,7 +170,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                     'name' => $item->getName(),
                     'category' => Mage::helper('foomanjirafe')->getCategory($product),
                     'price' => $item->getBasePrice(),
-                    'qty' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
+                    'quantity' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
                 );
             }
         }
