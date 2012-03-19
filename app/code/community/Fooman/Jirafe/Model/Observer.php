@@ -103,7 +103,7 @@ class Fooman_Jirafe_Model_Observer
         if($order->getJirafeIsNew()) {
             $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
             $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
-            $piwikTracker->setCustomVariable(3, 'customerHash', Mage::getHelper('foomanjirafe')->getCustomerHash($order->getCustomerEmail()));
+            $piwikTracker->setCustomVariable(3, 'customerHash', Mage::helper('foomanjirafe')->getCustomerHash($order->getCustomerEmail()));
             $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
             $piwikTracker->setIp($order->getRemoteIp());
 
