@@ -298,6 +298,11 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
         return trim($email);
     }
 
+    public function getCustomerHash($email)
+    {
+        return md5(strtolower(trim($email)));
+    }
+
     /**
      * unify the baseUrl
      * also deal with deprecated notation of {{base_url}}
