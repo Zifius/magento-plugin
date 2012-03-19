@@ -83,7 +83,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'subTotal'          => $order->getBaseSubtotal(),
                 'taxAmount'         => $order->getBaseTaxAmount(),
                 'shippingAmount'    => $order->getBaseShippingAmount(),
-                'discountAmount'    => $order->getBaseDiscountAmount(),
+                'discountAmount'    => abs($order->getBaseDiscountAmount()),
                 'items'             => $this->_getItems($order)
             );
             $order->setJirafeIsNew(2);
