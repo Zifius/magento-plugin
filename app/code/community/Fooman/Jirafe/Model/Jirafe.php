@@ -479,6 +479,7 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function postEvents($token, $siteId, $version)
     {
+        $this->createHistoricalEvents();
         $jirafeEvents = Mage::getModel('foomanjirafe/event')
             ->getCollection()
             ->addFieldToFilter('site_id', $siteId)
@@ -514,6 +515,30 @@ class Fooman_Jirafe_Model_Jirafe
         } catch (Exception $e) {
             Mage::logException($e);
             return false;
+        }
+    }
+
+    public function createHistoricalEvents()
+    {
+        $orders = Mage::getModel('sales/order')
+            ->getCollection()
+            ->setOrder('created_at', 'DESC')
+            ->setPageSize(10)
+            ->setCurPage(1)
+            ->addAttributeToFilter(
+                'jirafe_export_status', array('or' => array(
+                    0 => array('eq' => 0),
+                    1 => array('is' => new Zend_Db_Expr('null')))
+                ),
+                'left'
+            );
+
+        //loop through older orders, creating events
+        //TODO use orderImport to create 1 event for multiple orders
+        foreach ($orders as $order) {
+            echo $order->getId();
+            Mage::helper('foomanjirafe')->debug('Create historical event for order '.$order->getIncrementId());
+            $order->setJirafeIsNew(1)->setJirafeExportStatus(1)->save();
         }
     }
 

@@ -18,6 +18,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     //TODO: these could move into the php-client
     const JIRAFE_ACTION_ORDER_CREATE    = 'orderCreate';
     const JIRAFE_ACTION_ORDER_UPDATE    = 'orderUpdate';
+    const JIRAFE_ACTION_ORDER_IMPORT    = 'orderImport';
     const JIRAFE_ACTION_INVOICE_CREATE  = 'invoiceCreate';
     const JIRAFE_ACTION_INVOICE_UPDATE  = 'invoiceUpdate';
     const JIRAFE_ACTION_SHIPMENT_CREATE = 'shipmentCreate';
