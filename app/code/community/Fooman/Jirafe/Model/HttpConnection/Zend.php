@@ -42,7 +42,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     function get($path, array $query = array()) 
     {
-        $this->setUri($path);
+        $this->init($path);
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
@@ -62,7 +62,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     function head($path, array $query = array())
     {
-        $this->setUri($path);
+        $this->init($path);
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
@@ -83,7 +83,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     function post($path, array $query = array(), array $parameters = array())
     {
-        $this->setUri($path);
+        $this->init($path);
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
@@ -108,7 +108,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     function put($path, array $query = array(), array $parameters = array())
     {
-        $this->setUri($path);
+        $this->init($path);
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
@@ -133,7 +133,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
      */
     function delete($path, array $query = array(), array $parameters = array())
     {
-        $this->setUri($path);
+        $this->init($path);
         foreach($query as $parameter=>$value) {
             $this->setParameterGet($parameter,$value);
         }
@@ -161,12 +161,13 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
     }    
 
     /**
-     * Set the URI for the next request, combine relative path with base url
+     * clean params and set the URI for the next request, combine relative path with base url
      *
      * @see Zend_Http_Client::setUri()
      */
-    public function setUri($path)
+    public function init($path)
     {
+        $this->resetParameters();
         parent::setUri($this->_base . ltrim($path, '/'));
     }
     
