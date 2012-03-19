@@ -354,8 +354,9 @@ class Fooman_Jirafe_Model_Jirafe
     /**
      * Save store info that has come back from the Jirafe sync process.  Only save information that changed, so that we do not
      * kick off another sync process.
+     * Trigger update of getevents url
      */
-    public function saveStoreInfo($jirafeSites)
+    public function saveStoreInfo($jirafeSites, $appId)
     {
         if(!empty($jirafeSites)) {
             foreach ($jirafeSites as $jirafeSite) {
@@ -372,6 +373,9 @@ class Fooman_Jirafe_Model_Jirafe
                         Mage::helper('foomanjirafe')->setStoreConfig('checkout_goal_id', $jirafeSite['checkout_goal_id'], $store->getId());
                     }
                 }
+                $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
+                Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
+                $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
             }
         }
     }
@@ -398,7 +402,7 @@ class Fooman_Jirafe_Model_Jirafe
                 $this->getJirafeApi()->getConnection()->setConfig(array('timeout'=>120));
                 $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO, true);
                 $this->saveUserInfo($return['users']);
-                $this->saveStoreInfo($return['sites']);
+                $this->saveStoreInfo($return['sites'], $appId);
             } catch (Exception $e) {
                 Mage::logException($e);
                 Mage::helper('foomanjirafe')->setStoreConfig('last_status_message', $e->getMessage());
