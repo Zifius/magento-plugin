@@ -23,7 +23,7 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
         $version = $this->getRequest()->getParam('version');
         $siteId = $this->getRequest()->getParam('siteId');
 
-	$response = $this->getResponse();
+        $response = $this->getResponse();
 
         if($token && $hash && $siteId) {
             $jirafe = Mage::getModel('foomanjirafe/jirafe');
