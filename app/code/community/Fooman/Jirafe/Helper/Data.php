@@ -300,7 +300,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getCustomerHash($email)
     {
-        return md5(strtolower(trim($email)));
+        return md5('jirafe*'.strtolower(trim($email)));
     }
 
     /**
