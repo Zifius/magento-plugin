@@ -71,6 +71,19 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
             $user->unsPassword();
         }
         $user->save();
+
+        if ($answer) {
+            $notice = $helper->__('You now have access to advanced analytics from Jirafe.  Please check your email at \'%s\' to confirm your email address.',
+                $user->getEmail()
+            );
+        } else {
+            $notice = $helper->__('You will not have access to advanced analytics from Jirafe.  If you would like to enable this in the future, please choose \'%1$s\' in your \'%2$s\' settings.',
+                $helper->__('Enable Jirafe'),
+                $helper->__('My Account')
+            );
+        }
+
+        Mage::getSingleton('adminhtml/session')->addNotice($notice);
         $this->_redirect('adminhtml/dashboard');
     }
 }
