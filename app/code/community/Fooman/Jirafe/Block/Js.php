@@ -27,14 +27,7 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     const PAGE_CART     = 4;
     const PAGE_CONFIRM  = 5;
     
-    public $pageLevel = self::VISITOR_BROWSERS;
     public $pageType;
-    
-    protected $aPageMap = array(
-        self::PAGE_PRODUCT => self::VISITOR_ENGAGED,
-        self::PAGE_CART    => self::VISITOR_READY2BUY,
-        self::PAGE_CONFIRM => self::VISITOR_CUSTOMER,
-    );
 
     /**
      * Set default template
@@ -106,33 +99,18 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return join('/', $aCategories);
     }
     
-    public function getJirafePageLevel()
-    {
-        $level = $this->_getSession()->getJirafePageLevel();
-        if (!empty($level) && $level > $this->pageLevel) {
-            // Override page type with session data
-            $this->pageLevel = $level;
-            // Clear session variable
-            $this->_getSession()->setJirafePageLevel(null);
-        }
-        
-        return $this->pageLevel;
-    }
-    
     public function setJirafePageType($type)
     {
         $type = constant(__CLASS__.'::'.$type);
         if (!empty($type)) {
             $this->pageType = $type;
-            $this->pageLevel = isset($this->aPageMap[$type]) ? $this->aPageMap[$type] : self::VISITOR_BROWSERS;
         }
     }
     
     public function getTrackingCode()
     {
         $aData = array(
-            'id'        => $this->getSiteId(),
-            'pageLevel' => $this->getJirafePageLevel(),
+            'id'        => $this->getSiteId()
         );
 
         $jsUrl = $this->getJsBaseURL();

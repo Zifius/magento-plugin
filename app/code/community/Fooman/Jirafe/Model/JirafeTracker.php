@@ -28,6 +28,7 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
         if (Mage::getDesign()->getArea() == 'frontend') {
             $this->visitorId = false;
         }
+        $this->disableCookieSupport();
     }
     
     public function setAsyncFlag ($flag)
@@ -89,6 +90,32 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
         }
         
         parent::addEcommerceItem($sku, $name, $category, $price, $quantity);
-    }     
-       
+    }
+
+    public function setFunnel($pageLevel)
+    {
+	for ($i = 0; $i < 5; $i++) {
+	    $var = $this->getCustomVariable($i);
+	    if ($var = $this->getCustomVariable($i)) {
+	        if ($i == 1) {
+	            $prevLevel = $var[1];
+	        }
+	        $this->setCustomVariable($i, $var[0], $var[1]);
+	    }
+	}
+        if (empty($prevLevel) || $prevLevel <= $pageLevel) {
+            // Set funnel variable
+            $this->setCustomVariable(1, 'U', $pageLevel);
+            // Update 1st party cookie
+            $prefix = "_pk_cvar_{$this->idSite}_";
+            foreach ($_COOKIE as $k => $v) {
+                if (strpos($k, $prefix) === 0) {
+                    // Found a matching cookie. Update the right one ("." vs PHP's "_")
+                    $k = preg_replace('#_(\d+)_(\d+)$#', '.$1.$2', $k);
+                    setcookie($k, json_encode($this->visitorCustomVar), time() + 1800, '/');
+                    break;
+                }
+            }
+        }
+    }
 }
