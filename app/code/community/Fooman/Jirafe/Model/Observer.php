@@ -46,8 +46,7 @@ class Fooman_Jirafe_Model_Observer
             //set forced VisitorId to be the ID read from the Cookie
             $piwikTracker->setVisitorId($piwikTracker->getVisitorId());
         }
-                
-        $piwikTracker->disableCookieSupport();
+
         $piwikTracker->setAsyncFlag(true);
 
         return $piwikTracker;
@@ -102,7 +101,7 @@ class Fooman_Jirafe_Model_Observer
         //track only orders that are just being converted from a quote
         if($order->getJirafeIsNew()) {
             $piwikTracker = $this->_initPiwikTracker($order->getStoreId());
-            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
+            $piwikTracker->setFunnel(Fooman_Jirafe_Block_Js::VISITOR_CUSTOMER);
             $piwikTracker->setCustomVariable(3, 'customerHash', Mage::helper('foomanjirafe')->getCustomerHash($order->getCustomerEmail()));
             $piwikTracker->setCustomVariable(5, 'orderId', $order->getIncrementId());
             $piwikTracker->setIp($order->getRemoteIp());
@@ -614,8 +613,8 @@ class Fooman_Jirafe_Model_Observer
     {
         $piwikTracker = $this->_initPiwikTracker($quote->getStoreId());
         if($piwikTracker->getVisitorId()) {
+            $piwikTracker->setFunnel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
             $piwikTracker->setIp($quote->getRemoteIp());
-            $piwikTracker->setCustomVariable(1, 'U', Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
 
             $this->_addEcommerceItems($piwikTracker, $quote);
             $piwikTracker->doTrackEcommerceCartUpdate($quote->getBaseGrandTotal());
@@ -630,7 +629,6 @@ class Fooman_Jirafe_Model_Observer
      */
     public function checkoutCartProductAddAfter($observer)
     {
-        Mage::getSingleton('customer/session')->setJirafePageLevel(Fooman_Jirafe_Block_Js::VISITOR_READY2BUY);
         if(!Mage::registry('foomanjirafe_update_ecommerce')) {
             Mage::register('foomanjirafe_update_ecommerce', true);
         }
