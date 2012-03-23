@@ -72,6 +72,7 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
         }
         $user->save();
 
+        $helper = Mage::helper('foomanjirafe/data');
         if ($answer) {
             $notice = $helper->__('You now have access to advanced analytics from Jirafe.  Please check your email at \'%s\' to confirm your email address.',
                 $user->getEmail()
