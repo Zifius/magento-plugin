@@ -19,11 +19,11 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_NOT_EXPORTED = 0;
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
-    
+
     const BATCH_SIZE = 100;
 
     private $_jirafeApi = false;
-    
+
     // PRODUCTION environment
     const JIRAFE_API_SERVER = 'https://api.jirafe.com';
     const JIRAFE_API_BASE = '';
@@ -35,23 +35,23 @@ class Fooman_Jirafe_Model_Jirafe
 //    const JIRAFE_API_BASE = 'app_dev.php';
 //    const JIRAFE_PIWIK_BASE_URL = 'piwik.local';
 //    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
-    
+
     // TEST environment
 //    const JIRAFE_API_SERVER = 'https://test-api.jirafe.com';
 //    const JIRAFE_API_BASE = '';
 //    const JIRAFE_PIWIK_BASE_URL = 'test-data.jirafe.com';
 //    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
-    
+
     const JIRAFE_API_VERSION = 'v1';
     const JIRAFE_DOC_URL = 'http://jirafe.com/doc';
-        
+
     function __construct ()
     {
         try {
             // register autoloader
             Jirafe_Autoloader::register();
             $this->_jirafeApi = new Jirafe_Client(
-                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'), 
+                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'),
                                     new Fooman_Jirafe_Model_HttpConnection_Zend('https://api.jirafe.com/v1')
                                 );
         } catch (Exception $e) {
@@ -63,7 +63,7 @@ class Fooman_Jirafe_Model_Jirafe
     }
 
     //TODO: move url generation into php-client
-    
+
     /**
      * Returns the URL of the API
      *
@@ -199,11 +199,11 @@ class Fooman_Jirafe_Model_Jirafe
     public function getJirafeApi()
     {
         if(!$this->_jirafeApi) {
-            throw new Exception('Jirafe API not initialised.');        
+            throw new Exception('Jirafe API not initialised.');
         }
         return $this->_jirafeApi;
     }
-   
+
     /**
      * check if Magento instance has a jirafe application id, create one if none exists
      * update jirafe server if any parameters have changed
@@ -217,9 +217,9 @@ class Fooman_Jirafe_Model_Jirafe
         $appId = Mage::helper('foomanjirafe')->getStoreConfig('app_id');
         $currentHash = $this->_createAppSettingsHash($defaultStoreId);
         $changeHash = false;
-        
+
         if ($appId) {
-            //check if settings have changed            
+            //check if settings have changed
             if ($currentHash != Mage::helper('foomanjirafe')->getStoreConfig('app_settings_hash')) {
                 try {
                     $baseUrl = Mage::helper('foomanjirafe')->getUnifiedStoreBaseUrl(Mage::getStoreConfig('web/unsecure/base_url', $defaultStoreId));
@@ -297,10 +297,10 @@ class Fooman_Jirafe_Model_Jirafe
                 $adminUserArray[] = $tmpUser;
             }
         }
-        
+
         return $adminUserArray;
     }
-    
+
     public function getStores()
     {
         $storeArray = array();
@@ -318,10 +318,10 @@ class Fooman_Jirafe_Model_Jirafe
             $tmpStore['checkout_goal_id'] = Mage::helper('foomanjirafe')->getStoreConfigDirect('checkout_goal_id', $storeId);
             $storeArray[] = $tmpStore;
         }
-        
+
         return $storeArray;
     }
-    
+
     /**
      * Save user info that has come back from the Jirafe sync process.  Only save information that changed, so that we do not
      * kick off another sync process.
@@ -384,13 +384,13 @@ class Fooman_Jirafe_Model_Jirafe
             }
         }
     }
-    
+
     public function syncUsersStores()
     {
         if (!Mage::registry('foomanjirafe_sync_run')) {
             Mage::register('foomanjirafe_sync_run', true);
-            
-            $appId = Mage::helper('foomanjirafe')->getStoreConfig('app_id');            
+
+            $appId = Mage::helper('foomanjirafe')->getStoreConfig('app_id');
             if (empty($appId)) {
                 $appId = $this->checkAppId();
             }
@@ -398,7 +398,7 @@ class Fooman_Jirafe_Model_Jirafe
                 return false;
             }
             $adminToken = Mage::helper('foomanjirafe')->getStoreConfig('app_token');
-            
+
             $this->getJirafeApi()->setToken($adminToken);
             $userArray = $this->getAdminUsers();
             $storeArray = $this->getStores();
@@ -446,7 +446,7 @@ class Fooman_Jirafe_Model_Jirafe
                 $this->syncUsersStores();
                 // Run cron for the first time since the upgrade, so that users can see any changes right away.
                 if(!Mage::helper('foomanjirafe')->getStoreConfig('installed')) {
-                    // Notify user 
+                    // Notify user
                     $this->_notifyAdminUser(Mage::helper('foomanjirafe')->isOk(), (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version);
                     Mage::helper('foomanjirafe')->setStoreConfig('installed', true);
                 }
@@ -485,7 +485,7 @@ class Fooman_Jirafe_Model_Jirafe
     public function postEvents($token, $siteId, $version)
     {
         $this->createHistoricalEvents($siteId);
-        
+
         $jirafeEvents = Mage::getModel('foomanjirafe/event')
             ->getCollection()
             ->addFieldToFilter('site_id', $siteId)
@@ -527,7 +527,7 @@ class Fooman_Jirafe_Model_Jirafe
     public function createHistoricalEvents($siteId)
     {
         try {
-            $storeId = Mage::helper('foomanjirafe')->getStoreIdFromSiteId($siteId);
+            $storeId = Mage::helper('foomanjirafe')->getStoreIdFromJirafeSiteId($siteId);
         } catch (Exception $e) {
             Mage::logException($e);
             Mage::helper('foomanjirafe')->debug($e->getMessage());
@@ -547,7 +547,7 @@ class Fooman_Jirafe_Model_Jirafe
                 ),
                 'left'
             );
-        
+
         if (count($orders)) {
             Mage::getModel('foomanjirafe/event')->orderImportCreate($siteId, $orders);
         }

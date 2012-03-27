@@ -184,14 +184,14 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
             return $storearr;
         }
     }
-    
+
     /**
      * get the store id for a given Jirafe site id
      *
      * @param int $siteId
      * @return string
      */
-    public function getStoreIdFromSiteId($siteId)
+    public function getStoreIdFromJirafeSiteId($siteId)
     {
         foreach ($this->getStores() as $storeId => $store) {
             if ($siteId == Mage::helper('foomanjirafe')->getStoreConfigDirect('site_id', $storeId)) {
@@ -406,7 +406,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     public function noSync ()
     {
         return $this->getStatus() != self::JIRAFE_STATUS_SYNC_COMPLETED;
-    }    
+    }
 
     /**
      * return the last status of interacting with Jirafe's Api
