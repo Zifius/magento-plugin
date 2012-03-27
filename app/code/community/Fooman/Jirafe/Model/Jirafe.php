@@ -19,6 +19,8 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_NOT_EXPORTED = 0;
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
+    
+    const BATCH_SIZE = 100;
 
     private $_jirafeApi = false;
     
@@ -366,16 +368,19 @@ class Fooman_Jirafe_Model_Jirafe
                 if ($siteId != $jirafeSite['site_id']) {
                     Mage::helper('foomanjirafe')->setStoreConfig('site_id', $jirafeSite['site_id'], $store->getId());
                 }
-                // Checkout Goal ID
+                // TODO: REMOVE this - Checkout Goal ID
                 if(isset($jirafeSite['checkout_goal_id'])){
                     $goalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $store->getId());
                     if ($goalId != $jirafeSite['checkout_goal_id']) {
                         Mage::helper('foomanjirafe')->setStoreConfig('checkout_goal_id', $jirafeSite['checkout_goal_id'], $store->getId());
                     }
                 }
+                // Send store API URL
                 $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
                 Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
                 $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
+                // Call CMB for the store
+                $this->sendCMB($siteId);
             }
         }
     }
@@ -479,7 +484,8 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function postEvents($token, $siteId, $version)
     {
-        $this->createHistoricalEvents();
+        $this->createHistoricalEvents($siteId);
+        
         $jirafeEvents = Mage::getModel('foomanjirafe/event')
             ->getCollection()
             ->addFieldToFilter('site_id', $siteId)
@@ -518,13 +524,22 @@ class Fooman_Jirafe_Model_Jirafe
         }
     }
 
-    public function createHistoricalEvents()
+    public function createHistoricalEvents($siteId)
     {
+        try {
+            $storeId = Mage::helper('foomanjirafe')->getStoreIdFromSiteId($siteId);
+        } catch (Exception $e) {
+            Mage::logException($e);
+            Mage::helper('foomanjirafe')->debug($e->getMessage());
+            return;
+        }
+
         $orders = Mage::getModel('sales/order')
             ->getCollection()
             ->setOrder('created_at', 'DESC')
-            ->setPageSize(10)
+            ->setPageSize(self::BATCH_SIZE)
             ->setCurPage(1)
+            ->addAttributeToFilter('store_id', $storeId)
             ->addAttributeToFilter(
                 'jirafe_export_status', array('or' => array(
                     0 => array('eq' => 0),
@@ -532,13 +547,9 @@ class Fooman_Jirafe_Model_Jirafe
                 ),
                 'left'
             );
-
-        //loop through older orders, creating events
-        //TODO use orderImport to create 1 event for multiple orders
-        foreach ($orders as $order) {
-            echo $order->getId();
-            Mage::helper('foomanjirafe')->debug('Create historical event for order '.$order->getIncrementId());
-            $order->setJirafeIsNew(1)->setJirafeExportStatus(1)->save();
+        
+        if (count($orders)) {
+            Mage::getModel('foomanjirafe/event')->orderImportCreate($siteId, $orders);
         }
     }
 

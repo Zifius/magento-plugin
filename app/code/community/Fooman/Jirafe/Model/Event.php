@@ -66,6 +66,23 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($this->getSiteId());
         return parent::afterCommitCallback();
     }
+    
+    public function getEventDataFromOrder($order)
+    {
+        return array (
+            'orderId'           => $order->getIncrementId(),
+            'status'            => $this->_getOrderStatus($order),
+            'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
+            'visitorId'         => $this->_getJirafeVisitorId($order),
+            'time'              => strtotime($order->getCreatedAt()),
+            'grandTotal'        => $order->getBaseGrandTotal(),
+            'subTotal'          => $order->getBaseSubtotal(),
+            'taxAmount'         => $order->getBaseTaxAmount(),
+            'shippingAmount'    => $order->getBaseShippingAmount(),
+            'discountAmount'    => abs($order->getBaseDiscountAmount()),
+            'items'             => $this->_getItems($order)
+        );
+    }
 
     public function orderCreateOrUpdate($order)
     {
@@ -73,19 +90,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         if ($order->getJirafeIsNew() == 1) {
             $saveEvent = true;
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
-            $eventData = array (
-                'orderId'           => $order->getIncrementId(),
-                'status'            => $this->_getOrderStatus($order),
-                'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
-                'visitorId'         => $this->_getJirafeVisitorId($order),
-                'time'              => strtotime($order->getCreatedAt()),
-                'grandTotal'        => $order->getBaseGrandTotal(),
-                'subTotal'          => $order->getBaseSubtotal(),
-                'taxAmount'         => $order->getBaseTaxAmount(),
-                'shippingAmount'    => $order->getBaseShippingAmount(),
-                'discountAmount'    => abs($order->getBaseDiscountAmount()),
-                'items'             => $this->_getItems($order)
-            );
+            $eventData = $this->getEventDataFromOrder($order);
             $order->setJirafeIsNew(2);
         } else {
             if($order->getOrigData()) {
@@ -144,6 +149,30 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             }
             $creditmemo->setJirafeIsNew(2);
         }
+    }
+    
+    public function orderImportCreate($siteId, $orders)
+    {
+        $eventData = array('orders' => array());
+        foreach ($orders as $order) {
+            Mage::helper('foomanjirafe')->debug('Adding order '.$order->getIncrementId().' to orderImport batch');
+            $eventData['orders'][] = $this->getEventDataFromOrder($order);
+        }
+
+        try {
+            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_IMPORT);
+            $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
+            $this->setEventData(json_encode($eventData));
+            $this->save();
+            
+            foreach ($orders as $order) {
+                $order->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
+            }
+        } catch (Exception $e) {
+            Mage::logException($e);
+            Mage::helper('foomanjirafe')->debug($e->getMessage());
+        }
+        
     }
 
     protected function _getJirafeVisitorId($order)

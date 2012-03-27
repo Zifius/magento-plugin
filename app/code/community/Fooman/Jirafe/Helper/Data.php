@@ -184,6 +184,22 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
             return $storearr;
         }
     }
+    
+    /**
+     * get the store id for a given Jirafe site id
+     *
+     * @param int $siteId
+     * @return string
+     */
+    public function getStoreIdFromSiteId($siteId)
+    {
+        foreach ($this->getStores() as $storeId => $store) {
+            if ($siteId == Mage::helper('foomanjirafe')->getStoreConfigDirect('site_id', $storeId)) {
+                return $storeId;
+            }
+        }
+        throw new Exception ('Site ID '.$siteId.' is not associated with any store.');
+    }
 
     /**
      * return admin email addresses that we are emailing the reports to
