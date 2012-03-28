@@ -315,7 +315,6 @@ class Fooman_Jirafe_Model_Jirafe
             $tmpStore['url'] = Mage::helper('foomanjirafe')->getUnifiedStoreBaseUrl(Mage::helper('foomanjirafe')->getStoreConfigDirect('web/unsecure/base_url', $storeId, false, $websiteId));
             $tmpStore['timezone'] = Mage::helper('foomanjirafe')->getStoreConfigDirect('general/locale/timezone', $storeId, false, $websiteId);
             $tmpStore['currency'] = Mage::helper('foomanjirafe')->getStoreConfigDirect('currency/options/base', $storeId, false, $websiteId);
-            $tmpStore['checkout_goal_id'] = Mage::helper('foomanjirafe')->getStoreConfigDirect('checkout_goal_id', $storeId);
             $storeArray[] = $tmpStore;
         }
         
@@ -367,13 +366,6 @@ class Fooman_Jirafe_Model_Jirafe
                 $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $store->getId());
                 if ($siteId != $jirafeSite['site_id']) {
                     Mage::helper('foomanjirafe')->setStoreConfig('site_id', $jirafeSite['site_id'], $store->getId());
-                }
-                // TODO: REMOVE this - Checkout Goal ID
-                if(isset($jirafeSite['checkout_goal_id'])){
-                    $goalId = Mage::helper('foomanjirafe')->getStoreConfig('checkout_goal_id', $store->getId());
-                    if ($goalId != $jirafeSite['checkout_goal_id']) {
-                        Mage::helper('foomanjirafe')->setStoreConfig('checkout_goal_id', $jirafeSite['checkout_goal_id'], $store->getId());
-                    }
                 }
                 // Send store API URL
                 $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
