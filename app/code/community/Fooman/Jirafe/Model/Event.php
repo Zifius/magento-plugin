@@ -72,7 +72,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         return array (
             'orderId'           => $order->getIncrementId(),
             'status'            => $this->_getOrderStatus($order),
-            'customerId'        => md5(strtolower(trim($order->getCustomerEmail()))),
+            'customerHash'      => Mage::helper('foomanjirafe')->getCustomerHash($order->getCustomerEmail()),
             'visitorId'         => $this->_getJirafeVisitorId($order),
             'time'              => strtotime($order->getCreatedAt()),
             'grandTotal'        => $order->getBaseGrandTotal(),
