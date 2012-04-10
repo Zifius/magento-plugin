@@ -20,7 +20,7 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
 
-    const BATCH_SIZE = 100;
+    const BATCH_SIZE = 500;
 
     private $_jirafeApi = false;
 
@@ -526,22 +526,29 @@ class Fooman_Jirafe_Model_Jirafe
             return;
         }
 
-        $orders = Mage::getModel('sales/order')
-            ->getCollection()
-            ->setOrder('created_at', 'DESC')
-            ->setPageSize(self::BATCH_SIZE)
-            ->setCurPage(1)
-            ->addAttributeToFilter('store_id', $storeId)
-            ->addAttributeToFilter(
-                'jirafe_export_status', array('or' => array(
-                    0 => array('eq' => 0),
-                    1 => array('is' => new Zend_Db_Expr('null')))
-                ),
-                'left'
-            );
+        $types = array(
+            'order'      => 'orderImportCreate',
+            'creditmemo' => 'refundImportCreate',
+        );
 
-        if (count($orders)) {
-            Mage::getModel('foomanjirafe/event')->orderImportCreate($siteId, $orders);
+        foreach($types as $type => $method) {
+            $data = Mage::getModel("sales/{$type}")
+                ->getCollection()
+                ->setOrder('created_at', 'DESC')
+                ->setPageSize(self::BATCH_SIZE)
+                ->setCurPage(1)
+                ->addAttributeToFilter('store_id', $storeId)
+                ->addAttributeToFilter(
+                    'jirafe_export_status', array('or' => array(
+                        0 => array('eq' => 0),
+                        1 => array('is' => new Zend_Db_Expr('null')))
+                    ),
+                    'left'
+                );
+
+            if (count($data)) {
+                Mage::getModel('foomanjirafe/event')->$method($siteId, $data);
+            }
         }
     }
 
