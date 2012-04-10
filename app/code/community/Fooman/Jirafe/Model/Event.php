@@ -186,7 +186,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         $eventData = array('refunds' => array());
         foreach ($creditmemos as $refund) {
             Mage::helper('foomanjirafe')->debug('Adding refund '.$refund->getIncrementId().' to orderImport batch');
-            $eventData['refunds'][] = $this->_getEventDataFromOrder($refund);
+            $eventData['refunds'][] = $this->_getEventDataFromCreditMemo($refund);
         }
 
         try {
