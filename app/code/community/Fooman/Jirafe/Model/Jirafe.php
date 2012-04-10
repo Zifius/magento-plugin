@@ -527,12 +527,12 @@ class Fooman_Jirafe_Model_Jirafe
         }
 
         $types = array(
-            'order'      => 'orderImportCreate',
-            'creditmemo' => 'refundImportCreate',
+            'sales/order'            => 'orderImportCreate',
+            'sales/order_creditmemo' => 'refundImportCreate',
         );
 
         foreach($types as $type => $method) {
-            $data = Mage::getModel("sales/{$type}")
+            $data = Mage::getModel($type)
                 ->getCollection()
                 ->setOrder('created_at', 'DESC')
                 ->setPageSize(self::BATCH_SIZE)
