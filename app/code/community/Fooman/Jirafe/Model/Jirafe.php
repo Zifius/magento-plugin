@@ -274,6 +274,19 @@ class Fooman_Jirafe_Model_Jirafe
         return md5($baseUrl . Mage::app()->getStore($storeId)->getName());
     }
 
+
+    /**
+     * create a md5 hash of the the store's url settings we store server side so we know when we need to update
+     *
+     * @param int $storeId
+     * @return string
+     */
+    protected function _createStoreSettingsHash ($storeId)
+    {
+        $baseUrl = Mage::helper('foomanjirafe')->getUnifiedStoreBaseUrl(Mage::getStoreConfig('web/secure/base_url', $storeId));
+        return md5($baseUrl);
+    }
+
     public function getAdminUsers()
     {
         $adminUserArray = array();
@@ -367,12 +380,18 @@ class Fooman_Jirafe_Model_Jirafe
                 if ($siteId != $jirafeSite['site_id']) {
                     Mage::helper('foomanjirafe')->setStoreConfig('site_id', $jirafeSite['site_id'], $store->getId());
                 }
-                // Send store API URL
-                $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
-                Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
-                $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
-                // Call CMB for the store
-                $this->sendCMB($siteId);
+                
+                //check if url settings have changed
+                $currentHash = $this->_createStoreSettingsHash($store->getId());
+                if ($currentHash != Mage::helper('foomanjirafe')->getStoreConfig('site_settings_hash', $store->getId())) {
+                    // Send store API URL
+                    $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
+                    Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
+                    $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
+                    Mage::helper('foomanjirafe')->setStoreConfig('site_settings_hash', $currentHash, $store->getId());
+                    // Call CMB for the store
+                    $this->sendCMB($siteId);
+                }
             }
         }
     }
