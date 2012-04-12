@@ -223,6 +223,12 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         foreach ($salesObject->getAllItems() as $item)
         {
             if (!$item->getParentItemId()) {
+                // Skip sub-items
+                $orderItem = $isOrder ? $item : $item->getOrderItem();
+                if ($orderItem->getParentItemId()) {
+                    continue;
+                }
+
                 $product = Mage::getModel('catalog/product')->load($item->getProductId());
 
                 $itemPrice = $item->getBasePrice();
