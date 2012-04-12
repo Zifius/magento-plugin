@@ -220,7 +220,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         $returnArray = array();
         $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
-        foreach ($salesObject->getAllVisibleItems() as $item)
+        foreach ($salesObject->getAllItems() as $item)
         {
             if (!$item->getParentItemId()) {
                 $product = Mage::getModel('catalog/product')->load($item->getProductId());
