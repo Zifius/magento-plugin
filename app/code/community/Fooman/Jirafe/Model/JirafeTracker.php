@@ -28,7 +28,6 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
         if (Mage::getDesign()->getArea() == 'frontend') {
             $this->visitorId = false;
         }
-        $this->disableCookieSupport();
     }
     
     public function setAsyncFlag ($flag)
@@ -90,22 +89,6 @@ class Fooman_Jirafe_Model_JirafeTracker extends Piwik_PiwikTracker
         }
         
         parent::addEcommerceItem($sku, $name, $category, $price, $quantity);
-    }
-    
-    public function setFunnel($pageLevel)
-    {
-        $previousLevel = $this->getCustomVariable(1);
-        $this->setCustomVariable(1, 'U', $pageLevel);
-        if ($previousLevel < $pageLevel) {
-            // Update 1st party cookie
-            $prefix = "cvar_{$this->idSite}_";
-            foreach ($_COOKIE as $k => $v) {
-                if (strpos($k, $prefix) === 0) {
-                    // Found a matching cookie. Update it
-                    setcookie($k, json_encode($this->visitorCustomVar));
-                    break;
-                }
-            }
-        }
-    }
+    }     
+       
 }
