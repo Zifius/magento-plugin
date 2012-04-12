@@ -183,7 +183,13 @@ class Fooman_Jirafe_Model_Jirafe
             //retrieve new application id from jirafe server
             try {
                 $baseUrl = Mage::helper('foomanjirafe')->getUnifiedStoreBaseUrl(Mage::helper('foomanjirafe')->getStoreConfigDirect('web/unsecure/base_url', $defaultStoreId,false));
-                $return = $this->getJirafeApi()->applications()->create(Mage::helper('foomanjirafe')->getStoreDescription(Mage::app()->getStore($defaultStoreId)), $baseUrl);
+                $return = $this->getJirafeApi()->applications()->create(
+                    Mage::helper('foomanjirafe')->getStoreDescription(Mage::app()->getStore($defaultStoreId)),
+                    $baseUrl,
+                    'magento',
+                    Mage::getVersion(),
+                    Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup')                
+                );
                 if(empty($return['app_id']) || empty($return['token'])) {
                     throw new Exception ('Jirafe did not return a valid application Id or token.');
                 }
