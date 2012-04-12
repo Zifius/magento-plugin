@@ -220,15 +220,24 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         $returnArray = array();
         $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
-        foreach ($salesObject->getAllItems() as $item)
+        foreach ($salesObject->getAllVisibleItems() as $item)
         {
             if (!$item->getParentItemId()) {
                 $product = Mage::getModel('catalog/product')->load($item->getProductId());
+
+                $itemPrice = $item->getBasePrice();
+                // This is inconsistent behaviour from Magento
+                // base_price should be item price in base currency
+                // TODO: add test so we don't get caught out when this is fixed in a future release
+                if(!$itemPrice || $itemPrice < 0.00001) {
+                    $itemPrice = $item->getPrice();
+                }
+
                 $returnArray[] = array(
-                    'sku' => $product->getSku(),
+                    'sku' => $product->getData('sku'),
                     'name' => $item->getName(),
                     'category' => Mage::helper('foomanjirafe')->getCategory($product),
-                    'price' => $item->getBasePrice(),
+                    'price' => $itemPrice,
                     'quantity' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
                 );
             }
