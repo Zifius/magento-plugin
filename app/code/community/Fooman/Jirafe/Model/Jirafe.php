@@ -50,7 +50,7 @@ class Fooman_Jirafe_Model_Jirafe
             Jirafe_Autoloader::register();
             $this->_jirafeApi = new Jirafe_Client(
                                     Mage::helper('foomanjirafe')->getStoreConfig('app_token'), 
-                                    new Fooman_Jirafe_Model_HttpConnection_Zend('https://api.jirafe.com/v1')
+                                    new Fooman_Jirafe_Model_HttpConnection_Zend(JIRAFE_API_SERVER . '/v1')
                                 );
         } catch (Exception $e) {
             Mage::logException($e);
