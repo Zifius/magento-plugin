@@ -151,7 +151,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return array
      */
-    protected function getPlatformData()
+    public function getPlatformData()
     {
         return array(
             'platform_type'    => 'magento',
