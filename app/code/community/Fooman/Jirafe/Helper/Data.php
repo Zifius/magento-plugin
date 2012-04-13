@@ -147,6 +147,20 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * get platform/plugin data that can be used with some Jirafe Client methods
+     *
+     * @return array
+     */
+    protected function getPlatformData()
+    {
+        return array(
+            'platform_type'    => 'magento',
+            'platform_version' => Mage::getVersion(),
+            'plugin_version'   => Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup'),
+        );
+    }
+
+    /**
      * get list of active store ids
      * @see getStores
      * @return string
