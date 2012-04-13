@@ -51,7 +51,7 @@ class Fooman_Jirafe_Model_Jirafe
             // register autoloader
             Jirafe_Autoloader::register();
             $this->_jirafeApi = new Jirafe_Client(
-                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'), 
+                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'),
                                     new Fooman_Jirafe_Model_HttpConnection_Zend(JIRAFE_API_SERVER . '/v1')
                                 );
         } catch (Exception $e) {
@@ -241,7 +241,7 @@ class Fooman_Jirafe_Model_Jirafe
                     $baseUrl,
                     'magento',
                     Mage::getVersion(),
-                    Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup')                
+                    Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup')
                 );
                 if(empty($return['app_id']) || empty($return['token'])) {
                     throw new Exception ('Jirafe did not return a valid application Id or token.');
@@ -403,7 +403,12 @@ class Fooman_Jirafe_Model_Jirafe
 
             try {
                 $this->getJirafeApi()->getConnection()->setConfig(array('timeout'=>120));
-                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO, true);
+                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, array(
+                    'platform_type' => 'magento',
+                    'plugin_version' => Mage::getResourceModel('core/resource')->getDbVersion('foomanjirafe_setup'),
+                    'platform_version' => Mage::getVersion(),
+                    'opt_in' => true
+                ));
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites'], $appId);
             } catch (Exception $e) {
