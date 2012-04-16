@@ -18,7 +18,7 @@
 <config>
     <modules>
         <Fooman_Jirafe>
-            <version>0.4.0</version>
+            <version>0.5.0</version>
         </Fooman_Jirafe>
     </modules>
 
@@ -86,6 +86,7 @@
                 <resourceModel>foomanjirafe_mysql4</resourceModel>
                 <entities>
                     <report><table>foomanjirafe_report</table></report>
+                    <event><table>foomanjirafe_event</table></event>
                 </entities>
             </foomanjirafe_mysql4>
             <log>
@@ -145,6 +146,53 @@
                </foomanjirafe_report_template>
            </email>
         </template>
+        <events>
+            <sales_order_save_after>
+                <observers>
+                    <foomanjirafe_salesOrderSaveAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderSaveAfter</method>
+                    </foomanjirafe_salesOrderSaveAfter>
+                </observers>
+            </sales_order_save_after>
+            <sales_order_save_commit_after>
+                <observers>
+                    <foomanjirafe_salesOrderSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderSaveCommitAfter</method>
+                    </foomanjirafe_salesOrderSaveCommitAfter>
+                </observers>
+            </sales_order_save_commit_after>
+            <sales_order_creditmemo_save_before>
+                <observers>
+                    <foomanjirafe_salesOrderCreditmemoSaveBefore>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderCreditmemoSaveBefore</method>
+                    </foomanjirafe_salesOrderCreditmemoSaveBefore>
+                </observers>
+            </sales_order_creditmemo_save_before>
+            <sales_order_creditmemo_save_after>
+                <observers>
+                    <foomanjirafe_salesOrderCreditmemoSaveAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderCreditmemoSaveAfter</method>
+                    </foomanjirafe_salesOrderCreditmemoSaveAfter>
+                </observers>
+            </sales_order_creditmemo_save_after>
+            <sales_order_creditmemo_save_commit_after>
+                <observers>
+                    <foomanjirafe_salesOrderCreditmemoSaveCommitAfter>
+                        <type>singleton</type>
+                        <class>Fooman_Jirafe_Model_OrderObserver</class>
+                        <method>salesOrderCreditmemoSaveCommitAfter</method>
+                    </foomanjirafe_salesOrderCreditmemoSaveCommitAfter>
+                </observers>
+            </sales_order_creditmemo_save_commit_after>
+        </events>
     </global>
     <default>
         <trans_email>
@@ -238,25 +286,16 @@
                     </foomanjirafe_salesConvertQuoteToOrder>
                 </observers>
             </sales_convert_quote_to_order>
-            <sales_order_save_after>
-                <observers>
-                    <foomanjirafe_salesOrderSaveAfter>
-                        <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveAfter</method>
-                    </foomanjirafe_salesOrderSaveAfter>
-                </observers>
-            </sales_order_save_after>
-            <sales_order_save_commit_after>
-                <observers>
-                    <foomanjirafe_salesOrderSaveCommitAfter>
-                        <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveCommitAfter</method>
-                    </foomanjirafe_salesOrderSaveCommitAfter>
-                </observers>
-            </sales_order_save_commit_after>
         </events>
+        <routers>
+            <foomanjirafe>
+                <use>standard</use>
+                <args>
+                    <module>Fooman_Jirafe</module>
+                    <frontName>foomanjirafe</frontName>
+                </args>
+            </foomanjirafe>
+        </routers>
     </frontend>
     <admin>
         <routers>
@@ -506,24 +545,6 @@
                     </foomanjirafe_salesConvertQuoteToOrder>
                 </observers>
             </sales_convert_quote_to_order>
-            <sales_order_save_after>
-                <observers>
-                    <foomanjirafe_salesOrderSaveAfter>
-                        <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveAfter</method>
-                    </foomanjirafe_salesOrderSaveAfter>
-                </observers>
-            </sales_order_save_after>
-            <sales_order_save_commit_after>
-                <observers>
-                    <foomanjirafe_salesOrderSaveCommitAfter>
-                        <type>singleton</type>
-                        <class>Fooman_Jirafe_Model_Observer</class>
-                        <method>salesOrderSaveCommitAfter</method>
-                    </foomanjirafe_salesOrderSaveCommitAfter>
-                </observers>
-            </sales_order_save_commit_after>
         </events>
         <layout>
             <updates>

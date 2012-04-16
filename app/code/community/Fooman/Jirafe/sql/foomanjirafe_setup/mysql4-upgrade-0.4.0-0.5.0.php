@@ -12,23 +12,11 @@
  * @copyright   Copyright (c) 2010 Fooman Limited (http://www.fooman.co.nz)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-$version = '0.4.0';
+$version = '0.5.0';
 Mage::log('Running Fooman Jirafe DB upgrade '.$version);
 
 $installer = $this;
 /* @var $installer Fooman_Jirafe_Model_Mysql4_Setup */
-
-// Loop through the users and reset everything for new optin question
-$adminUsers = Mage::getSingleton('admin/user')->getCollection();
-foreach ($adminUsers as $adminUser) {
-    $adminUser->setJirafeEnabled(false);
-    $adminUser->setJirafeUserToken(false);
-    //to prevent a password change unset it here for pre 1.4.0.0
-    if (version_compare(Mage::getVersion(), '1.4.0.0') < 0) {
-        $adminUser->unsPassword();
-    }
-    $adminUser->save();
-}
 
 $installer->startSetup();
 Mage::helper('foomanjirafe/setup')->runDbSchemaUpgrade($installer, $version);

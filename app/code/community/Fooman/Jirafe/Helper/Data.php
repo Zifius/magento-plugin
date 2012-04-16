@@ -200,6 +200,22 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * get the store id for a given Jirafe site id
+     *
+     * @param int $siteId
+     * @return string
+     */
+    public function getStoreIdFromJirafeSiteId($siteId)
+    {
+        foreach ($this->getStores() as $storeId => $store) {
+            if ($siteId == Mage::helper('foomanjirafe')->getStoreConfigDirect('site_id', $storeId)) {
+                return $storeId;
+            }
+        }
+        throw new Exception ('Site ID '.$siteId.' is not associated with any store.');
+    }
+
+    /**
      * return admin email addresses that we are emailing the reports to
      * either return a csv list of just emails or an array
      * with key = email address and value = report type
@@ -404,7 +420,7 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     public function noSync ()
     {
         return $this->getStatus() != self::JIRAFE_STATUS_SYNC_COMPLETED;
-    }    
+    }
 
     /**
      * return the last status of interacting with Jirafe's Api
@@ -415,4 +431,26 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return $this->getStoreConfig('last_status');
     }
+
+    /**
+     * return concatenated string of category names for a product
+     *
+     * @param type $product
+     * @return string
+     */
+    public function getCategory($product)
+    {
+        $id = current($product->getCategoryIds());
+        $category = Mage::getModel('catalog/category')->load($id);
+        $aCategories = array();
+        foreach ($category->getPathIds() as $k => $id) {
+            // Skip null and root
+            if ($k > 1) {
+                $category = Mage::getModel('catalog/category')->load($id);
+                $aCategories[] = $category->getName();
+            }
+        }
+        return join('/', $aCategories);
+    }
+
 }

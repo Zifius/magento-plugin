@@ -22,6 +22,47 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
         $currentConfigVersion = (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version;
         switch ($version) {
             case $currentConfigVersion:
+            case '0.5.0':
+
+                if(version_compare(Mage::getVersion(),'1.4.1.0') >= 0){
+                    $instructions = array_merge(
+                        $instructions,
+                        array(
+                            array("type" =>"sql-column", "table" =>"sales/creditmemo", "name" =>"jirafe_export_status","params" =>"int(5) DEFAULT 0")
+                        )
+                    );
+                } else {
+                    $instructions = array_merge(
+                        $instructions,
+                        array(
+                            array("type" =>"eav-attribute", "entity" =>"creditmemo", "name" =>"jirafe_export_status","params" =>array('type' => 'int','label' => 'Jirafe Export Status','required'=>0,'global'=>1,'visible'=>0,'default'=>0))
+                        )
+                    );
+                }
+                $instructions = array_merge(
+                    $instructions,
+                    array(
+                        array("type" => "table", "name" => "foomanjirafe_event", "items" =>
+                            array(
+                                array("sql-column", "id", "int(12) unsigned NOT NULL auto_increment"),
+                                array("sql-column", "version", "int(12) unsigned NOT NULL"),
+                                array("sql-column", "site_id", "int(12) unsigned NOT NULL"),
+                                array("sql-column", "created_at", "timestamp NOT NULL default CURRENT_TIMESTAMP"),
+                                array("sql-column", "generated_by_jirafe_version", "varchar(128)"),
+                                array("sql-column", "action", "varchar(128)"),
+                                array("sql-column", "event_data", "text"),
+                                array("key", "PRIMARY KEY", "id")
+                            )
+                        ),
+                        array("type"=> "index", "table"=>"foomanjirafe_event", "name"=>"CREATE UNIQUE INDEX `IDX_JIRAFE_EVENT`", "on"=>
+                            array('version','site_id')
+                        )
+                    )
+                );
+                if (!$returnComplete) {
+                    break;
+                }
+                //nobreak intentionally;
             case '0.4.0':
                 $instructions = array_merge(
                     $instructions,
@@ -33,7 +74,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                 if(!$returnComplete) {
                     break;
                 }
-            //nobreak intentionally;
+                //nobreak intentionally;
             case '0.3.6':
             case '0.3.5':
             case '0.3.4':
@@ -204,6 +245,16 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                 case 'eav-attribute':
                     try {
                         $installer->addAttribute($instruction['entity'], $instruction['name'], $instruction['params']);
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
+                    break;
+                case 'index':
+                    try {
+                        $columns = implode(',',$instruction['on']);
+                        $return = $installer->run("
+                            {$instruction['name']} ON `{$installer->getTable($instruction['table'])}` ({$columns})
+                        ");
                     } catch (Exception $e) {
                         Mage::logException($e);
                     }
