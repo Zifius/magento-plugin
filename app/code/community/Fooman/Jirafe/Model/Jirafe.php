@@ -51,8 +51,8 @@ class Fooman_Jirafe_Model_Jirafe
             // register autoloader
             Jirafe_Autoloader::register();
             $this->_jirafeApi = new Jirafe_Client(
-                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'),
-                                    new Fooman_Jirafe_Model_HttpConnection_Zend('https://api.jirafe.com/v1')
+                                    Mage::helper('foomanjirafe')->getStoreConfig('app_token'), 
+                                    new Fooman_Jirafe_Model_HttpConnection_Zend(self::JIRAFE_API_SERVER . '/v1')
                                 );
         } catch (Exception $e) {
             Mage::logException($e);
@@ -236,7 +236,14 @@ class Fooman_Jirafe_Model_Jirafe
             //retrieve new application id from jirafe server
             try {
                 $baseUrl = Mage::helper('foomanjirafe')->getUnifiedStoreBaseUrl(Mage::helper('foomanjirafe')->getStoreConfigDirect('web/unsecure/base_url', $defaultStoreId,false));
-                $return = $this->getJirafeApi()->applications()->create(Mage::helper('foomanjirafe')->getStoreDescription(Mage::app()->getStore($defaultStoreId)), $baseUrl);
+                $platformData = Mage::helper('foomanjirafe')->getPlatformData();
+                $return = $this->getJirafeApi()->applications()->create(
+                    Mage::helper('foomanjirafe')->getStoreDescription(Mage::app()->getStore($defaultStoreId)),
+                    $baseUrl,
+                    $platformData['platform_type'],
+                    $platformData['platform_version'],
+                    $platformData['plugin_version']
+                );
                 if(empty($return['app_id']) || empty($return['token'])) {
                     throw new Exception ('Jirafe did not return a valid application Id or token.');
                 }
@@ -416,7 +423,11 @@ class Fooman_Jirafe_Model_Jirafe
 
             try {
                 $this->getJirafeApi()->getConnection()->setConfig(array('timeout'=>120));
-                $return = $this->getJirafeApi()->applications($appId)->resources()->sync($storeArray, $userArray, Jirafe_Api_Collection::PLATFORM_TYPE_MAGENTO, true);
+                $return = $this->getJirafeApi()->applications($appId)->resources()->sync(
+                    $storeArray,
+                    $userArray,
+                    Mage::helper('foomanjirafe')->getPlatformData() + array('opt_in' => true)
+                );
                 $this->saveUserInfo($return['users']);
                 $this->saveStoreInfo($return['sites'], $appId);
             } catch (Exception $e) {
