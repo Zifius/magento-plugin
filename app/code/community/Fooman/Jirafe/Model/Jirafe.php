@@ -27,19 +27,22 @@ class Fooman_Jirafe_Model_Jirafe
     // PRODUCTION environment
     const JIRAFE_API_SERVER = 'https://api.jirafe.com';
     const JIRAFE_API_BASE = '';
-    const JIRAFE_PIWIK_BASE_URL = 'data.jirafe.com';
+    const JIRAFE_TRACKER_PLAIN_URL  = 'http://data.jirafe.com';
+    const JIRAFE_TRACKER_SECURE_URL = 'https://data.jirafe.com';
     const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
 
     // DEV environment
 //    const JIRAFE_API_SERVER = 'http://api.jirafe.local';
 //    const JIRAFE_API_BASE = 'app_dev.php';
-//    const JIRAFE_PIWIK_BASE_URL = 'piwik.local';
+//    const JIRAFE_TRACKER_PLAIN_URL  = 'http://tracekr.local';
+//    const JIRAFE_TRACKER_SECURE_URL = 'http://tracker.local';
 //    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
 
     // TEST environment
 //    const JIRAFE_API_SERVER = 'https://test-api.jirafe.com';
 //    const JIRAFE_API_BASE = '';
-//    const JIRAFE_PIWIK_BASE_URL = 'test-data.jirafe.com';
+//    const JIRAFE_TRACKER_PLAIN_URL  = 'http://test-data.jirafe.com';
+//    const JIRAFE_TRACKER_SECURE_URL = 'https://test-data.jirafe.com';
 //    const JIRAFE_JS_BASE_URL = 'c.jirafe.com';
 
     const JIRAFE_API_VERSION = 'v1';
@@ -107,13 +110,23 @@ class Fooman_Jirafe_Model_Jirafe
     }
 
     /**
-     * Returns the URL of the piwik installation
+     * Returns the URL of the tracker (plain http)
      *
      * @return string
      */
-    public function getPiwikBaseUrl ()
+    public function getTrackerUrl ()
     {
-        return rtrim(self::JIRAFE_PIWIK_BASE_URL, '/');
+        return rtrim(self::JIRAFE_TRACKER_PLAIN_URL, '/');
+    }
+
+    /**
+     * Returns the URL of the tracker (https)
+     *
+     * @return string
+     */
+    public function getTrackerSecureUrl ()
+    {
+        return rtrim(self::JIRAFE_TRACKER_SECURE_URL, '/');
     }
 
     /**
@@ -123,7 +136,7 @@ class Fooman_Jirafe_Model_Jirafe
      */
     public function getCMBUrl ()
     {
-        return 'https://'.$this->getPiwikBaseUrl().'/cmb';
+        return $this->getTrackerSecureUrl().'/cmb';
     }
 
     /**
@@ -133,7 +146,7 @@ class Fooman_Jirafe_Model_Jirafe
      */
     public function getEventsUrl ()
     {
-        return 'https://'.$this->getPiwikBaseUrl().'/events';
+        return $this->getTrackerSecureUrl().'/events';
     }
 
     public function sendCMB($siteId)

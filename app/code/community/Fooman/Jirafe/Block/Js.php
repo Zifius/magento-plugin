@@ -55,9 +55,14 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         return Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     }
 
-    public function getPiwikBaseURL()
+    public function getTrackerBaseURL()
     {
-        return Mage::getModel('foomanjirafe/jirafe')->getPiwikBaseUrl();
+        return str_replace('http://', '', Mage::getModel('foomanjirafe/jirafe')->getTrackerUrl());
+    }
+
+    public function getTrackerSecureURL()
+    {
+        return Mage::getModel('foomanjirafe/jirafe')->getTrackerSecureUrl();
     }
 
     public function getJsBaseURL()
@@ -136,9 +141,9 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         );
 
         $jsUrl = $this->getJsBaseURL();
-        $piwikUrl = $this->getPiwikBaseURL();
-        if ($piwikUrl != 'data.jirafe.com') {
-            $aData['baseUrl'] = $piwikUrl;
+        $trackerUrl = $this->getTrackerBaseURL();
+        if ($trackerUrl != 'data.jirafe.com') {
+            $aData['baseUrl'] = $trackerUrl;
         }
 
         switch ($this->pageType) {

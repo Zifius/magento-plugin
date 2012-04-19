@@ -27,12 +27,12 @@ class Fooman_Jirafe_Block_JsAlt extends Fooman_Jirafe_Block_Js
 
     public function getTrackingCode()
     {
-        $urlHttps = 'https://'.$this->getPiwikBaseURL().'/';
+        $urlHttps = $this->getTrackerSecureURL();
         $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', Mage::app()->getStore()->getId());
     
         return <<<EOF
 <!-- Jirafe:START -->
-<noscript><p><img src="{$urlHttps}piwik.php?idsite={$siteId}" style="border:0" alt="" /></p></noscript>
+<noscript><p><img src="{$urlHttps}/piwik.php?idsite={$siteId}" style="border:0" alt="" /></p></noscript>
 <!-- Jirafe:END -->
 EOF;
     }
