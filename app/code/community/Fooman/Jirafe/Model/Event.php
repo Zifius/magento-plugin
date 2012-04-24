@@ -32,7 +32,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     const JIRAFE_ORDER_STATUS_COMPLETE          = 'complete';
     const JIRAFE_ORDER_STATUS_CLOSED            = 'closed';
     const JIRAFE_ORDER_STATUS_CANCELLED         = 'canceled';
-    const JIRAFE_ORDER_STATUS_HELD              = 'holded';
+    const JIRAFE_ORDER_STATUS_HELD              = 'held';
     const JIRAFE_ORDER_STATUS_PAYMENT_REVIEW    = 'paymentReview';
 
     protected $_eventPrefix = 'foomanjirafe_event';
