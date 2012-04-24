@@ -23,6 +23,24 @@ class Fooman_Jirafe_Block_Adminhtml_Dashboard_Toggle extends Mage_Adminhtml_Bloc
         }
     }
 
+    /**
+     * run a list of checks to work out if the Jirafe toggle link
+     * should be shown
+     *
+     * @return bool
+     */
+    public function displayToggleLink ()
+    {
+        $user = Mage::getSingleton('admin/session')->getUser();
+        if($user) {
+            return (
+                Mage::helper('foomanjirafe')->isOk() && 
+                Mage::helper('foomanjirafe')->currentUserEnabled() &&
+                $user->getJirafeOptinAnswered()
+            );
+        }
+    }
+
     public function getToggleLinkName ()
     {
         if (Mage::helper('foomanjirafe/data')->isDashboardActive()) {

@@ -357,17 +357,23 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDashboardActive ()
     {
-        // To check if the dashboard is active, you must check:
-        // 1. If the plugin is active
-        // 2. If the plugin is enabled for this user
-        // 3. If the dashboard is active for this user
-        // 4. If we have a valid app_id and app_token
-        return (
-        Mage::helper('foomanjirafe')->getStoreConfig('isActive') &&
-        $this->currentUserEnabled() &&
-        Mage::getSingleton('admin/session')->getUser()->getJirafeDashboardActive() &&
-        $this->isConfigured()
-        );
+        $user = Mage::getSingleton('admin/session')->getUser();
+        if($user) {
+            // To check if the dashboard is active, you must check:
+            // 1. If the plugin is active
+            // 2. If the plugin is enabled for this user
+            // 3. If the dashboard is active for this user
+            // 4. And the user has answered the opt-in question
+            // 5. If we have a valid app_id and app_token
+            return (
+                Mage::helper('foomanjirafe')->getStoreConfig('isActive') &&
+                $this->currentUserEnabled() &&
+                $user->getJirafeDashboardActive() &&
+                $user->getJirafeOptinAnswered() &&
+                $this->isConfigured()
+            );
+        }
+        return false;
     }
 
     /**
