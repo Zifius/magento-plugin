@@ -396,9 +396,9 @@ class Fooman_Jirafe_Model_Jirafe
                     Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
                     $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
                     Mage::helper('foomanjirafe')->setStoreConfig('site_settings_hash', $currentHash, $store->getId());
-                    // Call CMB for the store
-                    $this->sendCMB($siteId);
                 }
+                // Call CMB for the store
+                $this->sendCMB($siteId);
             }
         }
     }
