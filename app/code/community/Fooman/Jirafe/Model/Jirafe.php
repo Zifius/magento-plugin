@@ -388,15 +388,11 @@ class Fooman_Jirafe_Model_Jirafe
                     Mage::helper('foomanjirafe')->setStoreConfig('site_id', $jirafeSite['site_id'], $store->getId());
                 }
                 
-                //check if url settings have changed
-                $currentHash = $this->_createStoreSettingsHash($store->getId());
-                if ($currentHash != Mage::helper('foomanjirafe')->getStoreConfig('site_settings_hash', $store->getId())) {
-                    // Send store API URL
-                    $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
-                    Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
-                    $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
-                    Mage::helper('foomanjirafe')->setStoreConfig('site_settings_hash', $currentHash, $store->getId());
-                }
+                // Send store API URL
+                $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true));
+                Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
+                $this->getJirafeApi()->applications($appId)->sites()->get($jirafeSite['site_id'])->update(array('store_api_url'=>$storeJirafeApiUrl));
+
                 // Call CMB for the store
                 $this->sendCMB($siteId);
             }
