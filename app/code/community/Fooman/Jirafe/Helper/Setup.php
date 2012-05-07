@@ -22,6 +22,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
         $currentConfigVersion = (string) Mage::getConfig()->getModuleConfig('Fooman_Jirafe')->version;
         switch ($version) {
             case $currentConfigVersion:
+            case '0.5.1':
             case '0.5.0':
 
                 if(version_compare(Mage::getVersion(),'1.4.1.0') >= 0){
