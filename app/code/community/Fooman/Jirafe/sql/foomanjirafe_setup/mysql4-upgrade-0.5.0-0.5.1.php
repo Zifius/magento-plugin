@@ -19,18 +19,18 @@ $installer = $this;
 /* @var $installer Fooman_Jirafe_Model_Mysql4_Setup */
 
 // Check if there any "null" events, if so, clean them up
-$pastEvents = Mage::getSingleton('foomanjirafe/events')
+$nullEvents = Mage::getModel('foomanjirafe/event')
         ->getCollection()
-        ->addAttributeToFilter('event_data', 'null');
+        ->addFieldToFilter('event_data', 'null');
 
 if (count($nullEvents)) {
     $tblEvent = $this->getTable('foomanjirafe/event');
     $tblOrder = $this->getTable('sales/order');
     $tblCreditmemo = $this->getTable('sales/creditmemo');
     $this->run("
-        LOCK TABLES `{$tblEvent}`, `{$tblOrder}`, `{$tblCreditmemo}` WRITE;
-        TRUNCATE TABLE `{$tblEvent}`;
-        UPDATE `{$tblOrders}` SET `jirafe_export_status` = NULL;
+        LOCK TABLES `{$tblEvent}` WRITE, `{$tblOrder}` WRITE, `{$tblCreditmemo}` WRITE;
+        DELETE FROM `{$tblEvent}`;
+        UPDATE `{$tblOrder}` SET `jirafe_export_status` = NULL;
         UPDATE `{$tblCreditmemo}` SET `jirafe_export_status` = NULL;
         UNLOCK TABLES;
     ");
