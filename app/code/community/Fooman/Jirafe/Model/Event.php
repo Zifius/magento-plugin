@@ -168,7 +168,15 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_IMPORT);
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
-            $this->setEventData(json_encode($eventData));
+            
+            $json = json_encode($eventData);
+            while (strlen($json) >= 65535) {
+                // Too big! Remove one entry and retry
+                $removedOrders = array_pop($eventData['orders']);
+                $json = json_encode($eventData);
+            }
+            
+            $this->setEventData($json);
             $this->save();
             
             foreach ($orders as $order) {
@@ -192,7 +200,15 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_IMPORT);
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $refund->getStoreId()));
-            $this->setEventData(json_encode($eventData));
+            
+            $json = json_encode($eventData);
+            while (strlen($json) >= 65535) {
+                // Too big! Remove one entry and retry
+                $removedOrders = array_pop($eventData['refunds']);
+                $json = json_encode($eventData);
+            }
+            
+            $this->setEventData($json);
             $this->save();
             
             foreach ($creditmemos as $refund) {
