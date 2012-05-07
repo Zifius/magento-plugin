@@ -20,7 +20,7 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
 
-    const BATCH_SIZE = 500;
+    const BATCH_SIZE = 50;
 
     private $_jirafeApi = false;
 
