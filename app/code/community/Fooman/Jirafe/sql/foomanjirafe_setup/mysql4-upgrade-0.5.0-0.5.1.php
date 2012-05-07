@@ -21,7 +21,10 @@ $installer = $this;
 // Check if there any "null" events, if so, clean them up
 $nullEvents = Mage::getModel('foomanjirafe/event')
         ->getCollection()
-        ->addFieldToFilter('event_data', 'null');
+        ->addFieldToFilter(array('or' =>
+            array('event_data', 'null'),
+            array('LENGTH(event_data) >= 65535'),
+        ));
 
 if (count($nullEvents)) {
     $tblEvent = $this->getTable('foomanjirafe/event');
