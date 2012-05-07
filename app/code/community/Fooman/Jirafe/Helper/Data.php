@@ -474,7 +474,8 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
             if ($string != $utf8) {
                 // Not UTF-8
                 $storeCharset = Mage::getStoreConfig("api/config/charset", $storeId);
-                if (empty($storeCharset)) {
+                if (empty($storeCharset) || preg_match('/^utf-?8$/i', $storeCharset)) {
+                    // No charset, or charset wrongly reported as utf-8
                     $storeCharset = 'ISO-8859-1';
                 }
                 return @iconv($storeCharset, 'UTF-8', $string);
