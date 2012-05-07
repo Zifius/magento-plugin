@@ -241,7 +241,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
                 $returnArray[] = array(
                     'sku' => $product->getData('sku'),
-                    'name' => $product->getName(),
+                    'name' => Mage::helper('foomanjirafe')->toUTF8($product->getName()),
                     'category' => Mage::helper('foomanjirafe')->getCategory($product),
                     'price' => $itemPrice,
                     'quantity' => $isOrder ? $item->getQtyOrdered() : $item->getQty()

@@ -453,10 +453,34 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
             // Skip null and root
             if ($k > 1) {
                 $category = Mage::getModel('catalog/category')->load($id);
-                $aCategories[] = $category->getName();
+                $aCategories[] = $this->toUTF8($category->getName());
             }
         }
         return join('/', $aCategories);
+    }
+
+    /**
+     * returns a valid UTF8 string, either by converting from the store default
+     * charset or cleaning up non compliant characters
+     *
+     * @param string $string
+     * @param int $storeId
+     * @return string
+     */
+    public function toUTF8($string, $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID)
+    {
+        if (strlen($string) > 0) {
+            $utf8 = @iconv('UTF-8', 'UTF-8', $string);
+            if ($string != $utf8) {
+                // Not UTF-8
+                $storeCharset = Mage::getStoreConfig("api/config/charset", $storeId);
+                if (empty($storeCharset)) {
+                    $storeCharset = 'ISO-8859-1';
+                }
+                return @iconv($storeCharset, 'UTF-8', $string);
+            }
+        }
+        return $string;
     }
 
 }
