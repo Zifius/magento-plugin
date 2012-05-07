@@ -172,7 +172,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
-                $removedOrders = array_pop($eventData['orders']);
+                array_pop($eventData['orders']);
                 $json = json_encode($eventData);
             }
             
@@ -204,7 +204,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
-                $removedOrders = array_pop($eventData['refunds']);
+                array_pop($eventData['refunds']);
                 $json = json_encode($eventData);
             }
             
