@@ -38,7 +38,7 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
                         Mage::logException($e);
                         $reponseCode = 501;
                     }
-                    $this->releaseAdvisoryLock($siteId);
+                    $event->releaseAdvisoryLock($siteId);
                 } else {
                     $responseCode = 503;
                 }
