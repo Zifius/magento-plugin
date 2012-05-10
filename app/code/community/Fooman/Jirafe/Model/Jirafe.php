@@ -503,15 +503,13 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function postEvents($token, $siteId, $version)
     {
-        $eventModel = Mage::getModel('foomanjirafe/event');
-
-        if (!$eventModel->getAdvisoryLock()) {
+        if (!Mage::getResourceModel('foomanjirafe/event')->getAdvisoryLock($siteId)) {
             return false;
         }
 
         $this->createHistoricalEvents($siteId);
 
-        $jirafeEvents = $eventModel->getCollection()
+        $jirafeEvents = Mage::getModel('foomanjirafe/event')->getCollection()
             ->addFieldToFilter('site_id', $siteId)
             ->addFieldToFilter('version', array('gteq' => $version))
             ->setPageSize(self::EVENTS_BATCH_SIZE)
