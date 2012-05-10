@@ -30,8 +30,13 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
             $event = Mage::getResourceModel('foomanjirafe/event');
             if($jirafe->checkEventsToken($token, $hash)) {
                 if ($event->acquireAdvisoryLock($siteId)) {
-                    if (!$jirafe->postEvents($token, $siteId, $version+1)) {
-                        $responseCode = 500;
+                    try{
+                        if (!$jirafe->postEvents($token, $siteId, $version+1)) {
+                            $responseCode = 500;
+                        }
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                        $reponseCode = 501;
                     }
                     $this->releaseAdvisoryLock($siteId);
                 } else {

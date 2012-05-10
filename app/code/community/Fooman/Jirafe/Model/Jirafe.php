@@ -537,11 +537,16 @@ class Fooman_Jirafe_Model_Jirafe
         $client->setParameterPost('timestamp', Mage::getSingleton('core/date')->gmtTimestamp());
         try {
             $response = $client->request('POST');
-            return $response->isError() ? false : true;
         } catch (Exception $e) {
             Mage::logException($e);
             return false;
         }
+
+        if ($response->isError()) {
+            throw new Exception("Remote replied with %d %s", $response->getCode(), $response->getMessage());
+        }
+
+        return true;
     }
 
     public function createHistoricalEvents($siteId)
