@@ -20,7 +20,8 @@ class Fooman_Jirafe_Model_Jirafe
     const STATUS_ORDER_EXPORTED = 1;
     const STATUS_ORDER_FAILED = 2;
 
-    const EVENTS_BATCH_SIZE = 10;
+    const EVENTS_BATCH_SIZE  = 5;
+    const EVENTS_IMPORT_SIZE = 10;
 
     private $_jirafeApi = false;
 
@@ -513,6 +514,8 @@ class Fooman_Jirafe_Model_Jirafe
         $jirafeEvents = $eventModel->getCollection()
             ->addFieldToFilter('site_id', $siteId)
             ->addFieldToFilter('version', array('gteq' => $version))
+            ->setPageSize(self::EVENTS_BATCH_SIZE)
+            ->setCurPage(1)
             ->setOrder('version', 'ASC');
 
         $events = array();
@@ -561,7 +564,7 @@ class Fooman_Jirafe_Model_Jirafe
             $data = Mage::getModel($type)
                 ->getCollection()
                 ->setOrder('created_at', 'DESC')
-                ->setPageSize(self::EVENTS_BATCH_SIZE)
+                ->setPageSize(self::EVENTS_IMPORT_SIZE)
                 ->setCurPage(1)
                 ->addAttributeToFilter('store_id', $storeId)
                 ->addAttributeToFilter(
