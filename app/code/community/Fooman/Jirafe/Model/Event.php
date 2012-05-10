@@ -63,8 +63,10 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     public function afterCommitCallback()
     {
-        //ping Jirafe
-        Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($this->getSiteId());
+        if (!$this->getNoCMB()) {
+            //ping Jirafe
+            Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($this->getSiteId());
+        }
         return parent::afterCommitCallback();
     }
     
@@ -176,7 +178,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 $json = json_encode($eventData);
             }
             
-            $this->setEventData($json);
+            $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
             foreach ($orders as $order) {
@@ -208,7 +210,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 $json = json_encode($eventData);
             }
             
-            $this->setEventData($json);
+            $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
             foreach ($creditmemos as $refund) {
