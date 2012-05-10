@@ -530,10 +530,6 @@ class Fooman_Jirafe_Model_Jirafe
             $version = $jirafeEvent->getVersion()+1;
         }
 
-        if (!count($events)) {
-            return true;
-        }
-        
         $client = new Zend_Http_Client($this->getEventsUrl());
         $client->setParameterPost('token', $token);
         $client->setParameterPost('siteId', $siteId);
