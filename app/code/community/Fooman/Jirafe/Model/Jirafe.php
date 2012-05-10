@@ -503,10 +503,6 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function postEvents($token, $siteId, $version)
     {
-        if (!Mage::getResourceModel('foomanjirafe/event')->getAdvisoryLock($siteId)) {
-            return false;
-        }
-
         $this->createHistoricalEvents($siteId);
 
         $jirafeEvents = Mage::getModel('foomanjirafe/event')->getCollection()
@@ -534,13 +530,22 @@ class Fooman_Jirafe_Model_Jirafe
             $version = $jirafeEvent->getVersion()+1;
         }
 
+        if (!count($events)) {
+            return true;
+        }
+        
         $client = new Zend_Http_Client($this->getEventsUrl());
         $client->setParameterPost('token', $token);
         $client->setParameterPost('siteId', $siteId);
         $client->setParameterPost('events', json_encode($events));
         $client->setParameterPost('timestamp', Mage::getSingleton('core/date')->gmtTimestamp());
-        $response = $client->request('POST');
-        return $response->isError() ? false : true;
+        try {
+            $response = $client->request('POST');
+            return $response->isError() ? false : true;
+        } catch (Exception $e) {
+            Mage::logException($e);
+            return false;
+        }
     }
 
     public function createHistoricalEvents($siteId)
