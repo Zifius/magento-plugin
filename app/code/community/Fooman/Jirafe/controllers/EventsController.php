@@ -28,15 +28,27 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
         if($token && $hash && $siteId) {
             $jirafe = Mage::getModel('foomanjirafe/jirafe');
             if($jirafe->checkEventsToken($token, $hash)) {
-                $jirafe->postEvents($token, $siteId, $version+1);
-                $response->setBody('OK');
+                try {
+                    if (!$jirafe->postEvents($token, $siteId, $version+1)) {
+                        $responseCode = 503;
+                    }
+                } catch (Exception $e) {
+                    Mage::logException($e);
+
+                    $responseCode = 500;
+                }
             } else {
-                $response->setHttpResponseCode(400);
-                $response->setBody('KO');
+                $responseCode = 400;
             }
         } else {
-            $response->setHttpResponseCode(400);
-            $response->setBody('KO');
+            $responseCode = 400;
+        }
+
+        if (empty($responseCode)) {
+            $response->setBody("OK\n");
+        } else {
+            $response->setHttpResponseCode($responseCode);
+            $response->setBody("KO\n");
         }
     }
 

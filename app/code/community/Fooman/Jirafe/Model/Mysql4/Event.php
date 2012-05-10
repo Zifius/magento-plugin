@@ -21,6 +21,11 @@ class Fooman_Jirafe_Model_Mysql4_Event extends Mage_Core_Model_Mysql4_Abstract
         $this->_init('foomanjirafe/event', 'id');
     }
 
+    public function getAdvisoryLock()
+    {
+        return (bool)$this->_getWriteAdapter()->raw_fetchRow("SELECT GET_LOCK('jirafe_events', 0) AS l", 'l');
+    }
+
     public function getLastVersionNumber($siteId)
     {
         //the below query seems to perform slightly better on high concurrency than

@@ -502,10 +502,15 @@ class Fooman_Jirafe_Model_Jirafe
 
     public function postEvents($token, $siteId, $version)
     {
+        $eventModel = Mage::getModel('foomanjirafe/event');
+
+        if (!$eventModel->getAdvisoryLock()) {
+            return false;
+        }
+
         $this->createHistoricalEvents($siteId);
 
-        $jirafeEvents = Mage::getModel('foomanjirafe/event')
-            ->getCollection()
+        $jirafeEvents = $eventModel->getCollection()
             ->addFieldToFilter('site_id', $siteId)
             ->addFieldToFilter('version', array('gteq' => $version))
             ->setOrder('version', 'ASC');
@@ -533,13 +538,8 @@ class Fooman_Jirafe_Model_Jirafe
         $client->setParameterPost('siteId', $siteId);
         $client->setParameterPost('events', json_encode($events));
         $client->setParameterPost('timestamp', Mage::getSingleton('core/date')->gmtTimestamp());
-        try {
-            $response = $client->request('POST');
-            return $response->isError() ? false : true;
-        } catch (Exception $e) {
-            Mage::logException($e);
-            return false;
-        }
+        $response = $client->request('POST');
+        return $response->isError() ? false : true;
     }
 
     public function createHistoricalEvents($siteId)
