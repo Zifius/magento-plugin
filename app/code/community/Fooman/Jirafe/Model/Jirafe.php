@@ -543,7 +543,7 @@ class Fooman_Jirafe_Model_Jirafe
         }
 
         if ($response->isError()) {
-            throw new Exception("Remote replied with %d %s", $response->getCode(), $response->getMessage());
+            throw new Exception(sprintf("Remote replied with %d %s", $response->getStatus(), $response->getMessage()));
         }
 
         return true;
