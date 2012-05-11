@@ -119,6 +119,10 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
         Mage::helper('foomanjirafe')->debug($path);
         Mage::helper('foomanjirafe')->debug($query);
         Mage::helper('foomanjirafe')->debug($parameters);              
+        
+        // Work around bug http://framework.zend.com/issues/browse/ZF-11030
+        $this->setEncType(self::ENC_URLENCODED);
+        
         return $this->initializeResponse($this->request(self::PUT));     
     }
 
