@@ -185,7 +185,7 @@ class Fooman_Jirafe_Model_HttpConnection_Zend extends Zend_Http_Client implement
             Mage::helper('foomanjirafe')->debug($this->getLastResponse());
         } catch (Exception $e) {
             Mage::helper('foomanjirafe')->debug('--------------------------------------EXCEPTION--------------------------------------');
-            Mage::helper('foomanjirafe')->debug($this->getLastRequest());
+            Mage::helper('foomanjirafe')->debug($e->getMessage());
             throw $e;
         }
         return $response;
