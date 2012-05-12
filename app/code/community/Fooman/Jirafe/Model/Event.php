@@ -181,7 +181,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
-            foreach ($orders as $order) {
+            foreach ($eventData['orders'] as $order) {
                 $order->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
         } catch (Exception $e) {
@@ -213,7 +213,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
-            foreach ($creditmemos as $refund) {
+            foreach ($eventData['refunds'] as $refund) {
                 $refund->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
         } catch (Exception $e) {
