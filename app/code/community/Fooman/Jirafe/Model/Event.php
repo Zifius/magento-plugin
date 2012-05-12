@@ -175,13 +175,14 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
                 array_pop($eventData['orders']);
+                array_pop($orders);
                 $json = json_encode($eventData);
             }
             
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
-            foreach ($eventData['orders'] as $order) {
+            foreach ($orders as $order) {
                 $order->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
         } catch (Exception $e) {
@@ -207,13 +208,14 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
                 array_pop($eventData['refunds']);
+                array_pop($refunds);
                 $json = json_encode($eventData);
             }
             
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
-            foreach ($eventData['refunds'] as $refund) {
+            foreach ($refunds as $refund) {
                 $refund->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
         } catch (Exception $e) {
