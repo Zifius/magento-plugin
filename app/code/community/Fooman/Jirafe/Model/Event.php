@@ -34,6 +34,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     const JIRAFE_ORDER_STATUS_CANCELLED         = 'canceled';
     const JIRAFE_ORDER_STATUS_HELD              = 'held';
     const JIRAFE_ORDER_STATUS_PAYMENT_REVIEW    = 'paymentReview';
+    const JIRAFE_ORDER_STATUS_UNKNOWN           = 'unknown';
 
     protected $_eventPrefix = 'foomanjirafe_event';
     protected $_eventObject = 'jirafeevent';
@@ -299,6 +300,9 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 break;
             case Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW:
                 $status = self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
+                break;
+            default:
+                $status = self::JIRAFE_ORDER_STATUS_UNKNOWN;
                 break;
         }
         return $status;
