@@ -301,7 +301,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             case Mage_Sales_Model_Order::STATE_HOLDED:
                 $status = self::JIRAFE_ORDER_STATUS_HELD;
                 break;
-            case Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW:
+            case 'payment_review': //Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW                
                 $status = self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
                 break;
             default:
