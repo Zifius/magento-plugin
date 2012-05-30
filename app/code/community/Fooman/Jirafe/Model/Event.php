@@ -53,12 +53,15 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     /**
      * there is no afterCommitCallback on earlier
      * versions, use the closest alternative
-     * @see afterCommitCallback
      */
     protected function _afterSave()
     {
         if (version_compare(Mage::getVersion(), '1.4.0.0', '<')) {
-            $this->afterCommitCallback();
+            if (!$this->getNoCMB()) {
+                //ping Jirafe
+                Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($this->getSiteId());
+            }
+            return parent::_afterSave();
         }
     }
 
