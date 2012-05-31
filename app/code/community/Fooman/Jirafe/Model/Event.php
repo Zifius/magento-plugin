@@ -93,6 +93,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     
     protected function _getEventDataFromCreditMemo($creditmemo)
     {
+        $creditmemo = $creditmemo->load($creditmemo->getId());
         return array(
                 'refundId'                  => $creditmemo->getIncrementId(),
                 'orderId'                   => $creditmemo->getOrder()->getIncrementId(),
