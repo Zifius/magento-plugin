@@ -391,7 +391,7 @@ class Fooman_Jirafe_Model_Jirafe
                 
                 // Send store API URL
                 $storeJirafeApiUrl = $store->getUrl('foomanjirafe/events', array('_secure'=>true, '_nosid'=>true));
-                if (stripos($storeJirafeApiUrl, 'http://') !== 0){
+                if (stripos($storeJirafeApiUrl, 'http') !== 0){
                     $storeJirafeApiUrl = Mage::helper('foomanjirafe')->getStoreConfigDirect('web/secure/base_url', $store->getId(),false).$storeJirafeApiUrl;
                 }
                 Mage::helper('foomanjirafe')->debug('Store API URL ' . $storeJirafeApiUrl);
