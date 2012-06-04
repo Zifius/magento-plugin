@@ -68,26 +68,30 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
     public function getProduct()
     {
         $product = Mage::registry('product');
-        $aCategories = array();
-        foreach ($product->getCategoryIds() as $id) {
-            $category = Mage::getModel('catalog/category')->load($id);
-            $aCategories[] = $this->getCategory($category);
-        }
-        
-        $productPrice = $product->getBasePrice();
-        // This is inconsistent behaviour from Magento
-        // base_price should be item price in base currency
-        // TODO: add test so we don't get caught out when this is fixed in a future release
-        if(!$productPrice || $productPrice < 0.00001) {
-            $productPrice = $product->getPrice();
-        }
+        if ($product) {
+            $aCategories = array();
+            foreach ($product->getCategoryIds() as $id) {
+                $category = Mage::getModel('catalog/category')->load($id);
+                $aCategories[] = $this->getCategory($category);
+            }
 
-        return array(
-            'sku'        => $product->getSku(),
-            'name'       => $product->getName(),
-            'categories' => $aCategories,
-            'price'      => $productPrice,
-        );
+            $productPrice = $product->getBasePrice();
+            // This is inconsistent behaviour from Magento
+            // base_price should be item price in base currency
+            // TODO: add test so we don't get caught out when this is fixed in a future release
+            if (!$productPrice || $productPrice < 0.00001) {
+                $productPrice = $product->getPrice();
+            }
+
+            return array(
+                'sku' => $product->getSku(),
+                'name' => $product->getName(),
+                'categories' => $aCategories,
+                'price' => $productPrice,
+            );
+        } else {
+            return array();
+        }
     }
     
     public function getCategory($category = null)
@@ -96,11 +100,13 @@ class Fooman_Jirafe_Block_Js extends Mage_Core_Block_Template
         if (!isset($category)) {
             $category = Mage::registry('current_category');
         }
-        foreach ($category->getPathIds() as $k => $id) {
-            // Skip null and root
-            if ($k > 1) {
-                $category = Mage::getModel('catalog/category')->load($id);
-                $aCategories[] = $category->getName();
+        if ($category) {
+            foreach ($category->getPathIds() as $k => $id) {
+                // Skip null and root
+                if ($k > 1) {
+                    $category = Mage::getModel('catalog/category')->load($id);
+                    $aCategories[] = $category->getName();
+                }
             }
         }
         return join('/', $aCategories);
