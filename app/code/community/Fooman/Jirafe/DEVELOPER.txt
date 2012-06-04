@@ -53,18 +53,19 @@ ALTER TABLE admin_user DROP COLUMN jirafe_email_suppress;
 ALTER TABLE admin_user DROP COLUMN jirafe_user_id;
 ALTER TABLE admin_user DROP COLUMN jirafe_user_token;
 ALTER TABLE admin_user DROP COLUMN jirafe_dashboard_active;
+ALTER TABLE admin_user DROP COLUMN jirafe_enabled;
+ALTER TABLE admin_user DROP COLUMN jirafe_optin_answered;
+DROP TABLE foomanjirafe_event;
 
-#Magento 1.4.1.+
+#for plugin versions pre 0.2.7
+ALTER TABLE admin_user DROP COLUMN jirafe_also_send_to;
+
+#Magento 1.4.2.0 +
 ALTER TABLE sales_flat_order DROP COLUMN jirafe_visitor_id;
 ALTER TABLE sales_flat_order DROP COLUMN jirafe_attribution_data;
 ALTER TABLE sales_flat_order DROP COLUMN jirafe_export_status;
 ALTER TABLE sales_flat_order DROP COLUMN jirafe_placed_from_frontend;
+ALTER TABLE sales_flat_creditmemo DROP COLUMN jirafe_export_status;
 
-#Magento 1.4.1.-
-ALTER TABLE sales_order DROP COLUMN jirafe_visitor_id;
-ALTER TABLE sales_order DROP COLUMN jirafe_attribution_data;
-ALTER TABLE sales_order DROP COLUMN jirafe_export_status;
-ALTER TABLE sales_order DROP COLUMN jirafe_placed_from_frontend;
-
-#for versions pre 0.2.7
-ALTER TABLE admin_user DROP COLUMN jirafe_also_send_to;
+#Magento 1.4.1.1 -
+DELETE FROM eav_attribute WHERE attribute_code LIKE 'jirafe_%';
