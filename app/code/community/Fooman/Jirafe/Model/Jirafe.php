@@ -454,6 +454,17 @@ class Fooman_Jirafe_Model_Jirafe
         //return $this->getJirafeApi()->getLog()->sendLog(Mage::helper('foomanjirafe')->getStoreConfig('app_token'), $data);
     }
 
+    public function resetEvents ()
+    {
+        $stores = Mage::helper('foomanjirafe')->getStores();
+        $appId= Mage::helper('foomanjirafe')->getStoreConfigDirect('app_id');
+        foreach ($stores as $store) {
+            $siteId = Mage::helper('foomanjirafe')->getStoreConfigDirect('site_id', $store->getId());
+            Mage::helper('foomanjirafe')->debug('Resetting Events for site_id: ' . $siteId);
+            $this->getJirafeApi()->applications($appId)->sites()->get($siteId);
+        }
+    }
+
     /**
      * only sync once at the end of the installation or upgrade routine
      * @param string $upgradeVersion

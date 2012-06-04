@@ -55,7 +55,12 @@ class Fooman_Jirafe_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Template
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/report');
     }
-    
+
+    public function getOrderResetUrl()
+    {
+        return Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/orderReset');
+    }
+
     public function getResetUrl()
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/jirafe/reset');

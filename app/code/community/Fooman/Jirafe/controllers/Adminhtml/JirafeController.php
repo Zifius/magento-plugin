@@ -45,6 +45,14 @@ class Fooman_Jirafe_Adminhtml_JirafeController extends Mage_Adminhtml_Controller
         $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
     }
 
+    public function orderResetAction()
+    {
+        $jirafe = Mage::helper('foomanjirafe/setup');
+        $installer = Mage::getResourceModel('foomanjirafe/setup');
+        $jirafe->resetEventsDb($installer);
+        $this->_redirect('adminhtml/system_config/edit/section/foomanjirafe');
+    }
+
     public function toggleDashboardAction()
     {
         $user = Mage::getSingleton('admin/session')->getUser();

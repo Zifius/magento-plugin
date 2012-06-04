@@ -305,4 +305,33 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
         $installer->endSetup();
     }
 
+    public function resetEventsDb ($installer)
+    {
+        $tblEvent = $installer->getTable('foomanjirafe/event');
+        $tblSalesOrderInt = $installer->getTable('sales/sales_order_int');
+        if($tblSalesOrderInt) {
+            $tblSalesOrderEntityInt = $installer->getTable('sales/sales_order_entity_int');
+            $tblEavAttribute = $installer->getTable('eav/attribute');
+            $installer->run("
+                START TRANSACTION;
+                DELETE FROM `{$tblEvent}`;
+                UPDATE `{$tblSalesOrderInt}` SET value = 0 WHERE attribute_id IN (SELECT attribute_id FROM `{$tblEavAttribute}` WHERE attribute_code='jirafe_export_status');
+                UPDATE `{$tblSalesOrderEntityInt}` SET value = 0 WHERE attribute_id IN (SELECT attribute_id FROM `{$tblEavAttribute}` WHERE attribute_code='jirafe_export_status');
+                COMMIT;
+            ");
+        } else {
+            $tblOrder = $installer->getTable('sales/order');
+            $tblCreditmemo = $installer->getTable('sales/creditmemo');
+            $installer->run("
+                START TRANSACTION;
+                DELETE FROM `{$tblEvent}`;
+                UPDATE `{$tblOrder}` SET `jirafe_export_status` = NULL;
+                UPDATE `{$tblCreditmemo}` SET `jirafe_export_status` = NULL;
+                COMMIT;
+            ");
+        }
+        //reset Jirafe side
+        Mage::getModel('foomanjirafe/jirafe')->resetEvents();
+        //
+    }
 }
