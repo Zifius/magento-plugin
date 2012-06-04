@@ -308,8 +308,8 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     public function resetEventsDb ($installer)
     {
         $tblEvent = $installer->getTable('foomanjirafe/event');
-        $tblSalesOrderInt = $installer->getTable('sales/sales_order_int');
-        if($tblSalesOrderInt) {
+        try {
+            $tblSalesOrderInt = $installer->getTable('sales/sales_order_int');
             $tblSalesOrderEntityInt = $installer->getTable('sales/sales_order_entity_int');
             $tblEavAttribute = $installer->getTable('eav/attribute');
             $installer->run("
@@ -319,7 +319,8 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
                 UPDATE `{$tblSalesOrderEntityInt}` SET value = 0 WHERE attribute_id IN (SELECT attribute_id FROM `{$tblEavAttribute}` WHERE attribute_code='jirafe_export_status');
                 COMMIT;
             ");
-        } else {
+        } catch (Exception $e) {
+            //newer versions of Magento
             $tblOrder = $installer->getTable('sales/order');
             $tblCreditmemo = $installer->getTable('sales/creditmemo');
             $installer->run("
