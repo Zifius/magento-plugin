@@ -183,7 +183,9 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 array_pop($orders);
                 $json = json_encode($eventData);
             }
-            
+            if (empty($json)) {
+                Mage::throwException('Empty Jirafe order import event data.');
+            }
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
@@ -216,7 +218,9 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 array_pop($refunds);
                 $json = json_encode($eventData);
             }
-            
+            if (empty($json)) {
+                Mage::throwException('Empty Jirafe refund import event data.');
+            }
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
             
