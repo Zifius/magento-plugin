@@ -308,6 +308,7 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
     public function resetEventsDb ($installer)
     {
         $tblEvent = $installer->getTable('foomanjirafe/event');
+        $installer->run("LOCK TABLES `{$tblEvent}` WRITE;");
         try {
             $tblSalesOrderInt = $installer->getTable('sales/sales_order_int');
             $tblSalesOrderEntityInt = $installer->getTable('sales/sales_order_entity_int');
@@ -333,6 +334,6 @@ class Fooman_Jirafe_Helper_Setup extends Mage_Core_Helper_Abstract
         }
         //reset Jirafe side
         Mage::getModel('foomanjirafe/jirafe')->resetEvents();
-        //
+        $installer->run("UNLOCK TABLES;");
     }
 }
