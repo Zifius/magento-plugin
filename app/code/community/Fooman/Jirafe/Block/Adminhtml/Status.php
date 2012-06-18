@@ -66,8 +66,13 @@ class Fooman_Jirafe_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Template
         $conn = Mage::getSingleton('core/resource');
         $read = $conn->getConnection('core_read');
         return $read->fetchAll("SELECT * FROM `{$conn->getTableName('core_config_data')}` WHERE path like 'foomanjirafe%'");
-                
-    }    
+
+    }
+
+    public function getOrderSyncStatus()
+    {
+        return Mage::getModel('foomanjirafe/jirafe')->getOrderSyncStatus();
+    }
 
     public function isDebug()
     {
