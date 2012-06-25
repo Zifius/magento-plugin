@@ -314,7 +314,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 $status = self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
                 break;
             default:
-                $status = self::JIRAFE_ORDER_STATUS_NEW;
+                $status = self::JIRAFE_ORDER_STATUS_UNKNOWN;
                 break;
         }
         return $status;
