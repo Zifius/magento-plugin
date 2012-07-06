@@ -277,13 +277,21 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                     $itemPrice = $orderItem->getPrice();
                 }
 
-                $returnArray[] = array(
-                    'sku' => $product->getData('sku'),
-                    'name' => Mage::helper('foomanjirafe')->toUTF8($product->getName()),
-                    'category' => Mage::helper('foomanjirafe')->getCategory($product),
+                $currentItem = array(
                     'price' => Mage::helper('foomanjirafe')->formatAmount($itemPrice),
                     'quantity' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
                 );
+
+                //a product might have been deleted - use item information
+                if ($product->getId()) {
+                    $currentItem['sku'] = Mage::helper('foomanjirafe')->toUTF8($product->getData('sku'));
+                    $currentItem['name'] = Mage::helper('foomanjirafe')->toUTF8($product->getName());
+                    $currentItem['category'] = Mage::helper('foomanjirafe')->toUTF8(Mage::helper('foomanjirafe')->getCategory($product));
+                } else {
+                    $currentItem['sku'] = Mage::helper('foomanjirafe')->toUTF8($item->getData('sku'));
+                    $currentItem['name'] = Mage::helper('foomanjirafe')->toUTF8($item->getName());
+                }
+                $returnArray[] = $currentItem;
             }
         }
         return $returnArray;
