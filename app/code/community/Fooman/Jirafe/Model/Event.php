@@ -82,10 +82,10 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             'customerHash'      => Mage::helper('foomanjirafe')->getCustomerHash($order->getCustomerEmail()),
             'visitorId'         => $this->_getJirafeVisitorId($order),
             'time'              => strtotime($order->getCreatedAt()),
-            'grandTotal'        => $order->getBaseGrandTotal(),
-            'subTotal'          => $order->getBaseSubtotal(),
-            'taxAmount'         => $order->getBaseTaxAmount(),
-            'shippingAmount'    => $order->getBaseShippingAmount(),
+            'grandTotal'        => Mage::helper('foomanjirafe')->formatAmount($order->getBaseGrandTotal()),
+            'subTotal'          => Mage::helper('foomanjirafe')->formatAmount($order->getBaseSubtotal()),
+            'taxAmount'         => Mage::helper('foomanjirafe')->formatAmount($order->getBaseTaxAmount()),
+            'shippingAmount'    => Mage::helper('foomanjirafe')->formatAmount($order->getBaseShippingAmount()),
             'discountAmount'    => $this->_formatDiscountAmount($order->getBaseDiscountAmount()),
             'items'             => $this->_getItems($order)
         );
@@ -98,10 +98,10 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'refundId'                  => $creditmemo->getIncrementId(),
                 'orderId'                   => $creditmemo->getOrder()->getIncrementId(),
                 'time'                      => strtotime($creditmemo->getCreatedAt()),
-                'grandTotal'                => $creditmemo->getBaseGrandTotal(),
-                'subTotal'                  => $creditmemo->getBaseSubtotal(),
-                'taxAmount'                 => $creditmemo->getBaseTaxAmount(),
-                'shippingAmount'            => $creditmemo->getBaseShippingAmount(),
+                'grandTotal'                => Mage::helper('foomanjirafe')->formatAmount($creditmemo->getBaseGrandTotal()),
+                'subTotal'                  => Mage::helper('foomanjirafe')->formatAmount($creditmemo->getBaseSubtotal()),
+                'taxAmount'                 => Mage::helper('foomanjirafe')->formatAmount($creditmemo->getBaseTaxAmount()),
+                'shippingAmount'            => Mage::helper('foomanjirafe')->formatAmount($creditmemo->getBaseShippingAmount()),
                 'discountAmount'            => $this->_formatDiscountAmount($creditmemo->getBaseDiscountAmount()),
                 'items'                     => $this->_getItems($creditmemo)
             );
@@ -247,7 +247,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     protected function _formatDiscountAmount($discountAmount)
     {
-        return sprintf("%01.4f", abs($discountAmount));
+        return Mage::helper('foomanjirafe')->formatAmount(abs($discountAmount));
     }
 
     protected function _getItems($salesObject)
@@ -281,7 +281,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                     'sku' => $product->getData('sku'),
                     'name' => Mage::helper('foomanjirafe')->toUTF8($product->getName()),
                     'category' => Mage::helper('foomanjirafe')->getCategory($product),
-                    'price' => $itemPrice,
+                    'price' => Mage::helper('foomanjirafe')->formatAmount($itemPrice),
                     'quantity' => $isOrder ? $item->getQtyOrdered() : $item->getQty()
                 );
             }
