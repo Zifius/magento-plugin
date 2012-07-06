@@ -543,6 +543,7 @@ class Fooman_Jirafe_Model_Jirafe
         $client->setParameterPost('siteId', $siteId);
         $client->setParameterPost('events', json_encode($events));
         $client->setParameterPost('timestamp', Mage::getSingleton('core/date')->gmtTimestamp());
+        Mage::helper('foomanjirafe')->debugEvent(json_encode($events));
         try {
             $response = $client->request('POST');
         } catch (Exception $e) {

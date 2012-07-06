@@ -56,6 +56,11 @@ class Fooman_Jirafe_Model_Mysql4_Event extends Mage_Core_Model_Mysql4_Abstract
         $this->_getWriteAdapter()->raw_query("LOCK TABLES `{$tableName}` WRITE;");
         $lastEventNumberForSite = $this->getLastVersionNumber($event->getSiteId());
         $event->setVersion($lastEventNumberForSite + 1);
+        if (Mage::helper('foomanjirafe')->isDebug()) {
+            $event = array('v' => $event->getVersion(), 'a' => $event->getAction(), 'd' => $event->getEventData());
+            Mage::helper('foomanjirafe')->debugEvent(json_encode($event));
+        }
+
         return $this;
     }
 

@@ -272,6 +272,40 @@ class Fooman_Jirafe_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * keep entry in jirafe-event-fail.log with error message, trace and event data
+     *
+     * @param Exception $exception
+     * @param $event
+     */
+    public function debugFailedEvent(Exception $exception, $event, $withTrace = true)
+    {
+        Mage::log('--------------------------------------------------------------------------------------', null, 'jirafe-event-fail.log');
+        Mage::log($exception->getMessage(), null, 'jirafe-event-fail.log');
+        if ($withTrace) {
+            Mage::log($exception->getTrace(), null, 'jirafe-event-fail.log');
+        }
+        Mage::log($event, null, 'jirafe-event-fail.log');
+        Mage::log('--------------------------------------------------------------------------------------', null, 'jirafe-event-fail.log');
+    }
+
+    /**
+     * run events through validator
+     *
+     * @param JSON string $event
+     */
+    public function debugEvent($event, $withTrace = true)
+    {
+        if ($this->isDebug()) {
+            try {
+                $validator = new Jirafe_Event_Validator();
+                $validator->run($event);
+            } catch (Exception $e) {
+                Mage::helper('foomanjirafe')->debugFailedEvent($e, json_encode($event), $withTrace);
+            }
+        }
+    }
+
+    /**
      * are we currently in debug mode
      * @see Admin Back-end > System > Configuration > Jirafe Analytics
      *
