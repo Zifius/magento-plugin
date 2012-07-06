@@ -73,7 +73,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         }
         return parent::afterCommitCallback();
     }
-    
+
     protected function _getEventDataFromOrder($order)
     {
         return array(
@@ -86,11 +86,11 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             'subTotal'          => $order->getBaseSubtotal(),
             'taxAmount'         => $order->getBaseTaxAmount(),
             'shippingAmount'    => $order->getBaseShippingAmount(),
-            'discountAmount'    => abs($order->getBaseDiscountAmount()),
+            'discountAmount'    => $this->_formatDiscountAmount($order->getBaseDiscountAmount()),
             'items'             => $this->_getItems($order)
         );
     }
-    
+
     protected function _getEventDataFromCreditMemo($creditmemo)
     {
         $creditmemo = $creditmemo->load($creditmemo->getId());
@@ -102,7 +102,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
                 'subTotal'                  => $creditmemo->getBaseSubtotal(),
                 'taxAmount'                 => $creditmemo->getBaseTaxAmount(),
                 'shippingAmount'            => $creditmemo->getBaseShippingAmount(),
-                'discountAmount'            => $creditmemo->getBaseDiscountAmount(),
+                'discountAmount'            => $this->_formatDiscountAmount($creditmemo->getBaseDiscountAmount()),
                 'items'                     => $this->_getItems($creditmemo)
             );
     }
@@ -163,7 +163,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             $creditmemo->setJirafeIsNew(2);
         }
     }
-    
+
     public function orderImportCreate($siteId, $orders)
     {
         $eventData = array('orders' => array());
@@ -175,7 +175,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_IMPORT);
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
-            
+
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
@@ -188,7 +188,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             }
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
-            
+
             foreach ($orders as $order) {
                 $order->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
@@ -196,9 +196,9 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             Mage::logException($e);
             Mage::helper('foomanjirafe')->debug($e->getMessage());
         }
-        
+
     }
-    
+
     public function refundImportCreate($siteId, $refunds)
     {
         $eventData = array('refunds' => array());
@@ -210,7 +210,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_IMPORT);
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $refund->getStoreId()));
-            
+
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
                 // Too big! Remove one entry and retry
@@ -223,7 +223,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             }
             $this->setNoCMB(1)->setEventData($json);
             $this->save();
-            
+
             foreach ($refunds as $refund) {
                 $refund->setJirafeIsNew(2)->setJirafeExportStatus(1)->save();
             }
@@ -231,7 +231,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             Mage::logException($e);
             Mage::helper('foomanjirafe')->debug($e->getMessage());
         }
-        
+
     }
 
     protected function _getJirafeVisitorId($order)
@@ -245,13 +245,18 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         return $visitorId;
     }
 
+    protected function _formatDiscountAmount($discountAmount)
+    {
+        return sprintf("%01.4f", abs($discountAmount));
+    }
+
     protected function _getItems($salesObject)
     {
         $returnArray = array();
         $isOrder = ($salesObject instanceof Mage_Sales_Model_Order);
         foreach ($salesObject->getAllItems() as $item)
         {
-            if($item){                    
+            if($item){
                 if ($isOrder) {
                     $orderItem = $item;
                 } else {
@@ -310,7 +315,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
             case Mage_Sales_Model_Order::STATE_HOLDED:
                 $status = self::JIRAFE_ORDER_STATUS_HELD;
                 break;
-            case 'payment_review': //Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW                
+            case 'payment_review': //Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW
                 $status = self::JIRAFE_ORDER_STATUS_PAYMENT_REVIEW;
                 break;
             default:
