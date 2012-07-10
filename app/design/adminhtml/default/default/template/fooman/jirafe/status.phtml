@@ -67,7 +67,7 @@
             <tr>
                 <td><?php echo $this->__('Site Id') ?>: <?php echo $siteId ?></td><td><?php echo $status['ok']? $this->__('OK'):$this->__('Not okay') ?></td>
             </tr>
-            <?php if(!($status['ok']=='a')) :?>
+            <?php if(!($status['ok']==1)) :?>
                 <tr><td>&nbsp;</td><td><?php echo $this->__('Errors') ?> <?php echo $status['errors'] ?></td></tr>
                 <tr><td>&nbsp;</td><td><?php echo $this->__('Last Version') ?> <?php echo $status['version'] ?></td></tr>
             <?php endif;?>
