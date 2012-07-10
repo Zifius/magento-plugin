@@ -597,12 +597,21 @@ class Fooman_Jirafe_Model_Jirafe
     public function getOrderSyncStatus()
     {
         $appId = Mage::helper('foomanjirafe')->getStoreConfig('app_id');
-        $stores = Mage::helper('foomanjirafe')->getStores();
-        $sitesSyncStatus = array();
-        foreach ($stores as $storeId => $store) {
-            $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $storeId);
-            $sitesSyncStatus[$siteId] = $this->getJirafeApi()->applications($appId)->sites($siteId)->orders()->status()->fetch();
+        if ($appId) {
+            $stores = Mage::helper('foomanjirafe')->getStores();
+            $sitesSyncStatus = array();
+            foreach ($stores as $storeId => $store) {
+                $siteId = Mage::helper('foomanjirafe')->getStoreConfig('site_id', $storeId);
+                if ($siteId) {
+                    try {
+                        $sitesSyncStatus[$siteId] = $this->getJirafeApi()->applications($appId)->sites($siteId)->orders()->status()->fetch();
+                    } catch (Exception $e) {
+                        $sitesSyncStatus[$siteId] = array('ok' => 0, 'errors' => $e->getMessage(), 'version' => 'N/A');
+                    }
+                }
+            }
+            return $sitesSyncStatus;
         }
-        return $sitesSyncStatus;
+
     }
 }
