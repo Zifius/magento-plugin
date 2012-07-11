@@ -18,24 +18,6 @@ Mage::log('Running Fooman Jirafe DB upgrade '.$version);
 $installer = $this;
 /* @var $installer Fooman_Jirafe_Model_Mysql4_Setup */
 
-// Check if there any "null" events, if so, clean them up
-$nullEvents = Mage::getModel('foomanjirafe/event')
-        ->getCollection()
-        ->addFieldToFilter('LENGTH(event_data)', array('gteq' => '65535'));
-
-if (count($nullEvents)) {
-    $tblEvent = $this->getTable('foomanjirafe/event');
-    $tblOrder = $this->getTable('sales/order');
-    $tblCreditmemo = $this->getTable('sales/creditmemo');
-    $this->run("
-        LOCK TABLES `{$tblEvent}` WRITE, `{$tblOrder}` WRITE, `{$tblCreditmemo}` WRITE;
-        DELETE FROM `{$tblEvent}`;
-        UPDATE `{$tblOrder}` SET `jirafe_export_status` = NULL;
-        UPDATE `{$tblCreditmemo}` SET `jirafe_export_status` = NULL;
-        UNLOCK TABLES;
-    ");
-}
-
 $installer->startSetup();
 Mage::helper('foomanjirafe/setup')->runDbSchemaUpgrade($installer, $version);
 $installer->endSetup();
