@@ -113,7 +113,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
         if ($order->getJirafeIsNew() == 1) {
             if (!$this->getNoCMB()) {
                 //ping Jirafe for this new order - the call back creates the historical event orderCreate for this order
-                Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($order->getSiteId());
+                Mage::getSingleton('foomanjirafe/jirafe')->sendCMB(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
             }
         } else {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
