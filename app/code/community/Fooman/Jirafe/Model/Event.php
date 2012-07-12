@@ -76,6 +76,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     protected function _getEventDataFromOrder($order)
     {
+        $order = $order->load($order->getId());
         return array(
             'orderId'           => $order->getIncrementId(),
             'status'            => $this->_getOrderStatus($order),
