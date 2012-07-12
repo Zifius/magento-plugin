@@ -163,9 +163,13 @@ class Fooman_Jirafe_Model_Jirafe
         }
     }
 
-    public function checkEventsToken ($token, $hash)
+    public function checkEventsToken($token, $hash)
     {
-        return $hash == sha1($token.Mage::helper('foomanjirafe')->getStoreConfig('app_token'));
+        if ($hash == sha1($token . Mage::helper('foomanjirafe')->getStoreConfig('app_token'))) {
+            return true;
+        }
+        Mage::helper('foomanjirafe')->debug('Could not verify event token and hash ' . $hash . ' vs ' . sha1($token . Mage::helper('foomanjirafe')->getStoreConfig('app_token')));
+        return false;
     }
 
     /**
