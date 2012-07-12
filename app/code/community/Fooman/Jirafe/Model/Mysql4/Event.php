@@ -57,7 +57,7 @@ class Fooman_Jirafe_Model_Mysql4_Event extends Mage_Core_Model_Mysql4_Abstract
         $lastEventNumberForSite = $this->getLastVersionNumber($event->getSiteId());
         $event->setVersion($lastEventNumberForSite + 1);
         if (Mage::helper('foomanjirafe')->isDebug()) {
-            $event = array('v' => $event->getVersion(), 'a' => $event->getAction(), 'd' => $event->getEventData());
+            $event = array('v' => $event->getVersion(), 'a' => $event->getAction(), 'd' => json_decode($event->getEventData(), true));
             Mage::helper('foomanjirafe')->debugEvent(json_encode($event));
         }
 
