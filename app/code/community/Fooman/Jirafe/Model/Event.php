@@ -109,33 +109,14 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
     public function orderCreateOrUpdate($order)
     {
-        $saveEvent = false;
         if ($order->getJirafeIsNew() == 1) {
-            $saveEvent = true;
-            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_CREATE);
-            $eventData = $this->_getEventDataFromOrder($order);
-            $order->setJirafeIsNew(2);
+            if (!$this->getNoCMB()) {
+                //ping Jirafe for this new order - the call back creates the historical event orderCreate for this order
+                Mage::getSingleton('foomanjirafe/jirafe')->sendCMB($order->getSiteId());
+            }
         } else {
-            if($order->getOrigData()) {
-                if($order->getState() != $order->getOrigData('state')) {
-                    //only create an update event when the state has changed
-                    //TODO: check against final spec if there are any other changes we are interested in
-                    $saveEvent = true;
-                }
-            } elseif ($order->getJirafeIsNew() != 2 && $order->getState() != Mage_Sales_Model_Order::STATE_NEW) {
-                //During order creation Magento saves a new order twice
-                //the above check prevents an order_create AND order_update event for a new order
-                $saveEvent = true;
-            }
-            if($saveEvent) {
-                $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
-                $eventData = array (
-                    'orderId'   =>$order->getIncrementId(),
-                    'status'    =>$this->_getOrderStatus($order)
-                );
-            }
-        }
-        if($saveEvent) {
+            $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_UPDATE);
+            $eventData = $this->_getEventDataFromOrder($order);
             $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
             $this->setEventData(json_encode($eventData));
             try {
