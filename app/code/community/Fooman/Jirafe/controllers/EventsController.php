@@ -43,7 +43,7 @@ class Fooman_Jirafe_EventsController extends Mage_Core_Controller_Front_Action
                     $responseCode = 503;
                 }
             } else {
-                $responseCode = 400;
+                $responseCode = 401;
             }
         } else {
             $responseCode = 400;
