@@ -156,7 +156,7 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
 
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_ORDER_IMPORT);
-            $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $order->getStoreId()));
+            $this->setSiteId($siteId);
 
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
@@ -185,13 +185,13 @@ class Fooman_Jirafe_Model_Event extends Mage_Core_Model_Abstract
     {
         $eventData = array('refunds' => array());
         foreach ($refunds as $refund) {
-            Mage::helper('foomanjirafe')->debug('Adding refund '.$refund->getIncrementId().' to orderImport batch');
+            Mage::helper('foomanjirafe')->debug('Adding refund '.$refund->getIncrementId().' to refundImport batch');
             $eventData['refunds'][] = $this->_getEventDataFromCreditMemo($refund);
         }
 
         try {
             $this->setAction(Fooman_Jirafe_Model_Event::JIRAFE_ACTION_REFUND_IMPORT);
-            $this->setSiteId(Mage::helper('foomanjirafe')->getStoreConfig('site_id', $refund->getStoreId()));
+            $this->setSiteId($siteId);
 
             $json = json_encode($eventData);
             while (strlen($json) >= 65535) {
