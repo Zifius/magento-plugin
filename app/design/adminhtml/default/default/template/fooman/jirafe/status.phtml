@@ -13,6 +13,7 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
+<?php $orderSyncStatus = $this->getOrderSyncStatus() ?>
 <?php if ($this->noSync() && $this->isConfig()): ?>
     <ul class="messages">
         <li class="error-msg">
@@ -36,6 +37,17 @@
                 <a href="<?php echo $this->getReportUrl()?>"><?php echo $this->__('Run Report'); ?></a> |
                 <a href="<?php echo $this->getResetUrl()?>"><?php echo $this->__('Jirafe Reset'); ?></a></span>
         <?php endif;?>
+    </li>
+    <li>
+        <?php echo $this->__('Jirafe Version Information')?> <br/>
+        <table>
+            <tr>
+                <td>Magento</td><td><?php echo Mage::getVersion() ?></td>
+            </tr>
+            <tr>
+                <td>Jirafe Extension</td><td><?php echo $this->getJirafeInstalledVersion() ?></td>
+            </tr>
+        </table>
     </li>
     <li>
         <?php echo $this->__('Jirafe Debug Information')?> <br/>
@@ -62,17 +74,21 @@
     </li>
     <li>
         <?php echo $this->__('Jirafe Order Sync Status')?> <br/>
-        <table>
-        <?php foreach ($this->getOrderSyncStatus() as $siteId=>$status): ?>
-            <tr>
-                <td><?php echo $this->__('Site Id') ?>: <?php echo $siteId ?></td><td><?php echo $status['ok']? $this->__('OK'):$this->__('Not okay') ?></td>
-            </tr>
-            <?php if(!($status['ok']==1)) :?>
-                <tr><td>&nbsp;</td><td><?php echo $this->__('Errors') ?> <?php echo $status['errors'] ?></td></tr>
-                <tr><td>&nbsp;</td><td><?php echo $this->__('Last Version') ?> <?php echo $status['version'] ?></td></tr>
-            <?php endif;?>
-        <?php endforeach;?>
+        <?php if($orderSyncStatus): ?>
+            <table>
+            <?php foreach ($this->getOrderSyncStatus() as $siteId=>$status): ?>
+                <tr>
+                    <td><?php echo $this->__('Site Id') ?>: <?php echo $siteId ?></td><td><?php echo $status['ok']? $this->__('OK'):$this->__('Not okay') ?></td>
+                </tr>
+                <?php if(!($status['ok']==1)) :?>
+                    <tr><td>&nbsp;</td><td><?php echo $this->__('Errors') ?> <?php echo $status['errors'] ?></td></tr>
+                    <tr><td>&nbsp;</td><td><?php echo $this->__('Last Version') ?> <?php echo $status['version'] ?></td></tr>
+                <?php endif;?>
+            <?php endforeach;?>
         </table>
+        <?php else:?>
+            <?php echo $this->__('No status yet.') ?>
+        <?php endif;?>
     </li>
 </ul>
 <?php endif;?>
