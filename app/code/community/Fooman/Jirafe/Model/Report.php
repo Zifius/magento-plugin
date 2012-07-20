@@ -15,8 +15,8 @@
 
 class Fooman_Jirafe_Model_Report extends Mage_Core_Model_Abstract
 {
-    const XML_PATH_EMAIL_TEMPLATE = 'foomanjirafe/report_email_template';
-    const XML_PATH_EMAIL_IDENTITY = 'foomanjirafe/report_email_identity';
+    const XML_PATH_EMAIL_TEMPLATE = 'foomanjirafe/settings/report_email_template';
+    const XML_PATH_EMAIL_IDENTITY = 'foomanjirafe/settings/report_email_identity';
 
     protected $_helper = '';
 

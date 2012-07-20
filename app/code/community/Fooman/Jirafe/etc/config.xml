@@ -218,9 +218,9 @@
                 <is_debug>0</is_debug>
                 <also_send_emails_to/>
                 <installtime/>
+                <report_email_template>foomanjirafe_report_template</report_email_template>
+                <report_email_identity>jirafe</report_email_identity>
             </settings>
-            <report_email_template>foomanjirafe_report_template</report_email_template>
-            <report_email_identity>jirafe</report_email_identity>
         </foomanjirafe>
     </default>
     <frontend>
